@@ -1,0 +1,125 @@
+
+require 'rubygems'
+require('./test/env')
+require('lore/model')
+
+module Lore
+module Unit
+
+  NAME_FORMAT = { :format => /^([a-zA-Z_0-9])+$/, :length => 3..100, :mandatory => true }
+
+  class Manufacturer < Lore::Model
+    table :manufacturer, :public
+    primary_key :manuf_id, :manuf_id_seq
+
+    validates :name, NAME_FORMAT
+
+    use_label :name
+  end
+
+  class Owner < Lore::Model
+    table :owner, :public
+    primary_key :owner_id, :owner_id_seq
+
+    validates :name, NAME_FORMAT
+  end
+
+  class Vehicle < Lore::Model
+    table :vehicle, :public
+    primary_key :id, :vehicle_id_seq
+
+    has_a Manufacturer, :manuf_id
+    has_n Owner, :vehicle_id
+
+    validates :name, NAME_FORMAT
+    validates :maxspeed, :mandatory => true
+    validates :num_seats, :mandatory => true
+
+    add_input_filter(:name) { |name|
+      name.gsub(/[^a-zA-Z_0-9]/,'').downcase
+    }
+    add_input_filter(:maxspeed) { |m| m.to_s.gsub('km/h','') }
+    add_output_filter(:maxspeed) { |m| m << 'km/h' }
+
+  # add_select_filter { |clause| clause & (Vehicle.deleted == 't') }
+  end
+
+  class Vehicle_Owner < Lore::Model
+    table :vehicle_owner, :public
+    primary_key :vehicle_id
+    primary_key :owner_id
+    #    aggregates Vehicle, :vehicle_id
+    #    aggregates Owner, :owner_id
+    # maps Vehicle, Owner
+    
+    def get_owner()
+      Owner.find(1).with(Owner.owner_id == owner_id).entity
+    end
+  end
+
+  class Car_Type < Lore::Model
+    table :car_type, :public
+    primary_key :car_type_id, :car_type_id_seq
+
+    validates :name, NAME_FORMAT
+
+    use_label :name
+  end
+
+  class Car < Vehicle
+    table :car, :public
+    primary_key :id, :car_id_seq
+    
+    is_a Vehicle, :vehicle_id 
+    aggregates Car_Type, :car_type_id
+
+    validates :num_seats, :mandatory => true
+    validates :num_doors, :mandatory => true
+
+    add_input_filter(:maxspeed) { |m| m.to_s.gsub('km/h','') }
+    add_output_filter(:maxspeed) { |m| m << 'km/h' }
+  end
+
+  class Convertible < Car
+    table :convertible, :public
+    primary_key :id, :convertible_id_seq
+    is_a Car, :car_id
+  end
+
+  class Trailer < Lore::Model
+    table :trailer, :public
+    primary_key :trailer_id, :trailer_id_seq
+
+    aggregates Car, :car_id
+  end
+
+  class Motorbike < Vehicle
+    table :bike, :public
+    primary_key :bike_id, :bike_id_seq
+    
+    is_a Vehicle, :vehicle_id
+
+  end
+=begin
+  class Trike < Vehicle
+    table :trike, :public
+    primary_key :trike_id, :trike_id_seq
+
+    is_a Car, :car_id
+    is_a Bike, :bike_id
+
+    cache_entities
+  end
+=end
+  class Garage < Lore::Model
+    table :garage, :public
+    primary_key :garage_id, :garage_id_seq
+    primary_key :vehicle_id
+
+    has_n Vehicle, :vehicle_id
+  end
+
+end
+end
+
+
