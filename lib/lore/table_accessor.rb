@@ -396,6 +396,10 @@ class Table_Accessor
     @__attributes__.inherit(parent)
     @__associations__.add_aggregate_klass(parent, args[1..-1])
 
+    args.each { |attrib|
+      expects(attrib)
+    }
+
     define_entity_access_methods(parent, args[1..-1])
   end # }}}
 

@@ -125,6 +125,11 @@ module Lore
       @types.update(parent_attributes.types)
       @fields.update(parent_attributes.fields)
       @fields_flat += parent_attributes.fields_flat
+      # Shadowing attribute fields whose name is already 
+      # present in more specific table. Remove uniq! to 
+      # allow multiple appearance of attribute names in 
+      # flat field list. 
+      @fields_flat.uniq!
       @required.update(parent_attributes.required)
       @implicit.update(parent_attributes.implicit)
       @sequences.update(parent_attributes.sequences)
