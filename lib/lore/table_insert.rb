@@ -25,7 +25,7 @@ module Lore
       }
       
       Context.enter(@accessor.get_context) if @accessor.get_context
-      Lore.logger.debug { 'PERFORM INSERT on '+@accessor.to_s }
+      Lore.logger.info { 'PERFORM INSERT on '+@accessor.to_s }
 
       @sequence_values = load_sequence_values(@sequences)
       

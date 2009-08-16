@@ -32,6 +32,8 @@ module Lore
       keys.each { |key|
         @accessor.__attributes__.set_implicit(@accessor.table_name, key)
       }
+      # Inherit foreign keys: 
+      @foreign_keys.update(model.__associations__.foreign_keys)
     end
 
     public

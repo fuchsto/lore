@@ -73,15 +73,26 @@ module Model_Instance
   def get_primary_key_values
     return @primary_key_values if @primary_key_values
 
-    @primary_key_values = Hash.new
-    self.class.get_primary_keys.each_pair { |table, attrib_array|
-      @primary_key_values[table] = Hash.new
-      attrib_array.each { |field|
-          pk_attrib_value = @attribute_values[table][field]
-        # pk_attrib_value = @attribute_values[table][field.to_s[0..24]] unless pk_attrib_value
-          @primary_key_values[table][field] = pk_attrib_value
-      }
+    keys = self.class.get_primary_keys[self.class.table_name]
+    @primary_key_values = keys.map { |pkey|
+      @attribute_values_flat[pkey]
     }
+
+    # Before refactoring, attribute values have been 
+    # distributed to tables: 
+    # @primary_key_values = Hash.new
+    # self.class.get_primary_keys.each_pair { |table, attrib_array|
+    #   puts 'resolving for ' << table
+    #   @primary_key_values[table] = Hash.new
+    #   attrib_array.each { |field|
+    #       puts 'looking up value for ' << field.inspect
+    #       pk_attrib_value   = @attribute_values[table][field]
+    #       # Postgres does not allow field names longer than 25 chars, 
+    #       # and cuts them otherwise: 
+    #       pk_attrib_value ||= @attribute_values[table][field.to_s[0..24]] 
+    #       @primary_key_values[table][field] = pk_attrib_value
+    #   }
+    # }
     @primary_key_values
   end
 
@@ -191,14 +202,14 @@ module Model_Instance
   # Return primary key value. In case primary key is composed, return it as array. 
   def pkey
     table = self.class.table_name
-    key = get_primary_key_values[table]
+    key = get_primary_key_values
     return key.first if key.length < 2
     return key
   end
 
   def pkeys
     table = self.class.table_name
-    return get_primary_key_values[table]
+    return get_primary_key_values
   end
 
   # Returns true if instance points to same records as other instance, 
@@ -216,10 +227,6 @@ module Model_Instance
   def get_attribute_values() # :nodoc:
     @attribute_values_flat
   end # def
-
-  def get_primary_key_values
-    @primary_key_values
-  end
 
   # Returns value hash of instance attributes like: 
   #

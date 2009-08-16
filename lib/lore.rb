@@ -36,9 +36,11 @@ module Lore
 
   def self.disable_logging
     @logging_enabled = false
+    @logger.level = Logger::ERROR
   end
   def self.enable_logging
     @logging_enabled = true
+    @logger.level = Logger::DEBUG
   end
   def self.enable_query_log
     @log_queries = true
