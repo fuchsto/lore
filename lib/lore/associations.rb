@@ -9,15 +9,17 @@ module Lore
       @accessor = accessor
       @foreign_keys = {}
       @primary_keys = {}
-
+      
       @has_a = {}
       @has_n = {}
       @belongs_to = {}
-
+      
       @base_klasses = {}
       @base_klasses_tree = {}
       @aggregate_klasses = {}
       @aggregates_tree = {}
+
+      @joins = false
     end
 
     private
@@ -25,7 +27,8 @@ module Lore
     def add_foreign_key_to(model, *keys)
       keys.flatten! 
       mapping = [ keys, model.__associations__.primary_keys[model.table_name] ]
-      @foreign_keys[@accessor.table_name] = { model.table_name => mapping }
+      @foreign_keys[@accessor.table_name] = {} unless @foreign_keys[@accessor.table_name]
+      @foreign_keys[@accessor.table_name][model.table_name] = mapping 
       keys.each { |key|
         @accessor.__attributes__.set_implicit(@accessor.table_name, key)
       }
@@ -39,24 +42,31 @@ module Lore
     end
 
     # For Car.is_a Vehicle
-    def add_base_klass(model, *keys)
+    def add_base_model(model, *keys)
       add_foreign_key_to(model, *keys)
       @base_klasses[model.table_name] = [ model, *keys ]
       @base_klasses_tree[model.table_name] = model.__associations__.base_klasses_tree
       @aggregates_tree[model.table_name]   = model.__associations__.aggregates_tree
+      keys.each { |attribute|
+        @accessor.__attributes__.set_required(attribute)
+      }
       inherit(model)
     end
 
-    def add_aggregate_klass(model, *keys)
+    def add_aggregate_model(model, *keys)
       add_foreign_key_to(model, *keys)
       @aggregate_klasses[model.table_name] = [ model, *keys ]
       @aggregates_tree[model.table_name]   = model.__associations__.aggregates_tree
+      keys.each { |attribute|
+        @accessor.__attributes__.set_required(attribute)
+      }
       inherit(model)
     end
 
     def joined_models()
       @joined_models || @joined_models = @aggregate_klasses.dup.update(@base_klasses)
     end
+    alias joined_klasses joined_models
 
     def joins()
       @joins || @joins = @aggregates_tree.dup.update(@base_klasses_tree)

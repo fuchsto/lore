@@ -20,7 +20,7 @@ module Lore
 
     def perform_insert(value_keys)
     # {{{
-      @aggregates.each_pair { |table, subtable|
+      @aggregates.keys.each { |table|
         @is_a.delete(table)
       }
       

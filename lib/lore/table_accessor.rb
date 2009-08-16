@@ -373,8 +373,8 @@ class Table_Accessor
     parent = args.at(0)
     
     @__filters__.inherit(parent)
-    @__attributes__.inherit(parent)
-    @__associations__.add_base_klass(parent, args[1..-1])
+    @__attributes__.add_base_model(parent)
+    @__associations__.add_base_model(parent, args[1..-1])
 
     define_entity_access_methods(parent, args[1..-1])
   end # }}}
@@ -393,12 +393,8 @@ class Table_Accessor
     parent = args.at(0)
     
     @__filters__.inherit(parent)
-    @__attributes__.inherit(parent)
-    @__associations__.add_aggregate_klass(parent, args[1..-1])
-
-    args.each { |attrib|
-      expects(attrib)
-    }
+    @__attributes__.add_aggregate_model(parent)
+    @__associations__.add_aggregate_model(parent, args[1..-1])
 
     define_entity_access_methods(parent, args[1..-1])
   end # }}}
@@ -696,7 +692,6 @@ class Table_Accessor
     values = distribute_attrib_values(attrib_values)
     
     before_validation(values)
-    puts 'Inserting values ' << values.inspect
     Lore::Validation::Parameter_Validator.invalid_params(self, values)
 
     before_insert(attrib_values)

@@ -42,7 +42,7 @@ module Lore
       @required[attribute] && !@implicit[attribute] || false
     end
     def implicit?(attribute)
-      @implicit[attribute] || false
+      @implicit[attribute] 
     end
 
     def set_required(*args)
@@ -79,8 +79,8 @@ module Lore
         table     = @accessor.table_name
         attribute = args.at(0).to_sym
       end
-      @implicit[table] = {} unless @implicit[table]
-      @implicit[table][attribute] = true
+      @implicit[table] = [] unless @implicit[table]
+      @implicit[table] << attribute
     end
 
     def add_primary_key(attribute, sequence_name=nil)
@@ -118,6 +118,15 @@ module Lore
     def add_hidden(attribute)
       @hidden[@accessor.table_name] = attribute
     end
+
+    def add_base_model(model)
+      inherit(model)
+      @sequences.update(model.__attributes__.sequences)
+    end
+
+    def add_aggregate_model(model)
+      inherit(model)
+    end
     
     def inherit(base_model)
       parent_attributes = base_model.__attributes__
@@ -132,7 +141,6 @@ module Lore
       @fields_flat.uniq!
       @required.update(parent_attributes.required)
       @implicit.update(parent_attributes.implicit)
-      @sequences.update(parent_attributes.sequences)
       @primary_keys.update(parent_attributes.primary_keys)
     end
 
