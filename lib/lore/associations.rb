@@ -24,17 +24,17 @@ module Lore
 
     private
 
+    # Add foreign keys to another model. 
+    # Assumes foreign keys are stored in the models own table. 
     def add_foreign_key_to(model, *keys)
+    # {{{
       keys.flatten! 
       mapping = [ keys, model.__associations__.primary_keys[model.table_name] ]
       @foreign_keys[@accessor.table_name] = {} unless @foreign_keys[@accessor.table_name]
       @foreign_keys[@accessor.table_name][model.table_name] = mapping 
-      keys.each { |key|
-        @accessor.__attributes__.set_implicit(@accessor.table_name, key)
-      }
       # Inherit foreign keys: 
       @foreign_keys.update(model.__associations__.foreign_keys)
-    end
+    end # }}}
 
     public
 
@@ -43,32 +43,93 @@ module Lore
       @primary_keys[@accessor.table_name] << attribute
     end
 
-    # For Car.is_a Vehicle
+    # Add another model as base model. 
+    # Leads to inheritance of fields, primary keys, 
+    # joins etc. 
+    #
+    # Used by Model.is_a? Other_Model
+    #
     def add_base_model(model, *keys)
+    # {{{
       add_foreign_key_to(model, *keys)
       @base_klasses[model.table_name] = [ model, *keys ]
       @base_klasses_tree[model.table_name] = model.__associations__.base_klasses_tree
       @aggregates_tree[model.table_name]   = model.__associations__.aggregates_tree
-      keys.each { |attribute|
-        @accessor.__attributes__.set_required(attribute)
+      keys.flatten.each { |attribute|
+      # @accessor.__attributes__.set_required(attribute)
+        @accessor.__attributes__.set_implicit(@accessor.table_name, attribute)
       }
       inherit(model)
-    end
+    end # }}}
 
+    # Add another model as aggregate model. 
+    # Leads to inheritance of fields, primary keys, 
+    # joins etc. 
+    #
+    # Used by Model.aggregates Other_Model
+    #
     def add_aggregate_model(model, *keys)
+    # {{{
       add_foreign_key_to(model, *keys)
       @aggregate_klasses[model.table_name] = [ model, *keys ]
       @aggregates_tree[model.table_name]   = model.__associations__.aggregates_tree
-      keys.each { |attribute|
+      # Required attributes of aggregated models are not 
+      # required in this model, as aggregated models are 
+      # referenced by their pkey only and have to exist 
+      # in DB already. 
+      # Thus, the foreign key to an aggregated model is
+      # required only: 
+      keys.flatten.each { |attribute|
         @accessor.__attributes__.set_required(attribute)
       }
       inherit(model)
-    end
+    end # }}}
 
     def joined_models()
       @joined_models || @joined_models = @aggregate_klasses.dup.update(@base_klasses)
     end
     alias joined_klasses joined_models
+
+    # Recursively checks if another model is aggregated 
+    # by this model, either directly (foreign key is in 
+    # own table) or via inheritance (foreign key is in 
+    # joined table). 
+    def has_aggregate_model?(model)
+    # {{{
+      @aggregate_klasses.each_pair { |table,map|
+        aggr_model = map.first
+        if aggr_model == model || 
+           aggr_model.__associations__.has_aggregate_model?(model) then
+          return true 
+        end
+      }
+      return false
+    end # }}}
+
+    # Recursively checks if another model is a base model  
+    # of this model, either directly (foreign key is in 
+    # own table) or via inheritance (foreign key is in 
+    # joined table). 
+    def has_base_model?(model)
+    # {{{
+      @base_klasses.each_pair { |table,map|
+        aggr_model = map.first
+        if aggr_model == model || 
+           aggr_model.__associations__.has_base_model?(model) then
+          return true 
+        end
+      }
+      return false
+    end # }}}
+
+    # Recursively checks if another model is joined  
+    # by this model (aggregated or as base model), either 
+    # directly (foreign key is in own table) or via 
+    # inheritance (foreign key is in joined table). 
+    def has_joined_model?(model)
+      has_base_model?(model) || has_aggregated_model?(model)
+    end
+
 
     def joins()
       @joins || @joins = @aggregates_tree.dup.update(@base_klasses_tree)

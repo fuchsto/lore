@@ -403,7 +403,7 @@ class Table_Accessor
   class << self
     alias org_is_a? is_a?
     def is_a?(model)
-      org_is_a?(model) || @__associations__ &&  @__associations__.base_klasses.include?(model)
+      org_is_a?(model) || @__associations__ &&  @__associations__.has_joined_model?(model)
     end
   end
   
@@ -924,6 +924,7 @@ class Table_Accessor
       accessor.all_with(foreign_key_values)
     }
   end # }}}
+
 
 end # class
 

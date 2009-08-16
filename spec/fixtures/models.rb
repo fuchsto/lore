@@ -1,12 +1,13 @@
 
 require 'rubygems'
-require('./test/env')
+require('lore')
 require('lore/model')
 
 module Lore
-module Unit
+module Spec_Fixtures
+module Models
 
-  NAME_FORMAT = { :format => /^([a-zA-Z_0-9])+$/, :length => 3..100, :mandatory => true }
+  NAME_FORMAT = { :format => /^([a-zA-Z_0-9 ])+$/, :length => 3..100, :mandatory => true }
 
   class Manufacturer < Lore::Model
     table :manufacturer, :public
@@ -31,7 +32,7 @@ module Unit
     has_a Manufacturer, :manuf_id
     has_n Owner, :vehicle_id
 
-    validates :name, NAME_FORMAT
+  # validates :name, NAME_FORMAT
     validates :maxspeed, :mandatory => true
     validates :num_seats, :mandatory => true
 
@@ -61,19 +62,37 @@ module Unit
     table :car_type, :public
     primary_key :car_type_id, :car_type_id_seq
 
-    validates :name, NAME_FORMAT
+  # validates :type_name, NAME_FORMAT
 
-    use_label :name
+    use_label :type_name
   end
 
-  class Car < Vehicle
+  class Motor < Lore::Model
+    table :motor, :public
+    primary_key :id, :motor_id_seq
+    
+    expects :kw
+  end
+
+  class Motorized_Vehicle < Vehicle
+    table :motorized, :public
+    primary_key :id, :motorized_id_seq
+
+    is_a Vehicle, :vehicle_id
+    aggregates Motor, :motor_id
+  end
+
+  class Car < Motorized_Vehicle
     table :car, :public
     primary_key :id, :car_id_seq
     
-    is_a Vehicle, :vehicle_id 
+    # This is not a typo: As vehicle_id is a unique, 
+    # inherited primary key in Motorized_Vehicle, it 
+    # must be allowed for referencing a Motorized_Vehicle. 
+    is_a Motorized_Vehicle, :vehicle_id 
     aggregates Car_Type, :car_type_id
 
-    validates :num_seats, :mandatory => true
+  # validates :num_seats, :mandatory => true
     validates :num_doors, :mandatory => true
 
     add_input_filter(:maxspeed) { |m| m.to_s.gsub('km/h','') }
@@ -93,24 +112,13 @@ module Unit
     aggregates Car, :car_id
   end
 
-  class Motorbike < Vehicle
-    table :bike, :public
-    primary_key :bike_id, :bike_id_seq
+  class Motorbike < Motorized_Vehicle
+    table :motorbike, :public
+    primary_key :id, :bike_id_seq
     
-    is_a Vehicle, :vehicle_id
-
+    is_a Motorized_Vehicle, :vehicle_id
   end
-=begin
-  class Trike < Vehicle
-    table :trike, :public
-    primary_key :trike_id, :trike_id_seq
 
-    is_a Car, :car_id
-    is_a Bike, :bike_id
-
-    cache_entities
-  end
-=end
   class Garage < Lore::Model
     table :garage, :public
     primary_key :garage_id, :garage_id_seq
@@ -119,6 +127,7 @@ module Unit
     has_n Vehicle, :vehicle_id
   end
 
+end
 end
 end
 

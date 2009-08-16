@@ -122,8 +122,10 @@ module Model_Instance
   def method_missing(meth, *args)
     return @attribute_values_flat[meth]
   end
+
+  alias :obj_id :id
   def id
-    @attribute_values_flat[:id]
+    @attribute_values_flat[:id] || obj_id
   end
 
   # Set value for given attribute, e.g. for later commit. 

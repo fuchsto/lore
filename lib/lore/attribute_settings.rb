@@ -20,7 +20,7 @@ module Lore
       @accessor           = accessor
       fields.map! { |f| f.to_sym } 
       @fields             = { accessor.table_name => fields }
-      @fields_flat        = fields
+    # @fields_flat        = fields
       @required           = {}
       @implicit           = {}
       @types              = {}
@@ -109,9 +109,16 @@ module Lore
       @explicit = {}
       @fields.each_pair { |table, attrib_list| 
         @explicit[table] = attrib_list.reject { |a| 
-          @implicit[table] && @implicit[table][a.to_sym] 
+          # @fields includes all inherited fields. 
+          # We do not want to aggregated models to 
+          # extend @expected and @implicit, as they 
+          # can only be referenced by their primary 
+          # keys, but never assigned values in e.g. 
+          # Model.create. 
+          !@implicit[table] || @implicit[table].include?(a.to_sym)
         }
       }
+      @explicit.delete_if { |table, fields| fields.length == 0 }
       @explicit
     end
 
@@ -122,10 +129,47 @@ module Lore
     def add_base_model(model)
       inherit(model)
       @sequences.update(model.__attributes__.sequences)
+      @implicit.update(model.__attributes__.implicit)
+      @required.update(model.__attributes__.required)
+      @fields_flat = false # Invalidate cached values
     end
 
     def add_aggregate_model(model)
       inherit(model)
+      # Include indirect implicit fields, but do not 
+      # set aggregated primary keys as implicit, as it 
+      # will be set manually: 
+      aggregated_implicit = model.__attributes__.implicit.dup
+    # model.get_primary_keys.each { |pkey_field|
+    #   aggregated_implicit[model.table_name].delete(pkey_field)
+    # }
+    # @implicit.update(aggregated_implicit)
+      @fields_flat = false # Invalidate cached values
+    end
+
+    def fields_flat
+      return @fields_flat if @fields_flat
+      fields = @fields[@accessor.table_name]
+      fields += fields_flat_rec
+      # Shadowing attribute fields whose name is already 
+      # present in more specific table. Remove uniq! to 
+      # allow multiple appearance of attribute names in 
+      # flat field list. 
+      # TODO: CHECK THIS!!
+      # fields.uniq!
+      @fields_flat = fields
+      return @fields_flat
+    end
+
+    def fields_flat_rec(model=nil)
+      fields = []
+      model ||= @accessor
+      joined_models = model.__associations__.joined_models
+      model.__associations__.joins.each_pair { |table,base_tables|
+        fields += @fields[table]
+        fields += fields_flat_rec(joined_models[table].first)
+      }
+      fields
     end
     
     def inherit(base_model)
@@ -133,14 +177,7 @@ module Lore
       @constraints.update(parent_attributes.constraints)
       @types.update(parent_attributes.types)
       @fields.update(parent_attributes.fields)
-      @fields_flat += parent_attributes.fields_flat
-      # Shadowing attribute fields whose name is already 
-      # present in more specific table. Remove uniq! to 
-      # allow multiple appearance of attribute names in 
-      # flat field list. 
-      @fields_flat.uniq!
-      @required.update(parent_attributes.required)
-      @implicit.update(parent_attributes.implicit)
+    # @fields_flat += parent_attributes.fields_flat
       @primary_keys.update(parent_attributes.primary_keys)
     end
 

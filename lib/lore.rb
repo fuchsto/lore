@@ -6,8 +6,8 @@ module Lore
   VERSION='0.5.0'
 
   @logfile         = STDERR
-  @log_queries     = false
-  @logging_enabled = false
+  @log_queries     = true
+  @logging_enabled = true
   @cache_entities  = false
   @pg_server = 'localhost'
   @pg_port   = 5432
@@ -36,11 +36,11 @@ module Lore
 
   def self.disable_logging
     @logging_enabled = false
-    @logger.level = Logger::ERROR
+    Lore.logger.level = Logger::ERROR
   end
   def self.enable_logging
     @logging_enabled = true
-    @logger.level = Logger::DEBUG
+    Lore.logger.level = Logger::DEBUG
   end
   def self.enable_query_log
     @log_queries = true
