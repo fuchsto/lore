@@ -1,5 +1,5 @@
 
-require('lore/exception/ambiguous_attribute')
+require('lore/exceptions/ambiguous_attribute')
 require('lore/behaviours/movable')
 require('lore/behaviours/versioned')
 require('lore/behaviours/lockable')

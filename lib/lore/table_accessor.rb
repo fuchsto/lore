@@ -708,7 +708,7 @@ class Table_Accessor
     values = distribute_attrib_values(attrib_values)
     
     before_validation(values)
-    Lore::Validation::Parameter_Validator.invalid_params(self, values)
+    Lore::Validation::Parameter_Validator.validate(self, values)
 
     before_insert(attrib_values)
 

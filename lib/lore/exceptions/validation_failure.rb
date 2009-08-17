@@ -21,19 +21,22 @@ module Exceptions
   #  
 	class Validation_Failure < ::Exception
 		
+    # Instances of Exception::Invalid_Field
 		attr_reader :invalid_fields
+    # Model klass that failed validation
 		attr_reader :invalid_klass
 		
 		def initialize(klass, invalid_params_hash)
-      # Instances of Exception::Invalid_Parameters
+      # Instances of Exception::Invalid_Field
 			@invalid_fields = invalid_params_hash 
 			@invalid_klass  = klass
       @message        = "#{self.class.to_s}: #{@invalid_fields.inspect}"
       log()
 		end
 
-		def log()
+    def log()
     # {{{ 
+      Lore.logger.error { "====== VALIDATION FAILURE ===========" }
 			Lore.logger.error { "Invalid field values for klass #{@invalid_klass}: " }
 			Lore.logger.error { 'Invalid field values are: ' }
       @invalid_fields.each_pair { |table, ip|
@@ -41,11 +44,12 @@ module Exceptions
       }
 			Lore.logger.error { 'Required attributes are: ' } 
       @invalid_klass.__attributes__.required.each_pair { |table, ip|
-        Lore.logger.error { " |- Table: #{table}: #{ip.join(', ')}" } 
+        Lore.logger.error { " |- Table: #{table}: #{ip.inspect}" } 
       }
 		end # }}}
 
-		def serialize() # {{{
+		def serialize() 
+    # {{{
 			serials = {}
 			@invalid_fields.each_pair { |table, invalid_param|
 				serials[table] = invalid_param.serialize

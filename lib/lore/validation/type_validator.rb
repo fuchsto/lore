@@ -13,17 +13,17 @@ module Validation
                                        (value == 't' || value == 'f' || value.empty? && !required)
                                      }, 
       Lore::PG_BYTEA              => Proc.new { |value, required| true }, 
-      Lore::PG_INT                => Proc.new { |value, required 
-                                       required && (value.kind_of?(Integer) || value.to_i.to_s == value) || 
+      Lore::PG_INT                => Proc.new { |value, required|
+                                       (value.kind_of?(Integer) || value.to_i.to_s == value) || 
                                        !required && (value.empty?)
                                      }, 
       Lore::PG_SMALLINT           => Proc.new { |value, required|
-                                       required && ((value.kind_of?(Integer) || value.to_i.to_s == value) && 
-                                                    (value.to_i < 1024 && value.to_i > -1024)) || 
+                                       ((value.kind_of?(Integer) || value.to_i.to_s == value) && 
+                                        (value.to_i < 1024 && value.to_i > -1024)) || 
                                        !required && (value.empty?)
                                      }, 
       Lore::PG_DECIMAL            => Proc.new { |value, required| 
-                                       required && (value.kind_of?(Integer) or value.to_f.to_s == value) or 
+                                       (value.kind_of?(Integer) || value.to_f.to_s == value) ||
                                        !required && (value.empty?)
                                      }, 
       Lore::PG_TEXT               => Proc.new { |value, required| !required || !value.empty? }, 
@@ -35,9 +35,9 @@ module Validation
       Lore::PG_TIMESTAMP_TIMEZONE => Proc.new { |value, required| !required || !value.empty? }   # TODO
     }
 
-		def typecheck(code, value, nil_allowed=true)
+		def typecheck(code, value, is_required)
       validation = @@type_validation_rules[code]
-      return validation.call(value, !nil_allowed) if validation
+      return validation.call(value, is_required) if validation
 			raise Lore::Exceptions::Unkown_Type.new(code, value)
 		end
 

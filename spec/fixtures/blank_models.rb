@@ -3,6 +3,8 @@ module Lore
 module Spec_Fixtures
 module Blank_Models
 
+  NAME_FORMAT = { :format => /^([a-zA-Z_0-9 ])+$/, :length => 3..100, :mandatory => true }
+
   class Vehicle < Lore::Model
   end
 

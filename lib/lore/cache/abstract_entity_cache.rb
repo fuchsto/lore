@@ -2,6 +2,7 @@
 require('logger')
 require('pstore')
 require('digest/md5')
+require('lore/exceptions/cache_exception')
 
 module Lore
 module Cache

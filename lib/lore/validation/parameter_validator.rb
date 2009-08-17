@@ -25,6 +25,8 @@ module Validation
     # 
     def self.validate(klass, value_hash)
     
+      Lore.logger.debug { "Validating attributes for #{klass.to_s}: " }
+      Lore.logger.debug { "#{value_hash.inspect}" }
       invalid_params = Hash.new
       explicit_attributes = klass.__attributes__.required
       constraints = klass.__attributes__.constraints
@@ -58,22 +60,26 @@ module Validation
       type_validator = Type_Validator.new()
       type_codes.each_pair { |field, type|
         field = field.to_sym
-        nil_allowed = (!required || !required[field])
+        is_required = (required && required[field]) || false
 
-        value = table_value_hash[field]
+        value = table_value_hash[field] if table_value_hash
         # Replace whitespaces and array delimiters to check for real value length
         value_nil = (value.nil? || value.to_s.gsub(/\s/,'').gsub(/[{}]/,'').length == 0)
-        Lore.logger.debug { "Validate #{field}, required? #{nil_allowed}" }
-        Lore.logger.debug { "Value: #{value}, value nil? #{value_nil}" }
+        Lore.logger.debug { 
+          "Validate #{field}, required? #{is_required}, " << 
+          "value: #{value.inspect}, value nil? #{value_nil}" 
+        }
         # Is value missing? 
-        if (!nil_allowed && value_nil) then 
+        if (is_required && value_nil) then 
           invalid_types[field] = :missing
           Lore.logger.debug { "Field #{field} is :missing" }
-        # If so: Is value of valid type? 
-        elsif !type_validator.typecheck(type, value, nil_allowed) then
+        # Otherwise: Is value of valid type? 
+        elsif !value_nil && !type_validator.typecheck(type, value, is_required) then
           invalid_types[field] = type
-          Lore.logger.debug { "Field #{field} has invalid type: " } 
-          Lore.logger.debug { "expected: #{type}, value: #{value}" } 
+          Lore.logger.debug { 
+            "Field #{field} has invalid type: " << 
+            "expected: #{type}, value: #{value}" 
+          }
         end
         
       }

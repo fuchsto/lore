@@ -2,7 +2,7 @@
 require('pstore')
 
 require('lore/cache/bits')
-require('lore/exception/cache_exception')
+require('lore/exceptions/cache_exception')
 
 module Lore
 module Cache
