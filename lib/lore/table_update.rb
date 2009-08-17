@@ -34,12 +34,9 @@ module Lore
       Lore.logger.debug { 'Fields: ' << attributes.inspect }
       Lore.logger.debug { 'Required: ' << required.inspect }
 
-      query_string  = "\n"
-      query_string << "UPDATE #{table} SET "
-
-      set_string = String.new
-
-      key_counter = 0
+      query_string = "UPDATE #{table} SET "
+      set_string   = String.new
+      key_counter  = 0
       value_keys.each_pair { |attribute_name, value|
 
         internal_attribute_name = attribute_name.to_s[0..24].to_sym
@@ -68,9 +65,8 @@ module Lore
         end
         field_counter += 1
       }
-      query_string << ';'
+      query_string << "; "
         
-      Lore.logger.debug { query_string }
       return query_string
     end # }}}
 

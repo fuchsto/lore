@@ -321,7 +321,7 @@ module Model_Instance
       @update_pkey_values[table] = foreign_pkey_values if foreign_pkey_values
     }
 
-    Validation::Parameter_Validator.validate(self.class, update_values)
+    Validation::Parameter_Validator.validate_update(self.class, update_values)
 
     self.class.before_commit(self)
     self.class.__update_strategy__.perform_update(self)

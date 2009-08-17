@@ -112,14 +112,14 @@ class Connection # :nodoc
       
       if Lore.log_queries? then
         query.split("\n").each { |line|
-          Lore.log { line }
+          Lore.query_logger.debug { "   || #{line}" }
         }
       end
     rescue ::Exception => pge
       pge.message << "\n" << query.inspect
-      Lore.log { pge.message }
-      Lore.log { 'Context: ' << Context.inspect }
-      Lore.log { 'Query: ' << "\n" << query }
+      Lore.logger.error { pge.message }
+      Lore.logger.error { 'Context: ' << Context.inspect }
+      Lore.logger.error { 'Query: ' << "\n" << query }
       raise ::Exception.new(pge.message << "\n" << query.to_s)
     end
     

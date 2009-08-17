@@ -6,6 +6,7 @@ module Lore
   VERSION='0.5.0'
 
   @logfile         = STDERR
+  @query_logfile   = STDERR
   @log_queries     = true
   @logging_enabled = true
   @cache_entities  = false
@@ -17,13 +18,25 @@ module Lore
   def self.logfile
     @logfile
   end
+  def self.query_logfile
+    @query_logfile
+  end
   def self.logfile=(file)
-    @logger = Logger.new(file)
+    @logger       = Logger.new(file)
+    @query_logger = Logger.new(file)
+  end
+  def self.query_logfile=(file)
+    @query_logger = Logger.new(file)
   end
   def self.logger
     @logger
   end
+  def self.query_logger
+    @query_logger
+  end
+
   @logger = Logger.new(Lore.logfile)
+  @query_logger = Logger.new(Lore.query_logfile)
 
   def self.log(&log_block)
     return if Lore.logging_disabled?  

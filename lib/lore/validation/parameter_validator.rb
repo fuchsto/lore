@@ -27,11 +27,10 @@ module Validation
     
       Lore.logger.debug { "Validating attributes for #{klass.to_s}: " }
       Lore.logger.debug { "#{value_hash.inspect}" }
-      invalid_params = Hash.new
-      explicit_attributes = klass.__attributes__.required
-      constraints = klass.__attributes__.constraints
+      invalid_params     = Hash.new
       attribute_settings = klass.__attributes__
-      required = attribute_settings.required
+      constraints        = attribute_settings.constraints
+      required           = attribute_settings.required
 
       attribute_settings.types.each_pair { |table, fields|
         begin
@@ -54,11 +53,46 @@ module Validation
 
     end
 
+    def self.validate_update(klass, value_hash)
+      Lore.logger.debug { "Validating attributes for updating #{klass.to_s}: " }
+      Lore.logger.debug { "#{value_hash.inspect}" }
+      invalid_params     = Hash.new
+      attribute_settings = klass.__attributes__
+      constraints        = attribute_settings.constraints
+      required           = attribute_settings.required
+
+      value_hash.each_pair { |table, attributes|
+        types = attribute_settings.types[table] 
+        types.delete_if { |attribute,value| !attributes[attribute] }
+        begin
+          validate_types(types, attributes, required[table])
+        rescue Lore::Exceptions::Invalid_Types => ip
+          invalid_params[table] = ip
+        end
+      }
+      
+      value_hash.each_pair { |table, attributes|
+        constraints = attribute_settings.constraints[table]
+        constraints.delete_if { |attribute,constraint| !attributes[attribute] }
+        begin
+          validate_constraints(constraints, attributes)
+        rescue Lore::Exceptions::Unmet_Constraints => ip
+          invalid_params[table] = ip
+        end
+      }
+      if invalid_params.length == 0 then return true end
+        
+      raise Lore::Exceptions::Validation_Failure.new(klass, invalid_params)
+
+    end
+
     def self.validate_types(type_codes, table_value_hash, required)
-      invalid_types = {} 
-      value = false
+      invalid_types  = {} 
+      value          = false
       type_validator = Type_Validator.new()
-      type_codes.each_pair { |field, type|
+
+      # DERRN-DERRN-DERRN!! What if there is no value hash? 
+      type_codes.each_pair { |field,type|
         field = field.to_sym
         is_required = (required && required[field]) || false
 
@@ -92,7 +126,7 @@ module Validation
     def self.validate_constraints(table_constraints, table_value_hash)
       unmet_constraints = {}
       table_constraints.each_pair { |attrib, rules|
-        value = table_value_hash[attrib.to_s]
+        value = table_value_hash[attrib.to_s] if table_value_hash
         rules.each_pair { |rule, rule_value|
           Lore.logger.debug { "Found constraint for #{attrib}: #{rule.inspect} " }
           Lore.logger.debug { "Rule is: #{rule_value.inspect} " }

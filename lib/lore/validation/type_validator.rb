@@ -14,16 +14,16 @@ module Validation
                                      }, 
       Lore::PG_BYTEA              => Proc.new { |value, required| true }, 
       Lore::PG_INT                => Proc.new { |value, required|
-                                       (value.kind_of?(Integer) || value.to_i.to_s == value) || 
+                                       value && ((value.kind_of?(Integer) || value.to_i.to_s == value)) || 
                                        !required && (value.empty?)
                                      }, 
       Lore::PG_SMALLINT           => Proc.new { |value, required|
-                                       ((value.kind_of?(Integer) || value.to_i.to_s == value) && 
+                                       value && ((value.kind_of?(Integer) || value.to_i.to_s == value) && 
                                         (value.to_i < 1024 && value.to_i > -1024)) || 
                                        !required && (value.empty?)
                                      }, 
       Lore::PG_DECIMAL            => Proc.new { |value, required| 
-                                       (value.kind_of?(Integer) || value.to_f.to_s == value) ||
+                                       value && (value.kind_of?(Integer) || value.to_f.to_s == value) ||
                                        !required && (value.empty?)
                                      }, 
       Lore::PG_TEXT               => Proc.new { |value, required| !required || !value.empty? }, 
