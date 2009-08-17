@@ -17,7 +17,7 @@ class Attribute_Hash < Hash # :nodoc:
     elsif !random_access_op(key.to_s).nil? then
       return random_access_op(key.to_s)
     else
-      return random_access_op(key.to_s[0..24].to_sym)
+      return random_access_op(key.to_s[0..24].to_sym) 
     end
   end
 
@@ -32,7 +32,7 @@ class Attribute_Hash < Hash # :nodoc:
   end
 
   def method_missing(key) 
-    self[key]
+    self[key] 
   end
   
 end # class
@@ -45,6 +45,13 @@ module Model_Instance
 
   def table_accessor
     self.class
+  end
+
+  def update_values
+    @update_values
+  end
+  def update_pkey_values
+    @update_pkey_values
   end
 
   # Create a marshalled dump of this model instance. 
@@ -77,24 +84,37 @@ module Model_Instance
     @primary_key_values = keys.map { |pkey|
       @attribute_values_flat[pkey]
     }
-
-    # Before refactoring, attribute values have been 
-    # distributed to tables: 
-    # @primary_key_values = Hash.new
-    # self.class.get_primary_keys.each_pair { |table, attrib_array|
-    #   puts 'resolving for ' << table
-    #   @primary_key_values[table] = Hash.new
-    #   attrib_array.each { |field|
-    #       puts 'looking up value for ' << field.inspect
-    #       pk_attrib_value   = @attribute_values[table][field]
-    #       # Postgres does not allow field names longer than 25 chars, 
-    #       # and cuts them otherwise: 
-    #       pk_attrib_value ||= @attribute_values[table][field.to_s[0..24]] 
-    #       @primary_key_values[table][field] = pk_attrib_value
-    #   }
-    # }
     @primary_key_values
   end
+
+  # Returns primary key values mapped to table names. 
+  def get_primary_key_value_map
+  # {{{
+    return @primary_key_value_map if (@primary_key_value_map && !@touched)
+    
+    accessor    = self.class
+    base_models = accessor.__associations__.base_klasses()
+    table_name  = accessor.table_name
+    pkey_fields = accessor.get_primary_keys
+    
+    @primary_key_value_map = { table_name => {} }
+    pkey_fields[table_name].each { |own_pkey|
+      @primary_key_value_map[table_name][own_pkey] = @attribute_values_flat[own_pkey]
+    }
+    
+    # Map own foreign key values back to foreign primary key 
+    # values. This is necessary as joined primary key field names are 
+    # shadowed. 
+    accessor.__associations__.pkey_value_lookup.each { |mapping|
+      foreign_pkeys = {}
+      mapping.at(1).each_with_index { |fkey,idx|
+        value = @attribute_values_flat[fkey]
+        foreign_pkeys[mapping.at(2).at(idx)] = value 
+      }
+      @primary_key_value_map[mapping.at(0)] = foreign_pkeys
+    }
+    return @primary_key_value_map
+  end # }}}
 
   # Returns primary key values of own table
   def key
@@ -117,6 +137,19 @@ module Model_Instance
 
   def touched?
     @touched
+  end
+
+  def touch(attrib_name=nil)
+    @touched = true
+    @touched_fields ||= []
+    @touched_fields << attrib_name if attrib_name
+    @primary_key_value_map = false
+    @primary_key_values = false
+  end
+
+  def untouch(attrib_name=nil)
+    @touched = false
+    @touched_fields.delete(attrib_name) if attrib_name
   end
 
   def method_missing(meth, *args)
@@ -142,49 +175,14 @@ module Model_Instance
       attrib_value = @input_filters[attrib_name.intern].call(attrib_value)
     end
 
-    @touched = true
-    # Delete cached value of @flat_attr: 
-    @flat_attr = nil 
-    save_attribute_values = @attribute_values.dup
-    attrib_name = attrib_name.to_s
-    attrib_name_array = attrib_name.split('.')
-    
-    # Attrib name is implicit (no table name given). 
-    # Check for ambiguous attribute name: 
-    if attrib_name_array[2].nil? then
-      changed_table = false
-      @attribute_values.each { |table, attributes|
-        
-        if attributes.has_key?(attrib_name) then
-          @attribute_values[table][attrib_name] = attrib_value
-          changed_table = true
-        elsif attributes.has_key?(attrib_name) && changed_table then
-          raise Lore::Exception::Ambiguous_Attribute.new(table, 
-                                                         changed_table, 
-                                                         attrib_name)
-        end
-      }
-      
-    # Attrib name is explicit (also includes table name). 
-    # No need to check for ambiguous attribute: 
-    else 
-      attrib_name_index = attrib_name_array[2]
-      attrib_table      = attrib_name_array[0]+'.'+attrib_name_array[1]
-
-      if @attribute_values[attrib_table] && @attribute_values[attrib_table][attrib_name_index] then
-        @attribute_values[attrib_table][attrib_name_index] = attrib_value
-      else 
-      # raise ::Exception.new("#{self.class.to_s} does not have attribute #{attrib_table}.#{attrib_name_index}")
-      end
-    end
+    touch(attrib_name)
+    @attribute_values_flat[attrib_name.to_sym] = attrib_value
   end # def }}}
 
   # Sets attribute value. Example: 
   #   instance[:name] = 'Wombat'
   #   instance.commit
-  def []=(key, value)
-    set_attribute_value(key, value)
-  end
+  alias :[]= set_attribute_value
 
   # Explicit attribute request. 
   # Example: 
@@ -229,6 +227,13 @@ module Model_Instance
   def get_attribute_values() # :nodoc:
     @attribute_values_flat
   end # def
+
+  # Returns attribute values mapped to table names. 
+  def get_attribute_value_map
+    return @attribute_values if @attribute_values
+    @attribute_values = self.class.distribute_attrib_values(@attribute_values_flat)
+    return @attribute_values
+  end
 
   # Returns value hash of instance attributes like: 
   #
@@ -282,44 +287,52 @@ module Model_Instance
 
   
   # Commit changes on Table_Accessor instance to DB. 
-  # Results in an / several SQL update calls. 
+  # Results in one or more SQL update calls. 
   #
   # Common usage: 
   # 
-  #   unit['name'] = 'changed'
+  #   unit.name = 'changed'
   #   unit.commit() 
   # 
   def commit
   # {{{
-
     return unless @touched
     
-    input_filters = self.class.get_input_filters
-    if input_filters then
-      @attribute_values.each_pair { |table,keys|
-        keys.each_pair { |key, value|
-          @attribute_values[table][key] = input_filters[key.intern].call(value) if input_filters[key.intern]
-        }
-      }
-    end
+    Lore.logger.debug { "Updating #{self.to_s}. " }
+    Lore.logger.debug { "Touched values are: #{@touched_fields.inspect}" }
 
+    # TODO: Optimize this! 
     begin
-      Lore::Validation::Parameter_Validator.invalid_params(self.class, 
-                                                           @attribute_values)
+      @attribute_values = self.class.distribute_attrib_values(@attribute_values_flat)
+      foreign_pkey_values = false
+      @update_values = {}
+      @update_pkey_values = {}
+      @attribute_values.each_pair { |table,attributes|
+        @touched_fields.each { |name|
+          value  = @attribute_values[table][name]
+          filter = self.class.__filters__.input_filters[name]
+          value = filter.call(value) if filter
+          if attributes[name] then
+            update_values[table] ||= {}
+            @update_values[table][name] = value 
+          end
+        }
+        foreign_pkey_values = get_primary_key_value_map[table]
+        
+        @update_pkey_values[table] = foreign_pkey_values if foreign_pkey_values
+      }
+
+#     Validation::Parameter_Validator.invalid_params(self.class, update_values)
     rescue Lore::Exception::Invalid_Klass_Parameters => ikp    
-    # log'n'throw: 
       ikp.log
       raise ikp
     end
 
     self.class.before_commit(self)
-
-    Table_Updater.perform_update(self.class, self)
-
+    self.class.__update_strategy__.perform_update(self)
     self.class.after_commit(self)
 
     @touched = false
-    
   end # def }}}
   alias save commit
 
@@ -336,14 +349,14 @@ module Model_Instance
     # Called before entity_instance.delete
     self.class.before_instance_delete(self)
 
-    Table_Deleter.perform_delete(self.class, @attribute_values)
+    Table_Deleter.perform_delete(self.class, @attribute_values_flat)
     # Called after entity_instance.delete
     self.class.after_instance_delete(self)
   end # def
 
   def inspect
   # {{{
-    'Lore::Table_Accessor entity: ' << @attribute_values.inspect
+    'Lore::Table_Accessor entity: ' << @attribute_values_flat.inspect
   end # }}}
   
 end # module

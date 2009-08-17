@@ -78,7 +78,7 @@ describe(Lore::Table_Accessor) do
   end
 
   it "can be derived from one base model or more" do
-    Car.is_a Motorized_Vehicle, :vehicle_id
+    Car.is_a Motorized_Vehicle, :motorized_id
     Motorbike.is_a Vehicle, :vehicle_id
 
     Car.is_a?(Motorized_Vehicle).should == true
@@ -89,7 +89,7 @@ describe(Lore::Table_Accessor) do
     expected_fields = { 
       'public.vehicle'   => [ :id, :manuf_id, :num_seats, :maxspeed, :name, :owner_id ], 
       'public.car_type'  => [ :car_type_id, :type_name ], 
-      'public.car'       => [ :id, :vehicle_id, :car_type_id, :num_doors ], 
+      'public.car'       => [ :id, :motorized_id, :car_type_id, :num_doors ], 
       'public.motorized' => [ :vehicle_id, :motor_id, :id ], 
       'public.motor'     => [ :id, :motor_name, :kw ]
     }
@@ -124,7 +124,6 @@ describe(Lore::Table_Accessor) do
       # 'public.motor' => [ :motor_name ],
       # 'public.car_type' => [ :type_name ],
     }
-
     Car.__attributes__.explicit.should_be expected
   end
 
@@ -132,7 +131,7 @@ describe(Lore::Table_Accessor) do
     expected = { 
       'public.vehicle' => [ :id ], 
       'public.motorized' => [ :id, :vehicle_id ], 
-      'public.car' => [ :id, :vehicle_id ] 
+      'public.car' => [ :id, :motorized_id ] 
 
       # Aggregated models do not extend implicit or explicit fields!
       # 'public.motor' => [ :id ],

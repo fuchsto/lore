@@ -50,3 +50,21 @@ class Hash
   end
 
 end
+
+class Object
+  def empty? 
+    false
+  end
+end
+
+class String
+  def empty? 
+    return self == ''
+  end
+end
+
+class Nil
+  def empty?
+    true
+  end
+end

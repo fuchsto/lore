@@ -65,7 +65,7 @@ module Lore
       PG_TIMESTAMP           => lambda { |v| v.to_s if (v.is_a?(Date) || v.is_a?(DateTime)) }
     }
     @@output_filters = { 
-      PG_VCHAR_LIST          => lambda { |v| v.gsub(/[{}]/,'').split(',') }, 
+      PG_VCHAR_LIST          => lambda { |v| v[1..-2].split(',') }, 
       PG_INT                 => lambda { |v| if v then v.to_i else nil end }, 
       PG_SMALLINT            => lambda { |v| if v then v.to_i else nil end },
       PG_FLOAT               => lambda { |v| if v && v.length > 0 then v.to_f else nil end }, 

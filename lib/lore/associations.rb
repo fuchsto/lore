@@ -3,7 +3,37 @@ module Lore
 
   class Associations
 
-    attr_reader :foreign_keys, :primary_keys, :base_klasses, :has_a, :has_n, :belongs_to, :aggregate_klasses, :aggregates, :base_klasses_tree, :aggregates_tree
+    attr_reader :foreign_keys
+    attr_reader :primary_keys 
+    attr_reader :base_klasses 
+    attr_reader :has_a 
+    attr_reader :has_n 
+    attr_reader :belongs_to 
+    attr_reader :aggregate_klasses
+    attr_reader :aggregates 
+    attr_reader :base_klasses_tree
+    attr_reader :aggregates_tree
+    # Returns mapping rules from own foreign key values to 
+    # foreign primary key values. Supports composed foreign keys. 
+    # Example: 
+    #   { 
+    #     'public.vehicle'   => [ :vehicle_id ], 
+    #     'public.motorizes' => [ :motorized_id ] 
+    #   }
+    #   -->
+    #   # Mapping is:  [ <table>, <own key names>, <foreign pkey name> ]
+    #   [ 
+    #     'public.vehicle',   [ :vehicle_id ], [ :id ], 
+    #     'public.motorized', [ :motorizes_id ], [ :id ], 
+    #   ]
+    # Note that this is an array, not a Hash, and entries are 
+    # ordered by join order. 
+    # (Which is important as arrays are ordered, opposed to Hashes 
+    # in Ruby 1.8)
+    #
+    # For in-depth understanding, see 
+    # Model_Instance#get_primary_key_value_map
+    attr_reader :pkey_value_lookup
 
     def initialize(accessor)
       @accessor = accessor
@@ -18,6 +48,8 @@ module Lore
       @base_klasses_tree = {}
       @aggregate_klasses = {}
       @aggregates_tree = {}
+
+      @pkey_value_lookup = []
 
       @joins = false
     end
@@ -52,13 +84,17 @@ module Lore
     def add_base_model(model, *keys)
     # {{{
       add_foreign_key_to(model, *keys)
-      @base_klasses[model.table_name] = [ model, *keys ]
+      @base_klasses[model.table_name]      = [ model, *keys ]
       @base_klasses_tree[model.table_name] = model.__associations__.base_klasses_tree
       @aggregates_tree[model.table_name]   = model.__associations__.aggregates_tree
       keys.flatten.each { |attribute|
-      # @accessor.__attributes__.set_required(attribute)
         @accessor.__attributes__.set_implicit(@accessor.table_name, attribute)
       }
+      @primary_keys.update(model.__associations__.primary_keys)
+      @pkey_value_lookup += model.__associations__.pkey_value_lookup
+      @pkey_value_lookup << [ model.table_name, 
+                              keys.flatten, 
+                              model.__associations__.primary_keys[model.table_name] ]
       inherit(model)
     end # }}}
 

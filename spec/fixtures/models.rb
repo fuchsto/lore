@@ -13,7 +13,7 @@ module Models
     table :manufacturer, :public
     primary_key :manuf_id, :manuf_id_seq
 
-    validates :name, NAME_FORMAT
+  # validates :name, NAME_FORMAT
 
     use_label :name
   end
@@ -22,7 +22,7 @@ module Models
     table :owner, :public
     primary_key :owner_id, :owner_id_seq
 
-    validates :name, NAME_FORMAT
+  # validates :name, NAME_FORMAT
   end
 
   class Vehicle < Lore::Model
@@ -39,7 +39,7 @@ module Models
     add_input_filter(:name) { |name|
       name.gsub(/[^a-zA-Z_0-9]/,'').downcase
     }
-    add_input_filter(:maxspeed) { |m| m.to_s.gsub('km/h','') }
+    add_input_filter(:maxspeed) { |m| m.to_s.sub('km/h','') }
     add_output_filter(:maxspeed) { |m| m << 'km/h' }
 
   # add_select_filter { |clause| clause & (Vehicle.deleted == 't') }
@@ -89,7 +89,8 @@ module Models
     # This is not a typo: As vehicle_id is a unique, 
     # inherited primary key in Motorized_Vehicle, it 
     # must be allowed for referencing a Motorized_Vehicle. 
-    is_a Motorized_Vehicle, :vehicle_id 
+    # is_a Motorized_Vehicle, :vehicle_id 
+    is_a Motorized_Vehicle, :motorized_id 
     aggregates Car_Type, :car_type_id
 
   # validates :num_seats, :mandatory => true

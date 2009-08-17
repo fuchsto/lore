@@ -34,8 +34,6 @@ class Table_Accessor
   include Prepare
   extend Cache::Cacheable
 
-  attr_reader :__associations__, :__filters__, :__attributes__
-
   @@logger = Lore.logger
 
   def self.log(message, level=:debug)
@@ -58,6 +56,13 @@ class Table_Accessor
   end
   def self.__attributes__
     @__attributes__
+  end
+
+  def self.__update_strategy__
+    @update_strategy
+  end
+  def self.__delete_strategy__
+    @delete_strategy
   end
 
   # Holds own table name, defaults to self.class if not given. 
@@ -506,6 +511,15 @@ class Table_Accessor
     @__attributes__.set_required(attrib_name)
   end # }}}
 
+  def self.explicit(*args)
+    Aurita.log { "Model.explicit is deprecated (called for #{self.to_s}" } 
+  end
+
+  def self.hidden_attribute(*args)
+    Aurita.log { "Model.hidden_attribute is deprecated (called for #{self.to_s}. 
+                  Use Model.hidden instead" } 
+  end
+
   # Define an attribute as hidden. 
   # Especially needed for form generation (hidden fields)
   def self.hides(attrib_name)
@@ -556,7 +570,7 @@ class Table_Accessor
   # Returns full attribute name of given attribute
   def self.[](attribute_name)
   # {{{
-    return get_table_name+'.'+attribute_name.to_s
+    return "#{@table_name}.#{attribute_name}"
   end # }}}
 
 
@@ -881,7 +895,7 @@ class Table_Accessor
   # {{{
     type_name = accessor.to_s.split('::').at(-1).downcase unless type_name
 
-    define_method(type_name+'_entity') { 
+    define_method(type_name) { 
 
       has_a_keys = Hash.new
       foreign_keys.each { |foreign_key|
@@ -892,16 +906,21 @@ class Table_Accessor
       return accessor.load(has_a_keys)
     }
     
-    define_method('set_'+type_name+'_entity') { |other|
+    define_method("set_#{type_name}") { |other|
       foreign_keys.each { |foreign_key|
         # other.<foreign_key> will return corresponding value 
         # no matter if this klass or a super klass is holding it
-        self[foreign_key] = other.__send__ foreign_key
+        self[foreign_key] = other.pkey
       }
     }
-    define_method('set_'+type_name+'_entity!') { |other|
-      self.__send__ 'set_'+type_name+'_entity', other
-      self.commit
+    
+    define_method("#{type_name}=") { |other|
+      self.__send__("set_#{type_name}", other)
+    }
+
+    define_method("set_#{type_name}!") { |other|
+      self.__send__("set_#{type_name}", other)
+      self.__send__("commit")
     }
   end # }}}
 
@@ -911,7 +930,7 @@ class Table_Accessor
   # {{{
     type_name = accessor.to_s.split('::').at(-1).downcase unless type_name
     
-    define_method('add_'+type_name+'_entity') { |values|
+    define_method('add_'+type_name) { |values|
       values.update(get_primary_key_values)
       accessor.create(values)
     }

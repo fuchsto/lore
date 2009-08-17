@@ -16,59 +16,62 @@ module Lore
 
     private
 
-    def self.atomic_update_query(table_name, 
-                                 attributes, 
-                                 primary_key_values, 
-                                 value_keys, 
-                                 explicit_fields)
+    def atomic_update_query(accessor, 
+                            primary_key_values, 
+                            value_keys)
     # {{{
-      query_string = "\n"
-      query_string += 'UPDATE '+table_name+' SET '
+
+      return unless value_keys.length > 0
+
+      table      = accessor.table_name
+    # attributes = accessor.get_fields_flat
+      attributes = accessor.get_fields[table]
+      required   = accessor.__attributes__.required[table]
+
+      Lore.logger.debug { 'atomic update query' }
+      Lore.logger.debug { '----- ' << table.to_s + ' ------' }
+      Lore.logger.debug { 'Values: ' << value_keys.inspect }
+      Lore.logger.debug { 'Fields: ' << attributes.inspect }
+      Lore.logger.debug { 'Required: ' << required.inspect }
+
+      query_string  = "\n"
+      query_string << "UPDATE #{table} SET "
 
       set_string = String.new
 
       key_counter = 0
-      attributes.each { |attribute_name|
+      value_keys.each_pair { |attribute_name, value|
 
-        internal_attribute_name = attribute_name[0..24]
-        value = value_keys[internal_attribute_name].to_s
-        if value == '' then 
-          value = value_keys[table_name+'.'+internal_attribute_name].to_s
+        internal_attribute_name = attribute_name.to_s[0..24].to_sym
+        if value.empty? then 
+          value = value_keys["#{table}.#{internal_attribute_name}"].to_s
         end
 
-        # only include attribute to update query if 
-        # this attribute is not marked for explicit updating or 
-        # marked as explicit but non-empty: 
-        if(
-           !(explicit_fields && explicit_fields.include?(internal_attribute_name) && value.empty?) &&
-           !(primary_key_values[attribute_name] && value.empty?)
-          )
-        
-          if key_counter > 0
+        # Disallow setting an empty value for required fields
+        if !(required[attribute_name] && value.empty?) && !(value.nil?) then
+          if key_counter > 0 then
             set_string += ', '
-          end # if
-          set_string += attribute_name + '=\'' + value.to_s + '\' '
-          
+          end 
+          set_string << "#{attribute_name} = '#{value}'"
           key_counter = 1
-          
-        end # if
+        end 
       }
-      query_string += set_string
+      query_string << set_string
 
-      query_string += 'WHERE '
+      query_string << ' WHERE '
 
       field_counter=0
       primary_key_values.each_pair { |field, value|
-        query_string += field + '=\'' + value.to_s + '\' '
+        query_string << "#{field} = '#{value}'"
         if field_counter < primary_key_values.keys.length-1
-          query_string += 'AND '
+          query_string << ' AND '
         end
         field_counter += 1
       }
-      query_string += ';'
+      query_string << ';'
         
-      query_string
-
+      Lore.logger.debug { query_string }
+      return query_string
     end # }}}
 
     def block_update(&block)
@@ -92,51 +95,48 @@ module Lore
 
     end # }}}
 
-    def self.update_query(table_name, 
-                          is_a_hierarchy, 
-                          
-                          attributes,
-                          primary_key_values,
-                          value_keys,
-                          explicit_fields,
-                          
-                          query_string='')
+    def update_query(accessor, 
+                     primary_key_values,
+                     value_keys,
+                     query_string='')
     # {{{
+      Lore.logger.debug { 'Update query: ' }
+      Lore.logger.debug { value_keys.inspect }
+      Lore.logger.debug { primary_key_values.inspect }
+      
+      associations   = accessor.__associations__
+      is_a_hierarchy = associations.base_klasses_tree()
+      joined_models  = associations.base_klasses()
       is_a_hierarchy.each_pair { |table, base_tables| 
         
         # pass base tables first, recursively, as IS_A-based creation has
         # to be done bottom-up:
-        query_string += update_query(table, 
-                                     base_tables, 
-
-                                     attributes, 
+        Lore.logger.debug { 'For ' << table.to_s } 
+        Lore.logger.debug { joined_models.inspect }
+        query_string << update_query(joined_models[table].first, 
                                      primary_key_values, 
-                                     value_keys,
-                                     explicit_fields 
+                                     value_keys
                                     ).to_s
       }
       # finally, add query string for this table: 
-      query_string += atomic_update_query(table_name, 
-                                          attributes[table_name], 
+      table_name = accessor.table_name
+      query_string << atomic_update_query(accessor, 
                                           primary_key_values[table_name], 
-                                          value_keys[table_name], 
-                                          explicit_fields[table_name]
+                                          value_keys[table_name]
                                          ).to_s
         
       query_string
 
     end # }}}
 
-    protected
+    public
 
     def perform_update(accessor_instance)
     # {{{
-      query_string = update_query(@accessor.get_table_name, 
-                                  @accessor.get_is_a, 
-                                  @accessor.get_attributes, 
-                                  accessor_instance.get_primary_key_values, 
-                                  accessor_instance.get_attribute_values, 
-                                  @accessor.get_explicit)
+      query_string = update_query(@accessor, 
+                                  accessor_instance.update_pkey_values, 
+                               #  accessor_instance.get_attribute_value_map)
+                                  accessor_instance.update_values)
       
       Lore::Context.enter(@accessor.get_context) if @accessor.get_context
       begin

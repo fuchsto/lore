@@ -28,7 +28,11 @@ module Lore
       @hidden             = {}
       @sequences          = {}
       @primary_keys       = {}
-      @types[accessor.table_name] = types
+      sym_types = {}
+      types.each_pair { |attrib, type|
+        sym_types[attrib.to_sym] = type
+      }
+      @types[accessor.table_name] = sym_types
     end
 
     def [](table_name)
@@ -54,7 +58,7 @@ module Lore
         attribute = args.at(1)
       end
       @required[table] = {} unless @required[table]
-      @required[table][attribute] = true
+      @required[table][attribute.to_sym] = true
     end
 
     # Implicit attributes are set by the DBMS, via sequences, 
