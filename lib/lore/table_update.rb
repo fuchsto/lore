@@ -21,7 +21,7 @@ module Lore
                             value_keys)
     # {{{
 
-      return unless value_keys.length > 0
+      return unless value_keys && value_keys.length > 0
 
       table      = accessor.table_name
     # attributes = accessor.get_fields_flat

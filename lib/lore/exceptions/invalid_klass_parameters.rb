@@ -1,6 +1,6 @@
 
 module Lore
-module Exception
+module Exceptions
 
   # Usage: 
   #
@@ -13,7 +13,7 @@ module Exception
   #           :table_batz => Invalid_Types.new( :the_attribute => :error_type ) 
   #   })
   #  
-	class Invalid_Klass_Parameters < ::Exception
+	class Invalid_Field_Value < ::Exception
 		
 		attr_reader :invalid_parameters
 		attr_reader :invalid_klass
@@ -22,37 +22,34 @@ module Exception
       # Instances of Exception::Invalid_Parameters
 			@invalid_parameters = invalid_params_hash 
 			@invalid_klass 		  = klass
-      @message            = 'Invalid_Klass_Parameters: ' << @invalid_parameters.inspect
+      @message            = "#{self.class.to_s}: #{@invalid_parameters.inspect}"
       log()
 		end
 
 		def log()
-			Lore.logger.error('Invalid parameters for klass '+@invalid_klass.to_s+': ')
-			Lore.logger.error('Invalid parameters: ')
+    # {{{ 
+			Lore.logger.error { "Invalid field values for klass #{@invalid_klass}: " }
+			Lore.logger.error { 'Invalid field values are: ' }
       @invalid_parameters.each_pair { |table, ip|
-        Lore.logger.error(' |- Table: ' << table + ': ' << ip.inspect)
+        Lore.logger.error { " |- Table: #{table}: #{ip.inspect}" }
       }
-			Lore.logger.error('Explicit attributes: ')
-      @invalid_klass.__attributes__.explicit.each_pair { |table, ip|
-        Lore.logger.error(' |- Table: ' << table + ': ' << ip.join(', '))
+			Lore.logger.error { 'Required attributes are: ' } 
+      @invalid_klass.__attributes__.required.each_pair { |table, ip|
+        Lore.logger.error { " |- Table: #{table}: #{ip.join(', ')}" } 
       }
-		end
+		end # }}}
 
 		def serialize() # {{{
-
 			serials = {}
 			@invalid_parameters.each_pair { |table, invalid_param|
 				serials[table] = invalid_param.serialize
 			}
 			return serials
-			
 		end # def }}}
 		
 		def inspect()
-			'Model('+@invalid_klass.to_s+') => '+
-			@invalid_parameters.serialize + 
-			' Explicit: '+ 
-			@invalid_klass.get_explicit_attributes.inspect
+			"Model(#{@invalid_klass}) => #{@invalid_parameters.serialize} " << 
+			"Required: #{@invalid_klass.__attributes__.required.inspect}"
 		end
     alias explain serialize
 		

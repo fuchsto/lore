@@ -1,21 +1,10 @@
 
-require 'rubygems'
-require 'lore'
-require 'lore/model'
-
-Lore.logfile = STDOUT
-Lore.enable_query_log
-Lore.logger.level = Logger::ERROR
-Lore.add_login_data 'test' => [ 'cuba', 'cuba23' ]
-Lore::Context.enter :test
-
-require './fixtures/models'
-require './spec_helpers'
-
+require 'spec_env'
 include Lore::Spec_Fixtures::Models
 
 describe(Lore::Table_Accessor) do
   before do
+    flush_test_data()
   end
 
   it "is assigned to a base table" do
@@ -35,7 +24,7 @@ describe(Lore::Table_Accessor) do
     v.manufacturer.should == manuf_org
   end
 
-  it "allows setting entities for has_a relations" do
+  it "allows setting entities for 1:1 relations" do
     owner     = Owner.create(:name => 'Filou')
     manuf_org = Manufacturer.create(:name => 'Ford')
     manuf_new = Manufacturer.create(:name => 'Ford')
@@ -62,6 +51,34 @@ describe(Lore::Table_Accessor) do
     
     v.set_manufacturer!(manuf_org)
     v.manufacturer.should == manuf_org
+  end
+
+  it "provides 1:n associations" do
+    garage = Garage.create()
+    vehicle_1 = Vehicle.create()
+    vehicle_2 = Vehicle.create()
+    car_1 = Car.create()
+    car_2 = Car.create()
+
+    garage.add_vehicle(vehicle_1)
+    garage.add_vehicle(car_1)
+    garage.save
+    expected = [ vehicle_1, car_1 ]
+    garage.vehicle_set.should_be expected
+
+    garage.vehicle_set = [ vehicle_2, car_2 ]
+    garage.save
+    expected = [ vehicle_2, car_2 ]
+    garage.vehicle_set.should_be expected
+
+    garage.vehicle_set.delete(car2)
+    garage.save
+    expected = [ vehicle_2 ]
+    garage.vehicle_set.should_be expected
+  end
+
+  it "provides n:n associations" do
+    
   end
 
 end

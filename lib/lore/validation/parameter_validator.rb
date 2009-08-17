@@ -33,7 +33,7 @@ module Validation
       attribute_settings.types.each_pair { |table, fields|
         begin
           validate_types(fields, value_hash[table], required[table])
-        rescue Lore::Exception::Invalid_Types => ip
+        rescue Lore::Exceptions::Invalid_Types => ip
           invalid_params[table] = ip
         end
       }
@@ -41,13 +41,13 @@ module Validation
       attribute_settings.constraints.each_pair { |table, fields|
         begin
           validate_constraints(fields, value_hash[table])
-        rescue Lore::Exception::Unmet_Constraints => ip
+        rescue Lore::Exceptions::Unmet_Constraints => ip
           invalid_params[table] = ip
         end
       }
       if invalid_params.length == 0 then return true end
         
-      raise Lore::Exception::Invalid_Klass_Parameters.new(klass, invalid_params)
+      raise Lore::Exceptions::Invalid_Field_Values.new(klass, invalid_params)
 
     end
 
@@ -73,7 +73,7 @@ module Validation
         
       }
       if invalid_types.keys.length > 0 then
-          raise Lore::Exception::Invalid_Types.new(invalid_types)
+          raise Lore::Exceptions::Invalid_Types.new(invalid_types)
       end
       return true
     end
@@ -95,7 +95,7 @@ module Validation
         }
       }
       if unmet_constraints.length > 0 then
-        raise Lore::Exception::Unmet_Constraints.new(unmet_constraints)
+        raise Lore::Exceptions::Unmet_Constraints.new(unmet_constraints)
       end
       return true
     end

@@ -1,5 +1,7 @@
 
 require('logger')
+require('rubygems')
+require('lore')
 require('lore/types')
 require('lore/clause')
 require('lore/aspect')

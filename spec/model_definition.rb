@@ -1,17 +1,6 @@
 
-require 'rubygems'
-require 'lore'
-require 'lore/model'
-require './fixtures/blank_models'
-require './spec_helpers'
-
-NAME_FORMAT = { :format => /^([a-zA-Z_0-9])+$/, :length => 3..100, :mandatory => true }
-
+require 'spec_env'
 include Lore::Spec_Fixtures::Blank_Models
-
-Lore.logger.level = Logger::ERROR
-Lore::Context.enter :test
-Lore.add_login_data 'test' => [ 'cuba', 'cuba23' ]
 
 describe(Lore::Table_Accessor) do
   before do

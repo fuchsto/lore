@@ -35,12 +35,10 @@ range_to   = 1100
 
 module AR
   class Content < ActiveRecord::Base
-#    abstract_class = true
-#    has_one :article, :dependent => :destroy
   end
 
-  class Article < Content
-#    belongs_to :article
+  class Article < ActiveRecord::Base
+     belongs_to :content
   end
 end
 
@@ -53,7 +51,7 @@ module Lore
   class Article < Lore::Model
     table :articles, :public
     primary_key :id, :article_id_seq
-  # is_a Content, :content_id
+#   is_a Content, :content_id
   end
 
   Article.prepare(:id_in_range, Lore::Type.integer, Lore::Type.integer) { |a|
@@ -149,7 +147,6 @@ sql = "SELECT *
         FROM public.articles
         JOIN public.contents on (public.contents.id = public.articles.content_id)
         WHERE public.articles.id BETWEEN #{range_from} AND #{range_to} LIMIT #{range_to-range_from} OFFSET 0"
-        p sql
 
 sql_exec = "EXECUTE public_articles__id_in_range(#{range_from},#{range_to}); "
 
@@ -179,7 +176,7 @@ sql_prep = 'PREPARE public_articles__id_in_range(integer,integer) AS
 (0..3000).to_a.each { |i|
 # Lore::Article.create(:title   => "title_#{i}", 
 #                      :tags    => [ :foo, :bar, :wombat ], 
-#                      :content => "text #{i}")
+#                      :text     => "text #{i}")
 }
 
 
@@ -216,102 +213,119 @@ bmbm(12) { |test|
   }
   test.report("ac_instances unfiltered") { 
     Lore.disable_cache
-    Lore::Article.disable_output_filters
+    Lore::Article.disable_output_filters if Lore::Article.respond_to?(:disable_output_filters)
     num_loops.times { 
-      result = Lore::Connection.perform(sql).get_rows
-      result.each { |row|
-        Lore::Article.new(row)
+      result = Lore::Connection.perform(sql).get_rows()
+      result.map! { |row|
+        row = (Lore::Article.new(row))
       }
     }
   }
   test.report("ac_instances filtered") { 
     Lore.disable_cache
-    Lore::Article.enable_output_filters
+    Lore::Article.enable_output_filters if Lore::Article.respond_to?(:enable_output_filters)
     num_loops.times { 
-      result = Lore::Connection.perform(sql).get_rows
-      result.each { |row|
-        Lore::Article.new(row)
+      result = Lore::Connection.perform(sql).get_rows()
+      result.map! { |row|
+        row = (Lore::Article.new(row))
       }
     }
   }
   test.report("lore select unfiltered") { 
     Lore.disable_cache
-    Lore::Article.disable_output_filters
+    Lore::Article.disable_output_filters if Lore::Article.respond_to?(:disable_output_filters)
     id_error = false
     count = 0
     num_loops.times { 
       count = range_from
-      r = Lore::Article.select { |a|
+      Lore::Article.select { |a|
         a.where(Lore::Article.id.in(range_from..range_to))
         a.limit(100)
       }.each { |a|
-        raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count.to_s
+        raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id.to_s != count.to_s
         count += 1
       }
     }
   }
-  test.report("lore shortcut") { 
+  test.report("lore shortcut filtered") { 
     id_error = false
     Lore.disable_cache
-    Lore::Article.enable_output_filters
+    Lore::Article.enable_output_filters if Lore::Article.respond_to?(:enable_output_filters)
     count = 0
     num_loops.times { 
       count = range_from
       r = Lore::Article.find(:all).with(Lore::Article.id.in(range_from..range_to)).each { |a|
-        raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
+        # raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
         count += 1
         valid = true
         valid = valid && a.tags.is_a?(Array)
         valid = valid && a.id.is_a?(Fixnum)
-        raise ::Exception.new("TYPE ERROR") unless valid
+        # raise ::Exception.new("TYPE ERROR") unless valid
       }
     }
   }
-# test.report("lore_prepared") { 
-#   id_error = false
-#   Lore.disable_cache
-#   count = 0
-#   num_loops.times { 
-#     count = range_from
-#     Lore::Article.id_in_range(range_from,range_to).each { |a|
-#       raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
-#       count += 1
-#       valid = true
-#       valid = valid && a.tags.is_a?(Array)
-#       valid = valid && a.id.is_a?(Fixnum)
-#       raise ::Exception.new("TYPE ERROR") unless valid
-#     }
-#   }
-# }
-  test.report("ar") { 
+  test.report("lore shortcut unfiltered") { 
+    id_error = false
+    Lore.disable_cache
+    Lore::Article.disable_output_filters if Lore::Article.respond_to?(:disable_output_filters)
+    count = 0
+    num_loops.times { 
+      count = range_from
+      r = Lore::Article.find(:all).with(Lore::Article.id.in(range_from..range_to)).each { |a|
+        # raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
+        count += 1
+        valid = true
+        valid = valid && a.tags.is_a?(Array)
+        valid = valid && a.id.is_a?(Fixnum)
+        # raise ::Exception.new("TYPE ERROR") unless valid
+      }
+    }
+  }
+  test.report("activerecord") { 
     id_error = false
     count = 0
     num_loops.times { 
       count = range_from
-      AR::Article.find(:all, :conditions => "id between #{range_from} AND #{range_to}").each { |a|
-        raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
+      for a in AR::Article.find(:all, :include => :content, :conditions => "id between #{range_from} AND #{range_to}") do
+        # raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
         count += 1
         valid = true
-#        valid = valid && a.tags.is_a?(Array)
-#        valid = valid && a.id.is_a?(Fixnum)
-        raise ::Exception.new("TYPE ERROR") unless valid
-      }
+        valid = valid && a.tags.is_a?(Array)
+        valid = valid && a.id.is_a?(Fixnum)
+        # raise ::Exception.new("TYPE ERROR") unless valid
+      end
     }
   }
-  test.report('using cache') { 
+  test.report('lore using cache') { 
     id_error = false
     Lore.enable_cache
-    Lore::Article.disable_output_filters
+    Lore::Article.disable_output_filters if Lore::Article.respond_to?(:disable_output_filters)
     count = 0
     num_loops.times { 
       count = range_from
       Lore::Article.find(100).with(Lore::Article.id.in(range_from..range_to)).each { |a|
-        raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
+        # raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
         count += 1
         valid = true
         valid = valid && a.tags.is_a?(Array)
         valid = valid && a.id.is_a?(Fixnum)
-        raise ::Exception.new("TYPE ERROR") unless valid
+        # raise ::Exception.new("TYPE ERROR") unless valid
+      }
+    }
+  }
+  test.report("lore prepared") { 
+    id_error = false
+    Lore.disable_cache
+    count = 0
+    num_loops.times { 
+      count = range_from
+      Lore::Article.id_in_range(range_from,range_to).each { |a|
+        # raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
+        count += 1
+        valid = true
+        valid = valid && a.tags.is_a?(Array)
+        valid = valid && a.id.is_a?(Fixnum)
+        # raise ::Exception.new("TYPE ERROR") unless valid
       }
     }
   }

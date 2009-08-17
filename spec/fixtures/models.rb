@@ -98,6 +98,10 @@ module Models
 
     add_input_filter(:maxspeed) { |m| m.to_s.gsub('km/h','') }
     add_output_filter(:maxspeed) { |m| m << 'km/h' }
+
+    def drive
+      "driving with #{maxspeed}!"
+    end
   end
 
   class Convertible < Car
@@ -126,6 +130,23 @@ module Models
     primary_key :vehicle_id
 
     has_n Vehicle, :vehicle_id
+  end
+
+  class Robot < Lore::Model
+    table :robot, :public
+    primary_key :id, :robot_id_seq
+
+    def transform
+      'Autobot transformed!'
+    end
+  end
+
+  class Autobot < Robot
+    table :autobot, :public
+    primary_key :id, :autobot_id_seq
+
+    is_a Robot, :robot_id
+    is_a Car, :car_id
   end
 
 end
