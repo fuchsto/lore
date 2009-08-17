@@ -2,7 +2,7 @@
 require('lore/cache/bits')
 
 module Lore
-module Cache
+module Exceptions
 
   class Cache_Read_Exception < ::Exception
 

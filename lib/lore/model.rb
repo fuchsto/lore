@@ -65,7 +65,6 @@ module Lore
   # Lore::Model extends 
   # * Lore::Cache::Cacheable
   # * Lore::Query_Shortcuts
-  # * Lore::Validation
   # * Lore::Aspect
   # 
   # Each of them is optional. If you want, for example, a minimalistic 
@@ -89,7 +88,6 @@ module Lore
   #   class User < Lore::Table_Accessor
   #   extend Lore::Query_Shortcuts
   #   extend Lore::Aspect
-  #   extend Lore::Validation
   #     
   #     table :user, :public
   #     primary_key :user_id
@@ -115,7 +113,6 @@ module Lore
   class Model < Table_Accessor
     extend Lore::Cache::Cacheable
     extend Lore::Query_Shortcuts
-    extend Lore::Validation
     extend Lore::Aspect
   # extend Lore::Migration
 

@@ -1,8 +1,8 @@
 
 module Lore
-module Exception
+module Exceptions
 
-  class Invalid_Parameters < ::Exception
+  class Invalid_Field < ::Exception
   
     attr_reader :invalid_params, :reason
 
@@ -25,14 +25,14 @@ module Exception
 
   end
 
-	class Invalid_Types < Invalid_Parameters
+	class Invalid_Types < Invalid_Field
     def initialize(invalid_params)
       super(invalid_params)
       @reason = :type
     end
 	end
 
-	class Unmet_Constraints < Invalid_Parameters
+	class Unmet_Constraints < Invalid_Field
     def initialize(invalid_params)
       super(invalid_params)
       @reason = :constraint

@@ -1,6 +1,6 @@
 
-require('lore/exception/invalid_parameter')
-require('lore/exception/unknown_typecode')
+require('lore/exceptions/invalid_field')
+require('lore/exceptions/unknown_type')
 require('lore/types')
 
 module Lore
@@ -8,84 +8,37 @@ module Validation
 
 	class Type_Validator # :nodoc:
 
+    @@type_validation_rules = {
+      Lore::PG_BOOL               => Proc.new { |value, required| 
+                                       (value == 't' || value == 'f' || value.empty? && !required)
+                                     }, 
+      Lore::PG_BYTEA              => Proc.new { |value, required| true }, 
+      Lore::PG_INT                => Proc.new { |value, required 
+                                       required && (value.kind_of?(Integer) || value.to_i.to_s == value) || 
+                                       !required && (value.empty?)
+                                     }, 
+      Lore::PG_SMALLINT           => Proc.new { |value, required|
+                                       required && ((value.kind_of?(Integer) || value.to_i.to_s == value) && 
+                                                    (value.to_i < 1024 && value.to_i > -1024)) || 
+                                       !required && (value.empty?)
+                                     }, 
+      Lore::PG_DECIMAL            => Proc.new { |value, required| 
+                                       required && (value.kind_of?(Integer) or value.to_f.to_s == value) or 
+                                       !required && (value.empty?)
+                                     }, 
+      Lore::PG_TEXT               => Proc.new { |value, required| !required || !value.empty? }, 
+      Lore::PG_VARCHAR            => Proc.new { |value, required| !required || !value.empty? }, 
+      Lore::PG_TIME               => Proc.new { |value, required| !required || !value.empty? },  # TODO
+      Lore::PG_DATE               => Proc.new { |value, required| !required || !value.empty? },  # TODO
+      Lore::PG_TIMESTAMP          => Proc.new { |value, required| !required || !value.empty? },  # TODO
+      Lore::PG_VCHAR_LIST         => Proc.new { |value, required| !required || !value.empty? },  # TODO
+      Lore::PG_TIMESTAMP_TIMEZONE => Proc.new { |value, required| !required || !value.empty? }   # TODO
+    }
+
 		def typecheck(code, value, nil_allowed=true)
-
-			case code
-
-			# bool
-			when Lore::PG_BOOL
-				if value == 't' || value == 'f' || 
-				   value == '' && nil_allowed || value.nil? && nil_allowed
-				then true else false end
-			# bytea
-			when Lore::PG_BYTEA
-        true
-			# int
-			when Lore::PG_INT 
-				if value.kind_of?(Integer) or 
-					value.to_i.to_s == value or 
-					value.nil? && nil_allowed or
-					value == '' && nil_allowed
-				then true else false end
-			# smallint
-			when Lore::PG_SMALLINT 
-				if ((value.kind_of?(Integer) or value.to_i.to_s == value or 
-					value.nil? && nil_allowed || value == '' && nil_allowed)) and
-					value.to_i < 1024 and value.to_i > -1024
-				then true else false end
-			# decimal
-			when Lore::PG_DECIMAL
-				if ((value.kind_of?(Integer) or value.to_f.to_s == value or 
-					value.nil? && nil_allowed || value == '' && nil_allowed)) 
-				then true else false end
-			# text
-			when Lore::PG_TEXT 
-				if nil_allowed || !nil_allowed && !value.nil? && value != '' 
-				then true else false end
-			when Lore::PG_FLOAT
-				if nil_allowed || !nil_allowed && !value.nil? && value != '' 
-				then true else false end
-			# varchar
-			when Lore::PG_CHAR 
-				if nil_allowed || !nil_allowed && !value.nil? && value != '' 
-				then true else false end
-			# varchar
-			when Lore::PG_CHARACTER
-				if nil_allowed || !nil_allowed && !value.nil? && value != '' 
-				then true else false end
-			# varchar
-			when Lore::PG_VARCHAR 
-				if nil_allowed || !nil_allowed && !value.nil? && value != '' 
-				then true else false end
-			# timestamp
-			when Lore::PG_TIME
-				# TODO
-				if nil_allowed || !nil_allowed && !value.nil? && value != '' 
-				then true else false end
-			# timestamp with timezone
-			when Lore::PG_TIMESTAMP
-				# TODO
-				if nil_allowed || !nil_allowed && !value.nil? && value != '' 
-				then true else false end
-			# timestamp with timezone
-			when Lore::PG_TIMESTAMP_TIMEZONE 
-				# TODO
-				if nil_allowed || !nil_allowed && !value.nil? && value != '' 
-				then true else false end
-			# date
-			when Lore::PG_DATE
-				# TODO
-				if nil_allowed || !nil_allowed && !value.nil? && value != '' 
-				then true else false end
-
-      # character varying[]
-      when Lore::PG_VCHAR_LIST
-        true
-		
-			else 
-        raise ::Exception.new("Unknown type code ('#{code.inspect.to_s}') for value '#{value.inspect}'. See README on how to add new types. ")
-			end
-			
+      validation = @@type_validation_rules[code]
+      return validation.call(value, !nil_allowed) if validation
+			raise Lore::Exceptions::Unkown_Type.new(code, value)
 		end
 
 	end

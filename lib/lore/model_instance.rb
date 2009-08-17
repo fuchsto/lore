@@ -302,31 +302,26 @@ module Model_Instance
     Lore.logger.debug { "Touched values are: #{@touched_fields.inspect}" }
 
     # TODO: Optimize this! 
-    begin
-      @attribute_values = self.class.distribute_attrib_values(@attribute_values_flat)
-      foreign_pkey_values = false
-      @update_values = {}
-      @update_pkey_values = {}
-      @attribute_values.each_pair { |table,attributes|
-        @touched_fields.each { |name|
-          value  = @attribute_values[table][name]
-          filter = self.class.__filters__.input_filters[name]
-          value = filter.call(value) if filter
-          if attributes[name] then
-            update_values[table] ||= {}
-            @update_values[table][name] = value 
-          end
-        }
-        foreign_pkey_values = get_primary_key_value_map[table]
-        
-        @update_pkey_values[table] = foreign_pkey_values if foreign_pkey_values
+    @attribute_values = self.class.distribute_attrib_values(@attribute_values_flat)
+    foreign_pkey_values = false
+    @update_values = {}
+    @update_pkey_values = {}
+    @attribute_values.each_pair { |table,attributes|
+      @touched_fields.each { |name|
+        value  = @attribute_values[table][name]
+        filter = self.class.__filters__.input_filters[name]
+        value = filter.call(value) if filter
+        if attributes[name] then
+          update_values[table] ||= {}
+          @update_values[table][name] = value 
+        end
       }
+      foreign_pkey_values = get_primary_key_value_map[table]
+      
+      @update_pkey_values[table] = foreign_pkey_values if foreign_pkey_values
+    }
 
-#     Validation::Parameter_Validator.invalid_params(self.class, update_values)
-    rescue Lore::Exception::Invalid_Klass_Parameters => ikp    
-      ikp.log
-      raise ikp
-    end
+    Validation::Parameter_Validator.validate(self.class, update_values)
 
     self.class.before_commit(self)
     self.class.__update_strategy__.perform_update(self)

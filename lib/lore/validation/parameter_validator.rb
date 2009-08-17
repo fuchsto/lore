@@ -1,11 +1,12 @@
 
 require('lore/validation/type_validator')
-require('lore/exception/invalid_parameter')
+require('lore/exceptions/invalid_field')
+require('lore/exceptions/validation_failure')
 
 module Lore
 module Validation
   
-  class Parameter_Validator # :nodoc:
+  class Parameter_Validator 
 
     PG_BOOL                 = 16
     PG_SMALLINT             = 21
@@ -22,7 +23,7 @@ module Validation
     # or e.g. in a dispatcher with
     # Validator.invalid_params(Some_Klass, parameter_hash)
     # 
-    def self.invalid_params(klass, value_hash)
+    def self.validate(klass, value_hash)
     
       invalid_params = Hash.new
       explicit_attributes = klass.__attributes__.required
@@ -47,7 +48,7 @@ module Validation
       }
       if invalid_params.length == 0 then return true end
         
-      raise Lore::Exceptions::Invalid_Field_Values.new(klass, invalid_params)
+      raise Lore::Exceptions::Validation_Failure.new(klass, invalid_params)
 
     end
 
@@ -62,18 +63,22 @@ module Validation
         value = table_value_hash[field]
         # Replace whitespaces and array delimiters to check for real value length
         value_nil = (value.nil? || value.to_s.gsub(/\s/,'').gsub(/[{}]/,'').length == 0)
-     #  puts "Validate #{field}: Nil allowed: #{nil_allowed}, value: #{value}, value nil: #{value_nil}"
+        Lore.logger.debug { "Validate #{field}, required? #{nil_allowed}" }
+        Lore.logger.debug { "Value: #{value}, value nil? #{value_nil}" }
         # Is value missing? 
         if (!nil_allowed && value_nil) then 
           invalid_types[field] = :missing
+          Lore.logger.debug { "Field #{field} is :missing" }
         # If so: Is value of valid type? 
         elsif !type_validator.typecheck(type, value, nil_allowed) then
           invalid_types[field] = type
+          Lore.logger.debug { "Field #{field} has invalid type: " } 
+          Lore.logger.debug { "expected: #{type}, value: #{value}" } 
         end
         
       }
       if invalid_types.keys.length > 0 then
-          raise Lore::Exceptions::Invalid_Types.new(invalid_types)
+        raise Lore::Exceptions::Invalid_Types.new(invalid_types)
       end
       return true
     end
@@ -83,14 +88,19 @@ module Validation
       table_constraints.each_pair { |attrib, rules|
         value = table_value_hash[attrib.to_s]
         rules.each_pair { |rule, rule_value|
+          Lore.logger.debug { "Found constraint for #{attrib}: #{rule.inspect} " }
+          Lore.logger.debug { "Rule is: #{rule_value.inspect} " }
           if rule == :minlength && value.to_s.length < rule_value then
             unmet_constraints[attrib] = :minlength
+            Lore.logger.debug { "Field #{attrib} failed :minlength" }
           end
           if rule == :maxlength && value.to_s.length > rule_value then
             unmet_constraints[attrib] = :maxlength
+            Lore.logger.debug { "Field #{attrib} failed :maxlength" }
           end
           if rule == :format && rule_value.match(value).nil? then
             unmet_constraints[attrib] = :format
+            Lore.logger.debug { "Field #{attrib} failed :format" }
           end
         }
       }
