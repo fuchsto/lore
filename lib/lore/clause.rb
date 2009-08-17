@@ -10,6 +10,59 @@ class String
   end
 end
 
+class Symbol
+# {{{
+  
+  # Do not overload Symbol#==
+  def eq(other)
+    Lore::Clause.new(self.to_s)==(other)
+  end
+  alias is eq
+  def >=(other)
+    Lore::Clause.new(self.to_s)>=(other)
+  end
+  def <=(other)
+    Lore::Clause.new(self.to_s)<=(other)
+  end
+  def >(other)
+    Lore::Clause.new(self.to_s)>(other)
+  end
+  def <(other)
+    Lore::Clause.new(self.to_s)<=(other)
+  end
+  def <=>(other)
+    Lore::Clause.new(self.to_s)<=>(other)
+  end
+  def not(other)
+    Lore::Clause.new(self.to_s)<=>(other)
+  end
+  def like(other)
+    Lore::Clause.new(self.to_s).like(other)
+  end
+  def ilike(other)
+    Lore::Clause.new(self.to_s).ilike(other)
+  end
+  def has_element(other)
+    Lore::Clause.new(self.to_s).has_element(other)
+  end
+  def has_element_like(other)
+    Lore::Clause.new(self.to_s).has_element_like(other)
+  end
+  def has_element_ilike(other)
+    Lore::Clause.new(self.to_s).has_element_ilike(other)
+  end
+  def in(other)
+    Lore::Clause.new(self.to_s).in(other)
+  end
+  def not_in(other)
+    Lore::Clause.new(self.to_s).not_in(other)
+  end
+  def between(s,e)
+    Lore::Clause.new(self.to_s).between(s,e)
+  end
+
+end # }}}
+
 module Lore
 
   def self.parse_field_value(value)
@@ -44,21 +97,10 @@ module Lore
       # By joining with another klass, new attributes are added 
       # we have to include in the AS part of the query: 
       new_attributes = ''
-   #  join_klass.get_attributes.each { |attr_set|
-   #    table = attr_set[0]
-   #    attr_set[1].each { |attrib_name|
-   #      new_attributes += ', ' << "\n"
-   #      new_attributes += table + '.' << attrib_name 
-   #      new_attributes += ' AS '
-   #      new_attributes += '"' << table << '.' << attrib_name << '" ' 
-   #    }
-   #  }
       implicit_joins = ''
       @clause_parser.add_as(new_attributes)
 
       @implicit_joins = Table_Selector.build_joined_query(join_klass)
-      
-      # @clause_parser.add_join(self)
     end
 
     def implicit_joins

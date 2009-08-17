@@ -34,6 +34,7 @@ end
 
 def flush_test_data()
   require './fixtures/models'
+  Lore.query_logger.debug { '-------- BEGIN FLUSH --------' }
   Lore::Spec_Fixtures::Models::Vehicle.delete_all
   Lore::Spec_Fixtures::Models::Motorized_Vehicle.delete_all
   Lore::Spec_Fixtures::Models::Car.delete_all
@@ -41,5 +42,6 @@ def flush_test_data()
   Lore::Spec_Fixtures::Models::Garage.delete_all
   Lore::Spec_Fixtures::Models::Owner.delete_all
   Lore::Spec_Fixtures::Models::Vehicle_Owner.delete_all
+  Lore.query_logger.debug { '-------- END FLUSH ----------' }
 end
 
