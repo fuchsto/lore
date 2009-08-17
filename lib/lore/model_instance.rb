@@ -118,7 +118,7 @@ module Model_Instance
 
   # Returns primary key values of own table
   def key
-    @primary_key_values[self.class.get_table_name]
+    get_primary_key_value_map[self.class.table_name]
   end
 
   def get_label_string

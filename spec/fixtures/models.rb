@@ -104,6 +104,15 @@ module Models
     end
   end
 
+  class Car_Features < Lore::Model
+    table :car_features, :public
+    primary_key :id, :car_features_id_seq
+
+    has_a Car, :car_id
+
+    expects :color
+  end
+
   class Convertible < Car
     table :convertible, :public
     primary_key :id, :convertible_id_seq

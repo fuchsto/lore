@@ -17,7 +17,7 @@ module Lore
 
     # Extracted, recursive method for building the JOIN-part of 
     # a SELECT query. 
-    def build_joined_query(accessor=nil, query_string='', joined_tables=[])
+    def self.build_joined_query(accessor=nil, query_string='', joined_tables=[])
     # {{{
       accessor       ||= @acessor
       associations     = accessor.__associations__
@@ -70,7 +70,7 @@ module Lore
 
     def build_select_query(value_keys)
     # {{{
-      query_string = "SELECT * FROM #{base_table} #{build_joined_query(@accessor)} WHERE "
+      query_string = "SELECT * FROM #{base_table} #{self.class.build_joined_query(@accessor)} WHERE "
       query_string << "\n WHERE "
     
       operator = '='
@@ -129,7 +129,7 @@ module Lore
       # Add JOIN part for system defined type (user defined 
       # joins will be set in Clause_Parser object in later 
       # yield): 
-      query_parts[:join] = build_joined_query(@accessor)
+      query_parts[:join] = self.class.build_joined_query(@accessor) << " \n " << query_parts[:join]
       query_string << [ :what, :from, :join, :where, :group_by, :having, :filter, :order_by, :limit, :offset ].map { |part|
         query_parts[part]
       }.join(' ')

@@ -100,7 +100,7 @@ module Lore
       implicit_joins = ''
       @clause_parser.add_as(new_attributes)
 
-      @implicit_joins = Table_Selector.build_joined_query(join_klass)
+      @implicit_joins = Table_Select.build_joined_query(join_klass)
     end
 
     def implicit_joins
@@ -134,7 +134,9 @@ module Lore
       elsif @type == :left then cmd = 'LEFT JOIN '
       elsif @type == :right then cmd = 'RIGHT JOIN '
       end
+      Lore.logger.debug { "JOIN.on #{clause.to_sql}" }
       @string = cmd << @join_klass.table_name << ' ON (' << clause.to_sql << ') ' 
+      Lore.logger.debug { "JOIN.on query: #{@string}" }
       @clause_parser.append_join(self)
       yield @clause_parser # use extended clause parser for inner block argument
     end
@@ -450,6 +452,7 @@ module Lore
       clause << @clause[:group_by].to_s 
       clause << @clause[:order_by].to_s 
       clause << @clause[:limit].to_s 
+      return clause
     end # def
 
     def where(where_clause)

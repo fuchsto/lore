@@ -98,14 +98,17 @@ class Table_Accessor
       @attribute_values_flat = values
     else
       @attribute_values_flat = {}
+      field_index = 0
       models  = [ self.class ]
       models |= joined_models
       models.each { |model|
-        tables = model.get_all_table_names
+        tables = model.all_table_names
         fields = model.get_fields_flat
-        fields.each_with_index { |field,field_index|
-        # First value set has precedence
+        # Increment over all fields, do not use each_with_index
+        fields.each { |field|
+          # First value set has precedence
           @attribute_values_flat[field] ||= values[field_index] 
+          field_index += 1 
         }
       }
       # Applying filter to *all* attribute values, including derived attributes. 
@@ -148,7 +151,7 @@ class Table_Accessor
     models  = [ self.class ] 
     models |= @joined_models
     models.each { |model|
-      tables = model.get_all_table_names
+      tables = model.all_table_names
       fields = model.get_fields
       tables.each { |table|
         map = {}
@@ -259,17 +262,7 @@ class Table_Accessor
 
   # Returns all (i.e. including joined) tables as 
   # Array of Strings, ordered by join order. 
-  def self.get_table_names
-  # {{{
-    return @table_names if @table_names
-    @table_names = [@table_name]
-    @table_names += get_is_a.keys_flat
-    return @table_names
-  end # }}}
-  # Alias for get_table_names. 
-  # Returns all (i.e. including joined) tables as 
-  # Array of Strings, ordered by join order. 
-  def self.get_all_table_names
+  def self.all_table_names
   # {{{
     return @table_names if @table_names
     @table_names = [@table_name]
@@ -517,7 +510,7 @@ class Table_Accessor
     Aurita.log { "Model.explicit is deprecated (called for #{self.to_s}" } 
   end
 
-  def self.hidden_attribute(*args)
+  def self.hide_attribute(*args)
     Aurita.log { "Model.hidden_attribute is deprecated (called for #{self.to_s}. 
                   Use Model.hidden instead" } 
   end
@@ -792,7 +785,7 @@ class Table_Accessor
   def self.get(*key_values)
   # {{{
     pkeys = {}
-    get_primary_keys[get_table_name].uniq.each_with_index { |pkey, idx|
+    get_primary_keys[table_name].uniq.each_with_index { |pkey, idx|
       pkeys[pkey] = key_values.at(idx)
     }
     load(pkeys)
@@ -862,7 +855,6 @@ class Table_Accessor
       # Only define methods on own attributes or on 
       # attributes only a parent Table_Accessor provides: 
       attribute_type = @__attributes__.types[@table_name][attribute]
-   #  log('Expected attribute type for ' << accessor.get_table_name + '.' << attribute.to_s + ': ' << Lore::Type.type_name(attribute_type).to_s + '(' << attribute_type.to_s + ')' )
       method = 
       "def self.#{attribute}() 
         Clause.new('#{@table_name}.#{attribute}', '', '', { :add_types => [ #{attribute_type}], :add_name => '' })

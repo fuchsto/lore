@@ -56,12 +56,27 @@ describe(Lore::Table_Accessor) do
     car.name.should == "car2"
   end
 
-  it "should provide convenience methods for selects" do
+  it "provides convenience methods for selects" do
     car_org = Car.create(car_create_values(:name => "The Car" ))
     car_sel = Car.find(1).with(Car.name == "thecar").entity
     car_org.name.should == "thecar"
     car_sel.name.should == "thecar"
     car_org.should == car_sel
+  end
+
+  it "allows arbitrary joins with other models" do
+    
+    cf = Car_Features.create(:car_id => Car.create(car_create_values(:name => 'fordmondeo')).pkey, 
+                             :color  => 'red')
+
+    res = Car.select { |c|
+      c.join(Car_Features).on(Car.id == Car_Features.car_id) { |cc|
+        cc.where(Car.name.ilike('ford%'))
+      }
+    }.first
+    res.color.should == 'red'
+    res.name.should == 'fordmondeo'
+
   end
 
 end
