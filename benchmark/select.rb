@@ -18,6 +18,7 @@ Lore.disable_query_log
 
 require('rubygems')
 require('activerecord')
+require('sequel')
 
 ActiveRecord::Base.establish_connection(
   :adapter  => 'postgresql', 
@@ -30,8 +31,12 @@ ActiveRecord::Base.establish_connection(
 Lore.add_login_data('artest' => ['cuba', 'cuba23'])
 Lore::Context.enter :artest
 
+DB = Sequel.connect('postgres://cuba:cuba23@localhost/artest')
+
+
 range_from = 1000
 range_to   = 1100
+
 
 module AR
   class Content < ActiveRecord::Base
@@ -51,7 +56,7 @@ module Lore
   class Article < Lore::Model
     table :articles, :public
     primary_key :id, :article_id_seq
-#   is_a Content, :content_id
+    is_a Content, :content_id
   end
 
   Article.prepare(:id_in_range, Lore::Type.integer, Lore::Type.integer) { |a|
@@ -275,8 +280,6 @@ bmbm(12) { |test|
         # raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
         count += 1
         valid = true
-        valid = valid && a.tags.is_a?(Array)
-        valid = valid && a.id.is_a?(Fixnum)
         # raise ::Exception.new("TYPE ERROR") unless valid
       }
     }
@@ -294,6 +297,21 @@ bmbm(12) { |test|
         valid = valid && a.id.is_a?(Fixnum)
         # raise ::Exception.new("TYPE ERROR") unless valid
       end
+    }
+  }
+  test.report("sequel") { 
+    id_error = false
+    count = 0
+    num_loops.times { 
+      count = range_from
+      DB[:articles].left_outer_join(:contents, :id => :content_id).filter( :articles__id => (range_from..range_to)).each { |a| 
+        # raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
+        count += 1
+        valid = true
+        # tags = a[:tags][1..-2].split(',')
+        # id   = a[:id].to_i
+        # raise ::Exception.new("TYPE ERROR") unless valid
+      }
     }
   }
   test.report('lore using cache') { 
