@@ -1,5 +1,5 @@
 
-require('lore/table_accessor')
+require('lore/model/table_accessor')
 require('lore/query_shortcuts') # So far, a forward-declaration could do here as well
 
 class String

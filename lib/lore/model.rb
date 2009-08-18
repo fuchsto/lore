@@ -1,8 +1,8 @@
 
 require('logger')
 
-require('lore/aspect');
-require('lore/table_accessor');
+require('lore/model/aspect');
+require('lore/model/table_accessor');
 
 module Lore
 

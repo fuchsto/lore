@@ -1,6 +1,5 @@
 
 require('lore/cache/cached_entities')
-require('lore/connection')
 require('lore/clause')
 
 module Lore

@@ -1,6 +1,4 @@
 
-require('lore/connection')
-
 module Lore
 
   class Table_Insert

@@ -1,7 +1,7 @@
 
 require('lore/exceptions/invalid_field')
 require('lore/exceptions/unknown_type')
-require('lore/types')
+require('lore/adapters/postgres')
 
 module Lore
 module Validation

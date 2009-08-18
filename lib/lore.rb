@@ -119,6 +119,4 @@ module Lore
 end
 
 require('lore/validation/parameter_validator')
-require('lore/exception/invalid_parameter')
-require('lore/exception/invalid_klass_parameters')
-require('lore/connection')
+require('lore/adapters/postgres')

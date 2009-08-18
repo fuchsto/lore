@@ -1,5 +1,4 @@
 
-require('lore/connection')
 require('lore/bits')
 
 module Lore

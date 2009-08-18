@@ -1,5 +1,5 @@
 
-require 'lore/polymorphic'
+require 'lore/model'
 
 module Lore
 module Spec_Fixtures

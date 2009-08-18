@@ -1,6 +1,6 @@
 
 require('lore/types')
-require('lore/model_factory')
+require('lore/model/model_factory')
 
 module Lore
 

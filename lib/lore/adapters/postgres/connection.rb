@@ -4,7 +4,7 @@ $:.push('/opt/local/lib/ruby/1.8/postgres')
 require('postgres')
 require('logger')
 require('lore')
-require('lore/result')
+require('lore/adapters/postgres/result')
 
 module Lore
 
