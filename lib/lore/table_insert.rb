@@ -98,7 +98,7 @@ module Lore
         end
         key_counter += 1
       }
-      query_string += "(#{field_string}) VALUES (#{value_string}); "
+      query_string += "(#{field_string}) \n VALUES (#{value_string}); "
       return query_string
     end # }}}
     

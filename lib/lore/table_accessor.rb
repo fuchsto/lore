@@ -32,6 +32,7 @@ class Table_Accessor
   extend Query_Shortcuts
   extend Model_Shortcuts
   extend Polymorphic_Class_Methods
+  include Polymorphic_Instance_Methods
   extend Prepare_Class_Methods
   include Prepare
   extend Cache::Cacheable
@@ -599,10 +600,7 @@ class Table_Accessor
   
   def self.select_values(what, &block) 
   # {{{
-    db_result = @select_strategy.select(what, &block)
-    return db_result.get_rows[:values].map { |e| 
-      e.first 
-    }
+    @select_strategy.select(what, &block).get_rows
   end # }}}
   
   # Wrap explicit select. Example: 
@@ -701,13 +699,19 @@ class Table_Accessor
     values = distribute_attrib_values(attrib_values)
     
     before_validation(values)
+    if @__associations__.polymorphics then
+      Lore.logger.debug { "Polymorphic create on #{self.to_s}" }
+      @__associations__.polymorphics.each_pair { |table, model_field|
+        values[table][model_field] = self.to_s
+      }
+    end
     Lore::Validation::Parameter_Validator.validate(self, values)
 
     before_insert(attrib_values)
 
     # retreive all final attrib values after insert: (this way, also 
     # sequence values are resolved): 
-    #
+    
     attrib_values = @insert_strategy.perform_insert(values)
     
     # This would be a double check, as self.load already filters 

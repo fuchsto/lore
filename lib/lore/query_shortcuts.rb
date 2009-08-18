@@ -65,7 +65,7 @@ module Lore
     #   -> Highest car_id as integer, e.g. 14223
     #
     def method_missing(method, attribute_name)
-      @what = method.to_s << '(' << attribute_name.to_s << ') AS "value"'
+      @what = "#{method.to_s}(#{attribute_name.to_s}) "
       return self
     end
 
@@ -265,6 +265,8 @@ module Lore
             result << row.values['value'] 
           elsif row.kind_of? String then
             result << row
+          else 
+            result = row
           end
         }
       end
@@ -272,6 +274,9 @@ module Lore
       return result
     end
     alias perform entities
+    alias to_a entities
+    alias result entities
+    alias value entity
 
   end # class
 

@@ -24,6 +24,10 @@ class Context
     return Connection_Pool.get_connection(@@context_stack.last)
   end
 
+  def self.get_context
+    @@context_stack.last
+  end
+
   def self.inspect
     @@context_stack.inspect
   end
@@ -112,7 +116,7 @@ class Connection # :nodoc
       
       if Lore.log_queries? then
         query.split("\n").each { |line|
-          Lore.query_logger.debug { "   || #{line}" }
+          Lore.query_logger.debug { "  sql|#{Context.get_context}| #{line}" }
         }
       end
     rescue ::Exception => pge

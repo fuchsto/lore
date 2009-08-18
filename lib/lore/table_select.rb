@@ -106,9 +106,9 @@ module Lore
       query_string = 'SELECT '
       
       # Example: 
-      # select(Car.name) -> SELECT public.car.name AS "value"
+      # select(Car.name) -> SELECT max(id)
       if what.instance_of? Lore::Clause then
-        what = what.to_s + ' AS "value" '
+        what = what.to_s 
       end
       
       if(what.nil? || what == '*' || what == '') then
@@ -159,7 +159,7 @@ module Lore
         query_string  = query[:query]
         joined_models = query[:joined_models]
       else 
-        query_string  = what
+        query_string  = what.to_s
       end
 
       result = Array.new
@@ -172,9 +172,13 @@ module Lore
         Context.enter(@accessor.get_context) if @accessor.get_context
         begin 
           result = Lore::Connection.perform(query_string).get_rows()
-          result.map! { |row|
-            row = (@accessor.new(row, joined_models))
-          }
+          if false and @accessor.is_polymorphic? then
+
+          else
+            result.map! { |row|
+              row = (@accessor.new(row, joined_models))
+            }
+          end
         rescue PGError => pge
           raise pge
         ensure

@@ -35,6 +35,16 @@ module Lore
     # Model_Instance#get_primary_key_value_map
     attr_reader :pkey_value_lookup
 
+    # Returns polymorphic base classes as map 
+    #   { table => polymorphic_attribute }
+    # Example: 
+    #  
+    #  { 'public.asset' => :concrete_asset_model }
+    #
+    attr_reader :polymorphics
+
+    attr_reader :concrete_models
+
     def initialize(accessor)
       @accessor = accessor
       @foreign_keys = {}
@@ -50,6 +60,9 @@ module Lore
       @aggregates_tree = {}
 
       @pkey_value_lookup = []
+
+      @polymorphics = {}
+      @concrete_models = []
 
       @joins = false
     end
@@ -95,8 +108,19 @@ module Lore
       @pkey_value_lookup << [ model.table_name, 
                               keys.flatten, 
                               model.__associations__.primary_keys[model.table_name] ]
+      if model.is_polymorphic? then
+        @polymorphics[model.table_name] = model.polymorphic_attribute
+        model.__associations__.add_concrete_model(@accessor)
+      end
       inherit(model)
     end # }}}
+
+    # For polymorphic models only. 
+    # Adds a concrete model class for a polymorphic 
+    # model. 
+    def add_concrete_model(model)
+      @concrete_models << model
+    end
 
     # Add another model as aggregate model. 
     # Leads to inheritance of fields, primary keys, 

@@ -79,6 +79,32 @@ describe(Lore::Table_Accessor) do
 
   end
 
+  it "allows selecting skalar values, e.g. for aggregate functions" do
+    most_recent_car = false
+    3.times { 
+      most_recent_car = Car.create(car_create_values(:name => "The Car" ))
+    }
+    values = Car.select_values('count(*), max(car.id)') { |c|
+      c.where(true)
+    }.first
+
+    values[0].to_i.should == 3
+    values[1].to_i.should == most_recent_car.id
+  end
+
+  it "provides convenience methods for selecting skalar values" do
+
+    most_recent_car = false
+    id_sum = 0
+    3.times { 
+      most_recent_car = Car.create(car_create_values(:name => "The Car" ))
+      id_sum += most_recent_car.id
+    }
+    Car.value_of.max(Car.id).to_i.should == most_recent_car.id
+    Car.value_of.sum(Car.id).to_i.should == id_sum
+
+  end
+
 end
 
 

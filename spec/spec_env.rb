@@ -12,5 +12,6 @@ Lore::Context.enter :test
 
 require './fixtures/models'
 require './fixtures/blank_models'
+require './fixtures/polymorphic_models'
 require './spec_helpers'
 
