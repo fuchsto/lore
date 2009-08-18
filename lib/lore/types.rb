@@ -59,10 +59,10 @@ module Lore
     @@input_filters = { 
       PG_VCHAR_LIST          => lambda { |v| "{#{v.join(',')}}" }, 
       PG_BOOL                => lambda { |v| if (v && v != 'f' || v == 't') then 'f' elsif (v.instance_of?(FalseClass) || v == 'f') then 'f' else nil end }, 
-      PG_DATE                => lambda { |v| v.to_s if (v.is_a?(Date) || v.is_a?(DateTime)) }, 
-      PG_TIME                => lambda { |v| v.to_s if (v.is_a?(Date) || v.is_a?(DateTime) || v.is_a?(Time)) }, 
-      PG_TIMESTAMP_TIMEZONE  => lambda { |v| v.to_s if (v.is_a?(Date) || v.is_a?(DateTime)) }, 
-      PG_TIMESTAMP           => lambda { |v| v.to_s if (v.is_a?(Date) || v.is_a?(DateTime)) }
+      PG_DATE                => lambda { |v| v.to_s }, 
+      PG_TIME                => lambda { |v| v.to_s }, 
+      PG_TIMESTAMP_TIMEZONE  => lambda { |v| v.to_s }, 
+      PG_TIMESTAMP           => lambda { |v| v.to_s }, 
     }
     @@output_filters = { 
       PG_VCHAR_LIST          => lambda { |v| v[1..-2].split(',') }, 

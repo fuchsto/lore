@@ -45,3 +45,28 @@ def flush_test_data()
   Lore.query_logger.debug { '-------- END FLUSH ----------' }
 end
 
+module Spec_Model_Select_Helpers
+  OWNER_ID = 12
+  MANUF_ID = 23
+  MOTOR_ID = 42
+
+  def mock_car_type
+    Car_Type.create(:type_name => 'Mock Type').pkey
+  end
+  def mock_motor
+    Motor.create(:motor_name => 'Mock Motor', :kw => 200).pkey
+  end
+
+  def car_create_values(replacements={})
+    { 
+      :name        => 'Some Car', 
+      :maxspeed    => 123, 
+      :num_doors   => 5, 
+      :num_seats   => 4, 
+      :owner_id    => OWNER_ID, 
+      :manuf_id    => MANUF_ID, 
+      :motor_id    => mock_motor(), 
+      :car_type_id => mock_car_type()
+    }.update(replacements)
+  end
+end

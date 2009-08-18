@@ -134,9 +134,7 @@ module Lore
       elsif @type == :left then cmd = 'LEFT JOIN '
       elsif @type == :right then cmd = 'RIGHT JOIN '
       end
-      Lore.logger.debug { "JOIN.on #{clause.to_sql}" }
       @string = cmd << @join_klass.table_name << ' ON (' << clause.to_sql << ') ' 
-      Lore.logger.debug { "JOIN.on query: #{@string}" }
       @clause_parser.append_join(self)
       yield @clause_parser # use extended clause parser for inner block argument
     end

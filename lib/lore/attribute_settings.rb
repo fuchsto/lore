@@ -88,10 +88,10 @@ module Lore
     end
 
     def add_primary_key(attribute, sequence_name=nil)
+      @primary_keys[@accessor.table_name] = [] unless @primary_keys[@accessor.table_name]
+      @primary_keys[@accessor.table_name] << attribute
       if sequence_name then
         set_sequence(attribute, sequence_name) if sequence_name
-        @primary_keys[@accessor.table_name] = [] unless @primary_keys[@accessor.table_name]
-        @primary_keys[@accessor.table_name] << attribute
       else
         set_required(attribute)
       end

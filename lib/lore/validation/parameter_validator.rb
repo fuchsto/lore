@@ -63,6 +63,9 @@ module Validation
 
       value_hash.each_pair { |table, attributes|
         types = attribute_settings.types[table] 
+        if !types then 
+          raise ::Exception.new("No types given for #{klass.to_s} (#{table})")
+        end
         types.delete_if { |attribute,value| !attributes[attribute] }
         begin
           validate_types(types, attributes, required[table])
@@ -73,11 +76,15 @@ module Validation
       
       value_hash.each_pair { |table, attributes|
         constraints = attribute_settings.constraints[table]
-        constraints.delete_if { |attribute,constraint| !attributes[attribute] }
-        begin
-          validate_constraints(constraints, attributes)
-        rescue Lore::Exceptions::Unmet_Constraints => ip
-          invalid_params[table] = ip
+        if constraints then 
+          constraints.delete_if { |attribute,constraint| !attributes[attribute] }
+          begin
+            validate_constraints(constraints, attributes)
+          rescue Lore::Exceptions::Unmet_Constraints => ip
+            invalid_params[table] = ip
+          end
+        else 
+          Lore.logger.info { "No constraints for #{klass.to_s}?" }
         end
       }
       if invalid_params.length == 0 then return true end

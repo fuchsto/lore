@@ -1,5 +1,7 @@
 
+require('rubygems')
 require('aurita-gui')
+require('lore/types')
 require('lore/gui/lore_model_select_field')
 
 module Lore
@@ -76,69 +78,73 @@ module GUI
       model_labels   = @klass.attribute_labels if @klass.respond_to?(:attribute_labels)
       model_labels ||= {}
 
-      @klass.get_attributes.each_pair { |table, attributes|
+      @klass.get_fields.each_pair { |table, attributes|
 
         attributes.each { |attribute|
-          label_tag    = table.gsub('.','--') << '--' << attribute
+          label_tag    = "#{table.gsub('.','--')}--#{attribute}"
           label        = @labels[label_tag]
-#         label        = model_labels[attribute.to_s] if label.to_s == ''
-          label        = attribute.capitalize if label.to_s == ''
+          label        = attribute.to_s.capitalize if label.to_s == ''
 
-          full_attrib  = table + '.' << attribute
+          full_attrib  = "#{table}.#{attribute}"
           field_name   = full_attrib
           form_element = false
-          constraints  = @klass.get_constraints
+
+          attributes   = @klass.__attributes__
+          associations = @klass.__associations__
+
+          constraints  = attributes.constraints
           constraints  = constraints[table] if constraints
           constraints  = constraints[attribute] if constraints
+
+          aggregate_klasses = associations.aggregate_klasses
+          has_a_klasses     = associations.has_a
+          implicits         = attributes.implicit
+          ecplicits         = attributes.explicit
+          requireds         = attributes.required
+          primary_keys      = attributes.primary_keys
+          attribute_types   = attributes.types
           
-          # @custom_elements is a hash mapping attribute names to
-          # Custom_Element instances. 
+          # @custom_elements is a hash mapping attribute 
+          # names to Custom_Element instances. 
           if ((@custom_elements[table]) and
               (@custom_elements[table][attribute])) then
             
             form_element = @custom_elements[table][attribute].new(:label => label, 
-                                                                  :id => full_attrib, 
-                                                                  :name => field_name)
+                                                                  :id    => full_attrib, 
+                                                                  :name  => field_name)
             
-          elsif (@klass.get_primary_keys[table].nil? or                      # Ignore primary key attributes
-                 !@klass.get_primary_keys[table].include? attribute) and        
-                (@klass.get_implicit_attributes[table].nil? or               # Ignore implicit attributes
-                 !@klass.get_implicit_attributes[table].include? attribute) and 
-                (@klass.get_has_a_klasses.nil? or                            # Ignore attributes aggregated via has_a associations (added later)
-                 @klass.get_has_a_klasses[full_attrib].nil?) and        
-                (@klass.get_hidden_attributes[table].nil? or                 # Ignore otherwise hidden attributes
-                 !@klass.get_hidden_attributes[table].include? attribute)
+          elsif (primary_keys[table].nil? or                   # Ignore primary key attributes
+                 !primary_keys[table].include? attribute) and 
+                (implicits[table].nil? or                      # Ignore implicit attributes
+                 !implicits[table].include? attribute) and 
+                (has_a_klasses.nil? or                         # Ignore attributes aggregated via has_a associations (added later)
+                 has_a_klasses[full_attrib].nil?) 
+        #   and (hidden_attributes[table].nil? or              # Ignore otherwise hidden attributes
+        #       !hidden_attributes[table].include? attribute)
           then
-          # Attribute has to be added to form, according to data type
-            form_element = field_for(@klass.get_attribute_types[table][attribute], :name => field_name, :label => label)
-          elsif (!@klass.get_has_a_klasses.nil? and
-                 !@klass.get_has_a_klasses[full_attrib].nil?)
+            form_element = field_for(attribute_types[table][attribute], :name => field_name, :label => label)
+          elsif (!has_a_klasses.nil? and
+                 !has_a_klasses[full_attrib].nil?)
           then 
-            foreign_klass   = @klass.get_has_a_klasses[full_attrib]
+            foreign_klass   = has_a_klasses[full_attrib]
             form_element    = Aurita::GUI::Lore_Model_Select_Field.new(foreign_klass, :label => label, :name => field_name)
 
-          elsif (!@klass.get_aggregate_klasses.nil? and
-                 !@klass.get_aggregate_klasses[full_attrib].nil?)
+          elsif (!aggregate_klasses.nil? and
+                 !aggregate_klasses[full_attrib].nil?)
           then 
-            foreign_klass   = @klass.get_aggregate_klasses[full_attrib]
+            foreign_klass   = aggregate_klasses[full_attrib]
             form_element    = Aurita::GUI::Lore_Model_Select_Field.new(foreign_klass, :label => label, :name => field_name)
             
-          # Attribute is explixit (expected/required) but not 
-          # catched before -> Add attribute as hidden field: 
-          elsif (!@klass.get_explicit_attributes[table].nil? and 
-                 @klass.get_explicit_attributes[table].include? attribute)
-          then
-
-          elsif (!@klass.get_implicit_attributes[table].nil? and 
-                 @klass.get_implicit_attributes[table].include? attribute)
+          elsif (!implicits[table].nil? and 
+                  implicits[table].include? attribute)
           then
             # Implicit field, ignored
           end
 
           if form_element then
-            form_element.data_type = @klass.get_attribute_types[table][attribute] 
-            if(!@klass.get_explicit_attributes[table].nil? and 
-               @klass.get_explicit_attributes[table].include? attribute) then
+            form_element.data_type = attribute_types[table][attribute] 
+            if(!requireds[table].nil? and 
+                requireds[table].include? attribute) then
               form_element.required!
             end
             if constraints then

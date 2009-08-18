@@ -12,6 +12,7 @@ module Lore
 
     def initialize(accessor)
       @accessor = accessor
+      @base_table = accessor.table_name
     end
 
     private
@@ -70,12 +71,14 @@ module Lore
       return query_string
     end # }}}
 
+    public
+
     def block_update(&block)
     # {{{
       query_string = "UPDATE #{@base_table} "
 
       if block_given? then
-        yield_obj = Lore::Clause_Parser.new(@base_table)
+        yield_obj = Lore::Clause_Parser.new(@accessor)
         clause = yield *yield_obj
       end
 

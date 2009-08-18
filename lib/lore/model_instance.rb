@@ -97,6 +97,10 @@ module Model_Instance
     table_name  = accessor.table_name
     pkey_fields = accessor.get_primary_keys
     
+    if !pkey_fields[table_name] then
+      raise ::Exception.new("Unable to resolve pkey fields for #{self.class.to_s}. Known fields are: #{pkey_fields.inspect}")
+    end
+
     @primary_key_value_map = { table_name => {} }
     pkey_fields[table_name].each { |own_pkey|
       @primary_key_value_map[table_name][own_pkey] = @attribute_values_flat[own_pkey]
@@ -136,7 +140,7 @@ module Model_Instance
 
 
   def touched?
-    @touched
+    (@touched === true)
   end
 
   def touch(attrib_name=nil)
@@ -276,7 +280,7 @@ module Model_Instance
   #   self.class.abs_attr(Klass_A)[:id]  ->  123
   #
   def abs_attr(klass=nil)
-    raise ::Exception.new('abs_attr() is deprecated')
+    Lore.logger.warn { 'abs_attr() is deprecated' }
 
     klass = klass.to_s if klass.instance_of? Symbol
     return @attribute_values if klass.nil?
@@ -285,6 +289,10 @@ module Model_Instance
     return @attribute_values[klass.to_s.split('.')[0..1].join('.').to_s][klass.to_s.split('.').at(-1)] if klass.instance_of? Lore::Clause
   end # def
 
+  def attribute_values
+    @attribute_values ||= self.class.distribute_attrib_values(@attribute_values_flat)
+    @attribute_values
+  end
   
   # Commit changes on Table_Accessor instance to DB. 
   # Results in one or more SQL update calls. 
