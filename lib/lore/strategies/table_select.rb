@@ -118,7 +118,7 @@ module Lore
 
       if block_given? then
         yield_obj  = Clause_Parser.new(@accessor)
-        clause_parser  = yield *yield_obj
+        clause_parser = yield *yield_obj
       end
       
       query_string = 'SELECT '
@@ -142,9 +142,9 @@ module Lore
 
       # Attaching UNION selects: 
       if clause_parser.unions then
-        clause_parser.unions.each { |select_query|
+        clause_parser.unions.each { |select_query_obj|
           query_string << "\nUNION\n"
-          union_sql = select_query.sql
+          union_sql = select_query_obj.sql
           query_string << union_sql
         }
       end
@@ -176,7 +176,7 @@ module Lore
       # order by model;
       concrete_models = accessor.__associations__.concrete_models
       own_table_name  = accessor.table_name
-      implicit_joins  = ''
+      implicit_joins  = build_joined_query(accessor) 
       own_pkeys       = accessor.__associations__.primary_keys[own_table_name]
       concrete_models.each { |concrete_model|
         join_constraints = []
@@ -193,7 +193,7 @@ module Lore
 
     def select(what, &block)
     # {{{
-      query_string = select_query(what, &block)
+      query_string = select_query(what, nil, &block)
       return perform_select(query_string[:query])
     end # }}}
 
@@ -206,14 +206,14 @@ module Lore
         query         = select_query(what, &block)
         query_string  = query[:query]
         joined_models = query[:joined_models]
-      elsif !block_given? then
+      elsif !block_given? && clause_parser then
         query         = select_query(what, clause_parser)
         query_string  = query[:query]
         joined_models = query[:joined_models]
       else
-        query         = select_query(what, clause_parser)
         query_string  = what.to_s
       end
+      what = false if what.empty?
 
       result = Array.new
       if Lore.cache_enabled? && 
@@ -225,11 +225,13 @@ module Lore
         Context.enter(@accessor.get_context) if @accessor.get_context
         begin 
           result = Lore::Connection.perform(query_string).get_rows()
-          if @accessor.is_polymorphic? then
+          Lore.logger.debug { "Model #{@accessor.to_s} polymorphic? #{@accessor.is_polymorphic?}" }
+          if !what && @accessor.is_polymorphic? then
             result.map! { |row|
-            # Lore.logger.debug { "Polymorphic select returned: #{row.inspect}" }
+              Lore.logger.debug { "Polymorphic select returned: #{row.inspect}" }
               tmp = @accessor.new(row, joined_models)
               concrete_model = tmp.get_concrete_model
+              # TODO: filter row array fields for this accessor
               concrete_model.new(row, joined_models)
             }
           else

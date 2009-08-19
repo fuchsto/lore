@@ -5,7 +5,7 @@ module Lore
   #
   #   Model.select { |x| ... }    --> Select.new(Model, clause_parser)
   #
-  class Select_Query
+  class Select_Query < Array
 
     attr_reader :model, :clause_parser
 
@@ -41,9 +41,13 @@ module Lore
       perform.each_with_index(&block)
     end
 
-    def +(other)
+    def union(other)
       @clause_parser.union(other)
       return self
+    end
+
+    def +(other)
+      perform + other.to_a
     end
 
     # Any undefined method is interpreted as 

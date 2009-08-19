@@ -3,6 +3,9 @@ require('lore')
 
 module Lore
 
+  class Lore::Table_Accessor
+  end
+
   module Polymorphic_Class_Methods
 
     def is_polymorphic(key=:concrete_model)

@@ -12,10 +12,15 @@ describe(Lore::Table_Accessor) do
 
   it "implements inverse polymorphism" do
     
-    Asset.__associations__.concrete_models.length.should == 2
+    Asset.is_polymorphic?.should == true
+    Media_Asset.is_polymorphic?.should == false
+    Document_Asset.is_polymorphic?.should == false
     
     expected = { 'public.asset' => :model }
     Media_Asset.__associations__.polymorphics.should_be expected
+
+    Asset.__associations__.concrete_models.length.should == 2
+
     
     5.times { 
       info = Media_Asset_Info.create(:description => 'a media file')
@@ -53,12 +58,13 @@ describe(Lore::Table_Accessor) do
       a.where(Asset.asset_id.is media_polymorphic_id)
       a.limit(1)
     }.first
+    puts asset.class.to_s
     asset.is_a?(Media_Asset).should == true
     asset.is_a?(Asset).should == true
     asset.media_type.should == 'sound'
     
-    asset = Asset.select_polymorphic { |a|
-      a.where(:asset_id.is docum_polymorphic_id)
+    asset = Asset.select { |a|
+      a.where(Asset.asset_id.is docum_polymorphic_id)
       a.limit(1)
     }.first
     asset.is_a?(Document_Asset).should == true
