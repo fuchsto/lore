@@ -3,6 +3,7 @@ require('lore/model/table_accessor')
 require('lore/query_shortcuts') # So far, a forward-declaration could do here as well
 
 class String
+  # Poor man's SQL injection prevention ... 
   def lore_escape
     self.gsub!("'","X")
     self.gsub!('"','X')
@@ -85,7 +86,7 @@ module Lore
   #       k.limit(10)
   #     }
   #
-  class Join # :nodoc:
+  class Join 
   # {{{
 
     def initialize(clause, base_klass, join_klass, type=:natural)
@@ -141,7 +142,16 @@ module Lore
 
   end # class }}}
   
-  class Clause < String # :nodoc:
+  # Clause objects are responsible for operands on Model attributes, 
+  # as in WHERE parts of a query. 
+  # Model klass methods named like one if its (possibly inherited) 
+  # field names return a preconfigured Clause object on that field. 
+  #
+  # Example: 
+  #
+  #    (Car.num_seats > 100).to_sql  --> "public.vehicle.num_seats > '100'"
+  #
+  class Clause < String 
   # {{{
 
     attr_reader :field_name, :value_string, :left_side, :plan
@@ -361,7 +371,7 @@ module Lore
   
   # parses / builds WHERE, GROUP BY, ORDER BY, LIMIT, ... 
   # part of the query: 
-  class Clause_Parser # :nodoc
+  class Clause_Parser 
   # {{{
     
     attr_reader :unions

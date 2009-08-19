@@ -9,20 +9,21 @@ module Lore
 
     attr_reader :model, :clause_parser
 
-    def initialize(model, what=nil, &block)
+    def initialize(model, what=nil, polymorphic=false, &block)
       @model         = model
       @strategy      = model.__select_strategy__
       @what          = what
+      @polymorphic   = polymorphic
       @clause_parser = yield(Clause_Parser.new(@model))
     end
 
     def to_sql
-      @strategy.select_query(@what, @clause_parser)[:query]
+      @strategy.select_query(@what, @clause_parser, @polymorphic)[:query]
     end
     alias sql to_sql
 
     def perform
-      @strategy.select_cached(@what, @clause_parser)
+      @strategy.select_cached(@what, @clause_parser, @polymorphic)
     end
     alias to_a perform
     alias exec perform

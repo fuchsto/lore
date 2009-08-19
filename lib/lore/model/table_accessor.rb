@@ -437,50 +437,8 @@ class Table_Accessor
   def self.has_n(other, *args)
   # {{{
     @__associations__.add_has_n(other, *args)
-  
-    method_suffix = other.to_s.split('::').last
-    method_suffix.downcase! 
-    
-    # TODO: To be wrapped by Table_Instance, feeding this method with 
-    # primary keys required to get referenced has_n tuples. 
-    define_method(method_suffix+'_entities') { |*key_values|
-
-      query_args = Hash.new
-      query_args['_table'] = foreign_table_name
-      for arg_counter in 0...key_values.length do 
-      
-        query_args[@foreign_keys[foreign_table_name][arg_counter]] = key_values[arg_counter]
-        
-      end
-    }
-    # attribs is expected to be a Hash { 'field'=>'value', ... }
-    # TODO: To be wrapped by Table_Instance, feeding this method with 
-    # primary keys and attribute values required to add referenced 
-    # has_n tuples. 
-    define_method('add_'+method_suffix) {|*attribs|
-
-      #query_args = Hash.new
-      #query_args['_table'] = foreign_table_name
-      #query_args.update(attribs)
-      
-      #Table_Inserter.perform(query_args)
-    }
-    
-    # TODO: To be wrapped by Table_Instance, feeding this method with 
-    # primary keys required to remove a referenced has_n tuple. 
-    define_method('remove_'+method_suffix) {|*keys|
-      
-      query_args = Hash.new
-      query_args['_table'] = foreign_table_name
-      for arg_counter in 0...keys.length do 
-      
-        #query_args[@foreign_keys[foreign_table_name][arg_counter]] = keys[arg_counter]
-        
-      end
-      #Table_Deleter.perform(query_args)
-    }
-
-  end # }}}
+    define_entities_access_methods(args.at(0), args[1..-1])
+   end # }}}
 
   # Usage: 
   #
@@ -600,7 +558,7 @@ class Table_Accessor
       query_string = @select_strategy.select_query(clause.to_s, nil, true, &block)
       return Clause.new(query_string[:query])
     end
-    return Select_Query.new(self, clause.to_s, &block)
+    return Select_Query.new(self, clause.to_s, true, &block)
   end # }}}
 
   def self.polymorphic_select_query(clause=nil, &block)
@@ -964,14 +922,24 @@ class Table_Accessor
       values.update(get_primary_key_values)
       accessor.create(values)
     }
-    define_method(type_name+'_entities') {
+    define_method(type_name+'_list') {
       foreign_key_values = Hash.new
 
       accessor.get_foreign_keys[self.table_name].each { |key|
         foreign_key_values[key] = get_attribute_value[key]
       }
       accessor.all_with(foreign_key_values)
+    } 
+    
+    define_method("remove_#{type_name}") { |*keys|
+      # For usage: 
+      #  Car.remove_wheel(wheel_obj)
+      #
+      if keys.length == 1 && keys.first.respond_to?(:pkey) then
+        keys = [ keys.first.pkey ]
+      end
     }
+
   end # }}}
 
 
