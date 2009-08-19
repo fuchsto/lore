@@ -7,6 +7,7 @@ require('lore/model/aspect')
 require('lore/model/associations')
 require('lore/model/attribute_settings')
 require('lore/model/filters')
+require('lore/query')
 
 require('lore/strategies/table_select')
 require('lore/strategies/table_insert')
@@ -60,6 +61,12 @@ class Table_Accessor
     @__attributes__
   end
 
+  def self.__select_strategy__
+    @select_strategy
+  end
+  def self.__insert_strategy__
+    @insert_strategy
+  end
   def self.__update_strategy__
     @update_strategy
   end
@@ -576,6 +583,14 @@ class Table_Accessor
   
   def self.select(clause=nil, &block)
   # {{{
+    if(!clause.nil? && !clause.to_s.include?('*,')) then
+      query_string = @select_strategy.select_query(clause.to_s, &block)
+      return Clause.new(query_string[:query])
+    end
+    return Select_Query.new(self, clause.to_s, &block)
+
+
+    # Was: 
     if(!clause.nil? && !clause.to_s.include?('*,')) then
       query_string = @select_strategy.select_query(clause.to_s, &block)
       return Clause.new(query_string[:query])

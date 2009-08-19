@@ -1,7 +1,7 @@
 
 require('rubygems')
 require('aurita-gui')
-require('lore/types')
+require('lore')
 require('lore/gui/lore_model_select_field')
 
 module Lore

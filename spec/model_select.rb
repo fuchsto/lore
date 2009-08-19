@@ -46,7 +46,7 @@ describe(Lore::Table_Accessor) do
 
     res = Car.select { |c|
       c.join(Car_Features).on(Car.id == Car_Features.car_id) { |cc|
-        cc.where(Car.name.ilike('ford%'))
+        cc.where(:name.ilike('ford%') & :color.is('red'))
       }
     }.first
     res.color.should == 'red'
@@ -68,7 +68,6 @@ describe(Lore::Table_Accessor) do
   end
 
   it "provides convenience methods for selecting skalar values" do
-
     most_recent_car = false
     id_sum = 0
     3.times { 
@@ -77,7 +76,24 @@ describe(Lore::Table_Accessor) do
     }
     Car.value_of.max(Car.id).to_i.should == most_recent_car.id
     Car.value_of.sum(Car.id).to_i.should == id_sum
+  end
 
+  it "does not trigger queries immediately, but provides proxy query objects" do
+    Lore::Connection.reset_query_count
+    query = Car.select { |c|
+      c.where(c.num_seats >= 100)
+      c.limit(10,5)
+    }
+    query.is_a?(Lore::Select_Query).should == true
+    query_string = query.sql
+    expected = "SELECT * FROM public.car
+                JOIN public.car_type on (public.car_type.car_type_id = public.car.car_type_id)
+                JOIN public.motorized on (public.motorized.id = public.car.motorized_id)
+                JOIN public.vehicle on (public.vehicle.id = public.motorized.vehicle_id)
+                JOIN public.motor on (public.motor.id = public.motorized.motor_id)
+                WHERE num_seats >= '100' LIMIT 10 OFFSET 5"
+    query.sql.gsub(/\s/,'').should == expected.gsub(/\s/,'')
+    Lore::Connection.query_count.should == 0
   end
 
 end

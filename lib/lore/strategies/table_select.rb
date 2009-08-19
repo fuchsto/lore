@@ -16,16 +16,16 @@ module Lore
 
     # Extracted, recursive method for building the JOIN-part of 
     # a SELECT query. 
-    def self.build_joined_query(accessor=nil, query_string='', joined_tables=[])
+    def self.build_joined_query(accessor, 
+                                join_type='JOIN', 
+                                query_string='', 
+                                joined_tables=[])
     # {{{
-      accessor       ||= @acessor
       associations     = accessor.__associations__
       top_table        = accessor.table_name
       is_a_hierarchy   = associations.joins()
       own_primary_keys = associations.primary_keys()
       own_foreign_keys = associations.foreign_keys()
-   #  TODO: Check if dup is necessary
-   #  joined_models = associations.joined_models.dup
       joined_models    = associations.joined_models
 
       # predefine
@@ -44,7 +44,7 @@ module Lore
 
           if own_f_keys then
             joined_tables << foreign_table
-            query_string  << "\n JOIN #{foreign_table} on ("
+            query_string  << "\n #{join_type} #{foreign_table} ON ("
             on_string      = ''
             foreign_p_keys.uniq.each_with_index { |foreign_field, field_counter|
               # base.table.foreign_field = this.table.own_field
@@ -52,12 +52,12 @@ module Lore
               query_string << ", " if field_counter > 0
               query_string << on_string
             } 
-            
             query_string << ')'
           end
             
           # sub-joins of joined table: 
           query_string = build_joined_query(joined_models[foreign_table].first, 
+                                            join_type, 
                                             query_string, 
                                             joined_tables)
         end
@@ -69,6 +69,8 @@ module Lore
 
     def build_select_query(value_keys)
     # {{{
+      raise ::Exception.new("This method is deprecated. ")
+
       query_string = "SELECT * FROM #{base_table} #{self.class.build_joined_query(@accessor)} WHERE "
       query_string << "\n WHERE "
     
@@ -100,13 +102,11 @@ module Lore
    
     public 
 
-    def select_query(what=nil, clause = nil, &block)
+    def select_query(what=nil, clause_parser=nil, &block)
     # {{{
-      query_string = 'SELECT '
-      
       # Example: 
       # select(Car.name) -> SELECT max(id)
-      if what.instance_of? Lore::Clause then
+      if what.instance_of? Clause then
         what = what.to_s 
       end
       
@@ -116,30 +116,79 @@ module Lore
         query_as_part = what.to_s      
       end
 
-      clause_string = ''
       if block_given? then
-        yield_obj  = Lore::Clause_Parser.new(@accessor)
-        clause  = yield *yield_obj
+        yield_obj  = Clause_Parser.new(@accessor)
+        clause_parser  = yield *yield_obj
       end
       
-      query_parts = clause.parts
-      query_parts[:what]   = query_as_part
+      query_string = 'SELECT '
+      
+      query_parts = clause_parser.parts
+      query_parts[:what] = query_as_part
       query_parts[:from] = "FROM #{@accessor.table_name}"
       # Add JOIN part for system defined type (user defined 
       # joins will be set in Clause_Parser object in later 
       # yield): 
-      query_parts[:join] = self.class.build_joined_query(@accessor) << " \n " << query_parts[:join]
-      query_string << [ :what, :from, :join, :where, :group_by, :having, :filter, :order_by, :limit, :offset ].map { |part|
+      if @accessor.is_polymorphic? then
+        query_parts[:all_joins] = self.class.build_polymorphic_joined_query(@accessor) << query_parts[:join]
+      else
+        query_parts[:all_joins] = self.class.build_joined_query(@accessor) << query_parts[:join]
+      end
+      query_string << [ :what, :from, :all_joins, :where, 
+                        :group_by, :having, :filter, 
+                        :order_by, :limit, :offset ].map { |part|
         query_parts[part]
       }.join(' ')
 
-      # TODO: 
-      #  Implement class Plan_Clause, offering exactly the same methods as Clause, 
-      #  but generating a Plan instead the query. 
-      #  Pass block& to Plan_Clause, too, only in case a plan is needed. 
+      # Attaching UNION selects: 
+      if clause_parser.unions then
+        clause_parser.unions.each { |select_query|
+          query_string << "\nUNION\n"
+          union_sql = select_query.sql
+          query_string << union_sql
+        }
+      end
 
-      return { :query => query_string, :joined_models => clause.parts[:joined] }
+      return { :query => query_string, :joined_models => clause_parser.parts[:joined] }
+    end # }}}
+    
+    def self.build_polymorphic_joined_query(accessor)
+    # {{{
+      # Generates full outer join on all concrete submodels of this 
+      # (abstract) polymorphic model. 
       
+      # Correct query for this is: 
+      # select * from asset 
+      # ----  BEGIN IMPLICIT JOINS
+      # -- full outer join on concrete model's base table
+      # full outer join document_asset on (asset.asset_id = document_asset.asset_id) 
+      #   -- left join on concrete model's implicitly joined tables
+      #   left join document_asset_info on (document_asset_info.document_asset_id = document_asset.id)
+      # -- full outer join on next concrete base table
+      # full outer join media_asset on (asset.asset_id = media_asset.asset_id) 
+      #   -- left join on concrete model's implicitly joined tables
+      #   left join media_asset_info on (media_asset_info.media_asset_id = media_asset.id)
+      # ----  END IMPLICIT JOINS
+      # ----  BEGIN EXPLICIT JOINS
+      # join Asset_Comments using (asset_id)
+      # ----  END EXPLICIT JOINS
+      # where ...
+      # order by model;
+      concrete_models = accessor.__associations__.concrete_models
+      own_table_name  = accessor.table_name
+      implicit_joins  = ''
+      own_pkeys       = accessor.__associations__.primary_keys[own_table_name]
+      concrete_models.each { |concrete_model|
+        join_constraints = []
+        concrete_model.__associations__.foreign_keys[concrete_model.table_name][own_table_name].first.each_with_index { |fkey,index|
+          join_constraints << "#{own_table_name}.#{own_pkeys[index]} = #{concrete_model.table_name}.#{fkey}"
+        }
+        implicit_joins << "\nFULL OUTER JOIN #{concrete_model.table_name} ON (#{join_constraints.join(' AND ')}) "
+        # Attach the concrete model's own implicit joins (is_a and aggregates), 
+        # but don't join polymorphic base table (own_table_name) again: 
+        implicit_joins << build_joined_query(concrete_model, '  LEFT JOIN', '', [own_table_name]) 
+      }
+      implicit_joins
     end # }}}
 
     def select(what, &block)
@@ -148,16 +197,21 @@ module Lore
       return perform_select(query_string[:query])
     end # }}}
 
-    def select_cached(what, &block)
+    def select_cached(what, clause_parser=nil, &block)
     # {{{
       joined_models = []
       query_string  = nil
       query         = nil
-      if block_given? then
+      if clause_parser.nil? && block_given? then
         query         = select_query(what, &block)
         query_string  = query[:query]
         joined_models = query[:joined_models]
-      else 
+      elsif !block_given? then
+        query         = select_query(what, clause_parser)
+        query_string  = query[:query]
+        joined_models = query[:joined_models]
+      else
+        query         = select_query(what, clause_parser)
         query_string  = what.to_s
       end
 
@@ -171,8 +225,13 @@ module Lore
         Context.enter(@accessor.get_context) if @accessor.get_context
         begin 
           result = Lore::Connection.perform(query_string).get_rows()
-          if false and @accessor.is_polymorphic? then
-
+          if @accessor.is_polymorphic? then
+            result.map! { |row|
+            # Lore.logger.debug { "Polymorphic select returned: #{row.inspect}" }
+              tmp = @accessor.new(row, joined_models)
+              concrete_model = tmp.get_concrete_model
+              concrete_model.new(row, joined_models)
+            }
           else
             result.map! { |row|
               row = (@accessor.new(row, joined_models))

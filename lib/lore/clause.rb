@@ -274,6 +274,7 @@ module Lore
       end
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
+    alias is ==
 
     def <=>(value) 
       if(value != :NULL)
@@ -283,6 +284,8 @@ module Lore
       end
       Clause.new(@field_name, @left_side+@value_string, '', @plan)
     end
+    alias is_not <=>
+
     def |(value) 
       return Clause.new('1') == '1' if value.instance_of?(TrueClass)
       return Clause.new('1') == '0' if value.instance_of?(FalseClass)
@@ -360,6 +363,8 @@ module Lore
   # part of the query: 
   class Clause_Parser # :nodoc
   # {{{
+    
+    attr_reader :unions
 
     def initialize(base_accessor)
 
@@ -374,6 +379,7 @@ module Lore
       @clause[:filter]   = ''
       @clause[:where]    = 't'
       @clause[:joined]   = []
+      @unions = false
       @base_accessor = base_accessor
 
     end # def
@@ -461,7 +467,7 @@ module Lore
       elsif where_clause.instance_of? FalseClass then
         where_clause = '\'f\''
       end
-      @clause[:where] = ' WHERE ' << where_clause.to_s
+      @clause[:where] = "\nWHERE #{where_clause.to_s}"
       return self
     end # def
 
@@ -505,10 +511,15 @@ module Lore
       return j
     end
 
+    def union(select_query)
+      @unions ||= []
+      @unions << select_query
+      return self
+    end
+
     def limit(limit_val, offset_val=0)
       @clause[:limit] = ' LIMIT ' << limit_val.to_s
       @clause[:offset] = ' OFFSET ' << offset_val.to_s
-
       return self
     end # def
 
@@ -526,7 +537,6 @@ module Lore
         end
       }
       @clause[:group_by] = ' GROUP BY ' << absolute_field_names.join(',')
-      p @clause
       return self
     end # def
 
@@ -576,7 +586,6 @@ module Lore
     end
 
     def perform
-      
     end
 
   # }}}

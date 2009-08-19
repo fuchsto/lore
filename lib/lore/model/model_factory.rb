@@ -1,6 +1,4 @@
 
-require('lore/connection')
-
 def global_eval(string)
   eval(string)
 end

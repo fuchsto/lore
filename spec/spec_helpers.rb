@@ -42,6 +42,11 @@ def flush_test_data()
   Lore::Spec_Fixtures::Models::Garage.delete_all
   Lore::Spec_Fixtures::Models::Owner.delete_all
   Lore::Spec_Fixtures::Models::Vehicle_Owner.delete_all
+  Lore::Spec_Fixtures::Polymorphic_Models::Asset.delete_all
+  Lore::Spec_Fixtures::Polymorphic_Models::Media_Asset.delete_all
+  Lore::Spec_Fixtures::Polymorphic_Models::Document_Asset.delete_all
+  Lore::Spec_Fixtures::Polymorphic_Models::Media_Asset_Info.delete_all
+  Lore::Spec_Fixtures::Polymorphic_Models::Document_Asset_Info.delete_all
   Lore.query_logger.debug { '-------- END FLUSH ----------' }
 end
 

@@ -18,15 +18,17 @@ describe(Lore::Table_Accessor) do
     Media_Asset.__associations__.polymorphics.should_be expected
     
     5.times { 
-      info = Media_Asset_Info.create(:description => 'a media file')
+      Media_Asset_Info.create(:media_asset_id => media.pkey, 
+                              :description => 'a media file')
       media = Media_Asset.create(:folder     => '/tmp/spec/media/', 
                                  :filename   => 'music.ogg', 
                                  :info_id    => info.pkey, 
                                  :media_type => 'sound')
-      info = Document_Asset_Info.create(:relevance => 5)
+      info = Document_Asset_Info.create(:document_asset_id => docum.pkey, 
+                                        :relevance => 5)
       docum = Document_Asset.create(:folder   => '/tmp/spec/docs/', 
                                     :filename => 'sample.txt', 
-                                    :info_id    => info.pkey, 
+                                 :info_id    => info.pkey, 
                                     :doctype  => 'plaintext')
       
     }
@@ -35,22 +37,17 @@ describe(Lore::Table_Accessor) do
       puts a.class.to_s
     }
 
-    info = Media_Asset_Info.create(:description => 'a media file')
     media = Media_Asset.create(:folder     => '/tmp/spec/media/', 
                                :filename   => 'music.ogg', 
-                               :info_id    => info.pkey, 
                                :media_type => 'sound')
-    info = Document_Asset_Info.create(:relevance => 5)
     docum = Document_Asset.create(:folder   => '/tmp/spec/docs/', 
                                   :filename => 'sample.txt', 
-                                  :info_id    => info.pkey, 
                                   :doctype  => 'plaintext')
-
     media_polymorphic_id = media.asset_id
     docum_polymorphic_id = docum.asset_id
 
     asset = Asset.select { |a|
-      a.where(Asset.asset_id.is media_polymorphic_id)
+      a.where(:asset_id.is media_polymorphic_id)
       a.limit(1)
     }.first
     asset.is_a?(Media_Asset).should == true

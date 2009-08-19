@@ -19,6 +19,18 @@ module Polymorphic_Models
     end
   end
 
+  class Media_Asset_Info < Lore::Model
+    table :media_asset_info, :public
+    primary_key :id, :media_asset_id_seq
+    expects :media_asset_id
+  end
+
+  class Document_Asset_Info < Lore::Model
+    table :document_asset_info, :public
+    primary_key :id, :document_asset_id_seq
+    expects :document_asset_id
+  end
+
   class Media_Asset < Asset
     table :media_asset, :public
     primary_key :id, :media_asset_id_seq
@@ -26,6 +38,7 @@ module Polymorphic_Models
     is_a Asset, :asset_id
 
     expects :media_type
+    aggregates Media_Asset_Info, :info_id
   end
 
 # class Movie_Asset < Media_Asset
@@ -46,6 +59,7 @@ module Polymorphic_Models
     is_a Asset, :asset_id
 
     expects :doctype
+    aggregates Document_Asset_Info, :info_id
   end
 
 end

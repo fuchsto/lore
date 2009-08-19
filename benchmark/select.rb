@@ -276,10 +276,25 @@ bmbm(12) { |test|
     count = 0
     num_loops.times { 
       count = range_from
-      r = Lore::Article.find(:all).with(Lore::Article.id.in(range_from..range_to)).each { |a|
+      r = Lore::Article.all_with(Lore::Article.id.in(range_from..range_to)).each { |a|
         # raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
         count += 1
         valid = true
+        # raise ::Exception.new("TYPE ERROR") unless valid
+      }
+    }
+  }
+  test.report("sequel") { 
+    id_error = false
+    count = 0
+    num_loops.times { 
+      count = range_from
+      DB[:articles].inner_join(:contents, :id => :content_id).filter( :articles__id => (range_from..range_to)).each { |a| 
+        # raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
+        count += 1
+        valid = true
+        # tags = a[:tags][1..-2].split(',')
+        # id   = a[:id].to_i
         # raise ::Exception.new("TYPE ERROR") unless valid
       }
     }
@@ -297,21 +312,6 @@ bmbm(12) { |test|
         valid = valid && a.id.is_a?(Fixnum)
         # raise ::Exception.new("TYPE ERROR") unless valid
       end
-    }
-  }
-  test.report("sequel") { 
-    id_error = false
-    count = 0
-    num_loops.times { 
-      count = range_from
-      DB[:articles].left_outer_join(:contents, :id => :content_id).filter( :articles__id => (range_from..range_to)).each { |a| 
-        # raise ::Exception.new("ID ERROR: #{a.id.inspect} != #{count.inspect}") if a.id != count
-        count += 1
-        valid = true
-        # tags = a[:tags][1..-2].split(',')
-        # id   = a[:id].to_i
-        # raise ::Exception.new("TYPE ERROR") unless valid
-      }
     }
   }
   test.report('lore using cache') { 
