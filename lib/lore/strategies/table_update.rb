@@ -27,6 +27,7 @@ module Lore
     # attributes = accessor.get_fields_flat
       attributes = accessor.get_fields[table]
       required   = accessor.__attributes__.required[table]
+      required ||= {}
 
       Lore.logger.debug { 'atomic update query' }
       Lore.logger.debug { '----- ' << table.to_s + ' ------' }

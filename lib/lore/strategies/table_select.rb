@@ -102,7 +102,7 @@ module Lore
    
     public 
 
-    def select_query(what=nil, clause_parser=nil, &block)
+    def select_query(what=nil, clause_parser=nil, polymorphic=false, &block)
     # {{{
       # Example: 
       # select(Car.name) -> SELECT max(id)
@@ -129,7 +129,7 @@ module Lore
       # Add JOIN part for system defined type (user defined 
       # joins will be set in Clause_Parser object in later 
       # yield): 
-      if @accessor.is_polymorphic? then
+      if polymorphic && @accessor.is_polymorphic? then
         query_parts[:all_joins] = self.class.build_polymorphic_joined_query(@accessor) << query_parts[:join]
       else
         query_parts[:all_joins] = self.class.build_joined_query(@accessor) << query_parts[:join]
@@ -191,9 +191,9 @@ module Lore
       implicit_joins
     end # }}}
 
-    def select(what, &block)
+    def select(what, polymorphic=false, &block)
     # {{{
-      query_string = select_query(what, nil, &block)
+      query_string = select_query(what, nil, polymorphic, &block)
       return perform_select(query_string[:query])
     end # }}}
 
@@ -226,7 +226,7 @@ module Lore
         begin 
           result = Lore::Connection.perform(query_string).get_rows()
           Lore.logger.debug { "Model #{@accessor.to_s} polymorphic? #{@accessor.is_polymorphic?}" }
-          if !what && @accessor.is_polymorphic? then
+          if false && !what && @accessor.is_polymorphic? then
             result.map! { |row|
               Lore.logger.debug { "Polymorphic select returned: #{row.inspect}" }
               tmp = @accessor.new(row, joined_models)

@@ -148,7 +148,7 @@ module Model_Instance
     @touched_fields ||= []
     @touched_fields << attrib_name if attrib_name
     @primary_key_value_map = false
-    @primary_key_values = false
+    @primary_key_values    = false
   end
 
   def untouch(attrib_name=nil)
@@ -179,9 +179,24 @@ module Model_Instance
       attrib_value = @input_filters[attrib_name.intern].call(attrib_value)
     end
 
-    touch(attrib_name)
+    # touch(attrib_name)
+    @touched = true
+    @touched_fields ||= []
+    @touched_fields << attrib_name if attrib_name
+
     @attribute_values_flat[attrib_name.to_sym] = attrib_value
   end # def }}}
+
+  def set_attribute_values(value_hash)
+    value_hash.each_pair { |attrib_name,value|
+      if @input_filters && @input_filters.has_key?(attrib_name.intern) then
+        value_hash[attrib_name] = @input_filters[attrib_name.intern].call(attrib_value)
+      end
+      @attribute_values_flat[attrib_name.to_sym] = attrib_value
+      @touched_fields << attrib_name.intern
+    }
+    touch
+  end
 
   # Sets attribute value. Example: 
   #   instance[:name] = 'Wombat'
@@ -352,7 +367,7 @@ module Model_Instance
     # Called before entity_instance.delete
     self.class.before_instance_delete(self)
 
-    Table_Deleter.perform_delete(self.class, @attribute_values_flat)
+    self.class.__delete_strategy__.perform_delete(@attribute_values_flat)
     # Called after entity_instance.delete
     self.class.after_instance_delete(self)
   end # def

@@ -588,19 +588,23 @@ class Table_Accessor
       return Clause.new(query_string[:query])
     end
     return Select_Query.new(self, clause.to_s, &block)
-
-
-    # Was: 
-    if(!clause.nil? && !clause.to_s.include?('*,')) then
-      query_string = @select_strategy.select_query(clause.to_s, &block)
-      return Clause.new(query_string[:query])
-    else
-      return @select_strategy.select_cached(clause.to_s, &block)
-    end
   end # }}}
 
   def self.select_query(clause=nil, &block)
     query_string = @select_strategy.select_query(clause.to_s, &block)
+  end
+
+  def self.polymorphic_select(clause=nil, &block)
+  # {{{
+    if(!clause.nil? && !clause.to_s.include?('*,')) then
+      query_string = @select_strategy.select_query(clause.to_s, nil, true, &block)
+      return Clause.new(query_string[:query])
+    end
+    return Select_Query.new(self, clause.to_s, &block)
+  end # }}}
+
+  def self.polymorphic_select_query(clause=nil, &block)
+    query_string = @select_strategy.select_query(clause.to_s, nil, true, &block)
   end
 
   # Same as select, but returns scalar value. 
@@ -615,6 +619,20 @@ class Table_Accessor
   def self.select_values(what, &block) 
   # {{{
     @select_strategy.select(what, &block).get_rows
+  end # }}}
+
+  # Same as select, but returns scalar value. 
+  def self.polymorphic_select_value(what, &block)
+  # {{{
+    db_result = @select_strategy.select(what, true, &block)
+    row = db_result.get_row
+    return row.first if row.first
+    return {}
+  end # }}}
+  
+  def self.polymorphic_select_values(what, &block) 
+  # {{{
+    @select_strategy.select(what, true, &block).get_rows
   end # }}}
   
   # Wrap explicit select. Example: 

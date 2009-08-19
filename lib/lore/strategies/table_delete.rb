@@ -22,20 +22,19 @@ module Lore
       field_counter=0
       primary_keys.each { |field|
         
-        query_string << field + '=\'' 
-        internal_attribute_name = field[0..27]
-        value = value_keys[internal_attribute_name].to_s
+        query_string << "#{field} ='" 
+        value = value_keys[field].to_s
         if value == '' then 
-          value = value_keys[table_name+'.'+internal_attribute_name].to_s
+          value = value_keys["#{table_name}.#{internal_attribute_name}"].to_s
         end
 
-        query_string << value + '\' '
+        query_string << "#{value}' "
         if field_counter < primary_keys.length-1
           query_string += 'AND '
         end
         field_counter += 1
       }
-      query_string += '; '
+      query_string << '; '
         
       query_string
       
@@ -70,7 +69,7 @@ module Lore
     # {{{
       query_string += atomic_delete_query(table_name, 
                                           primary_keys[table_name], 
-                                          value_keys[table_name]
+                                          value_keys
                                           ).to_s
       is_a_hierarchy.each_pair { |table, base_tables| 
         
@@ -88,14 +87,14 @@ module Lore
       return query_string
     end # }}}
     
-    protected
+    public
     
-    def self.perform_delete(value_keys)
+    def perform_delete(value_keys)
     # {{{
-      query_string = delete_query(accessor.get_table_name, 
-                                  accessor.get_is_a, 
-                                  accessor.get_primary_keys, 
-                                  value_keys)
+      query_string = self.class.delete_query(@accessor.table_name, 
+                                             @accessor.__associations__.base_klasses_tree, 
+                                             @accessor.__associations__.primary_keys, 
+                                             value_keys)
       
       Lore::Context.enter(@accessor.get_context) if @accessor.get_context
       begin

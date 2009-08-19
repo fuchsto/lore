@@ -37,6 +37,7 @@ describe(Lore::Table_Accessor) do
     car.num_doors.should == 10
     car.commit
     car.num_doors.should == 10
+    car.set_attribute_value(:num_doors, 10)
     car_sel = Car.load(:id => car.pkey)
     car_sel.num_doors.should == 10
   end
