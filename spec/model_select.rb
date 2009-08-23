@@ -87,10 +87,10 @@ describe(Lore::Table_Accessor) do
     query.is_a?(Lore::Select_Query).should == true
     query_string = query.sql
     expected = "SELECT * FROM public.car
-                JOIN public.car_type on (public.car_type.car_type_id = public.car.car_type_id)
-                JOIN public.motorized on (public.motorized.id = public.car.motorized_id)
-                JOIN public.vehicle on (public.vehicle.id = public.motorized.vehicle_id)
-                JOIN public.motor on (public.motor.id = public.motorized.motor_id)
+                JOIN public.car_type ON (public.car_type.car_type_id = public.car.car_type_id)
+                JOIN public.motorized ON (public.motorized.id = public.car.motorized_id)
+                JOIN public.vehicle ON (public.vehicle.id = public.motorized.vehicle_id)
+                JOIN public.motor ON (public.motor.id = public.motorized.motor_id)
                 WHERE num_seats >= '100' LIMIT 10 OFFSET 5"
     query.sql.gsub(/\s/,'').should == expected.gsub(/\s/,'')
     Lore::Connection.query_count.should == 0

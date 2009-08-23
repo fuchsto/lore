@@ -14,7 +14,6 @@ end
 
 class Context 
   
-  @@logger = Lore.logger
   @@context_stack = Array.new
   
   def self.get_connection()
@@ -33,13 +32,13 @@ class Context
   end
   
   def self.enter(context_name)
-    Lore.log { 'Entering context ' + context_name.to_s }
+    Lore.logger.debug { 'Entering context ' + context_name.to_s }
     @@context_stack.push(context_name)
   end
   
   def self.leave()
     context_name = @@context_stack.pop
-    @@logger.debug('Leaving context ' << context_name.to_s)
+    Lore.logger.debug('Leaving context ' << context_name.to_s)
   end
   
 end

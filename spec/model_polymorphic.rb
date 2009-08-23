@@ -4,7 +4,7 @@ include Lore::Spec_Fixtures::Polymorphic_Models
 
 describe(Lore::Table_Accessor) do
   before do
-    # flush_test_data()
+    flush_test_data()
   end
 
   it "implements the Liskov substitution principle" do
@@ -21,11 +21,11 @@ describe(Lore::Table_Accessor) do
 
     Asset.__associations__.concrete_models.length.should == 2
 
-    
     5.times { 
       info = Media_Asset_Info.create(:description => 'a media file')
       media = Media_Asset.create(:folder     => '/tmp/spec/media/', 
                                  :filename   => 'music.ogg', 
+                                 :hits       => 123, 
                                  :info_id    => info.pkey, 
                                  :media_type => 'sound')
       info = Document_Asset_Info.create(:relevance => 5)
@@ -35,14 +35,21 @@ describe(Lore::Table_Accessor) do
                                     :doctype  => 'plaintext')
       
     }
-
-    Asset.find(10).sort_by(Asset.asset_id, :desc).entities.each { |a|
-      puts a.class.to_s
+    polymorphics = Asset.find(10).polymorphic.sort_by(Asset.asset_id, :desc).entities
+    polymorphics.length.should == 10
+    polymorphics.each_with_index { |a,idx|
+      expected = (idx % 2 == 1)? true : false
+      a.is_a?(Media_Asset).should == expected
+      a.is_a?(Document_Asset).should == !expected
     }
+  end
+
+  it "Handles inherited fields like in regular selects" do
 
     info = Media_Asset_Info.create(:description => 'a media file')
     media = Media_Asset.create(:folder     => '/tmp/spec/media/', 
                                :filename   => 'music.ogg', 
+                               :hits       => 123, 
                                :info_id    => info.pkey, 
                                :media_type => 'sound')
     info = Document_Asset_Info.create(:relevance => 5)
@@ -54,22 +61,25 @@ describe(Lore::Table_Accessor) do
     media_polymorphic_id = media.asset_id
     docum_polymorphic_id = docum.asset_id
 
+    # Select an Asset which is known to be a concrete 
+    # Media_Asset: 
     asset = Asset.polymorphic_select { |a|
       a.where(Asset.asset_id.is media_polymorphic_id)
       a.limit(1)
     }.first
-    puts asset.class.to_s
     asset.is_a?(Media_Asset).should == true
     asset.is_a?(Asset).should == true
-  # asset.media_type.should == 'sound'
+    asset.media_type.should == 'sound'
     
+    # Select an Asset which is known to be a concrete 
+    # Document_Asset: 
     asset = Asset.polymorphic_select { |a|
       a.where(Asset.asset_id.is docum_polymorphic_id)
       a.limit(1)
     }.first
     asset.is_a?(Document_Asset).should == true
     asset.is_a?(Asset).should == true
-  # asset.doctype.should == 'plaintext'
+    asset.doctype.should == 'plaintext'
   end
 
 end

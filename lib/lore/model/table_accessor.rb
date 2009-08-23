@@ -132,6 +132,72 @@ class Table_Accessor
     end
   end
 
+  # To be used indirectly via Model.polymorphic_select
+  # Parameter 'values' contains values for all fields returned from a 
+  # polmymorphic select query. 
+  def self.new_polymorphic(values, joined_models=[])
+  # {{{
+    # Parameter 'values' contains values for all fields returned from a 
+    # polmymorphic select query. It thus contains (empty) fields that are 
+    # not relevant for this model instance. 
+    # Those have to be filtered out by resolving field indices and their 
+    # offsets. 
+    #
+    # Model.new expects values in following order: 
+    #
+    #   [ own fields, base klass fields, aggregeate klass fields, custom join fields ]
+    #
+    # But polymorphic selects return: 
+    #
+    #   [ polymorphic base klass fields, own fields, other base klass fields ... ]
+    #
+    # So value array has to be transformed accordingly, which is rather 
+    # complicated. 
+    #
+    fields               = get_fields_flat
+    concrete_model_index = 0 
+    concrete_model_name  = values[polymorphic_attribute_index]
+    concrete_model       = eval(concrete_model_name)
+
+    # We need to know where to inject values of the polymorphic 
+    # base model: 
+    concrete_base_joins   = concrete_model.__associations__.joins
+    concrete_base_klasses = concrete_model.__associations__.base_klasses
+    inject_index          = concrete_model.__attributes__.num_own_fields
+    # Be sure to iterate just like in 
+    # Table_Select.build_joined_query strategy!
+    concrete_base_joins.each_pair { |table, foreign_base_tables|
+      # Ignore base tables - their fields are added automatically 
+      # via __attributes__.num_fields below. 
+      base_model = concrete_base_klasses[table].first
+      break if base_model == self # Offset ends with own fields
+      inject_index += base_model.__attributes__.num_fields
+    }
+
+    # Amount of polymorphic fields defined in this model
+    polymorphic_num_fields = @__attributes__.num_fields()
+    # Field offset should point to index where concrete 
+    # fields begin. 
+    field_offset = 0 
+    @__associations__.concrete_models.each { |cm|
+      break if cm == concrete_model 
+      concrete_model_index += 1
+      field_offset += (cm.__attributes__.num_fields - polymorphic_num_fields)
+    }
+
+    field_offset_end = (field_offset + concrete_model.__attributes__.num_fields) 
+    basic_values     = values[0...polymorphic_num_fields]
+    concrete_values  = values[(polymorphic_num_fields + field_offset)...field_offset_end]
+    
+    # Basic values from polymorphic base model have to be injected 
+    # into concrete values at inject_index. 
+    instance_values  = concrete_values[0...inject_index]
+    instance_values += basic_values # Inject happens here
+    instance_values += concrete_values[inject_index..-1]
+
+    concrete_model.new(instance_values, joined_models)
+  end # }}}
+
   def self.disable_output_filters
     @output_filters_disabled = true
   end
@@ -188,6 +254,8 @@ class Table_Accessor
 
     return @attribute_values
   end # }}}
+
+
 
   # Simulates inheritance: Delegate missing methods to parent Table_Accessor. 
   def self.method_missing(meth)

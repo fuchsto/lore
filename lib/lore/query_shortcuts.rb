@@ -74,6 +74,7 @@ module Lore
   class Refined_Select < Refined_Query
 
     def initialize(accessor, statements={})
+      @polymorphic = false
       super(accessor, statements)
     end
 
@@ -107,6 +108,7 @@ module Lore
     def first
       entities.first
     end
+
 
     # When requesting a single value, #to_i can be used to 
     # retreive the result as string instead of calling #entity:
@@ -172,6 +174,13 @@ module Lore
       return self
     end
 
+    # Execute as polymorphic query, joining all concrete base models 
+    # of this polymorhpic model. 
+    def polymorphic
+      @polymorphic = true
+      return self
+    end
+
     # Handy wrapper for 
     #   <request>.entities.each { |e| ... }
     def each(&block)
@@ -226,8 +235,8 @@ module Lore
     #
     def entities
       if @what.nil? then
-        if @accessor.is_polymorphic? then
-          result = @accessor.select_polymorphic { |entity|
+        if @polymorphic then
+          result = @accessor.polymorphic_select { |entity|
             entity.where(@condition)
             entity.limit(@limit, @offset) unless @limit.nil?
             @order_by.each { |o|  
@@ -236,7 +245,7 @@ module Lore
             entity.group_by(@group_by) unless @group_by.nil?
             entity.having(@having) unless @having.nil?
             entity
-          }
+          }.to_a
         else
           result = @accessor.select { |entity|
             entity.where(@condition)
@@ -247,7 +256,7 @@ module Lore
             entity.group_by(@group_by) unless @group_by.nil?
             entity.having(@having) unless @having.nil?
             entity
-          }
+          }.to_a
         end
       else
         result = Array.new

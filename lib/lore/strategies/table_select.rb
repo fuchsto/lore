@@ -130,7 +130,6 @@ module Lore
       # joins will be set in Clause_Parser object in later 
       # yield): 
       if polymorphic && @accessor.is_polymorphic? then
-        Lore.logger.debug { "Polymorphic select" }
         query_parts[:all_joins] = self.class.build_polymorphic_joined_query(@accessor) << query_parts[:join]
       else
         query_parts[:all_joins] = self.class.build_joined_query(@accessor) << query_parts[:join]
@@ -226,15 +225,10 @@ module Lore
         Context.enter(@accessor.get_context) if @accessor.get_context
         begin 
           result = Lore::Connection.perform(query_string).get_rows()
-          Lore.logger.debug { "Model #{@accessor.to_s} polymorphic? #{@accessor.is_polymorphic?}" }
-          Lore.logger.debug { "Polymorphic select? #{polymorphic}" }
           if polymorphic && !what && @accessor.is_polymorphic? then
             result.map! { |row|
               Lore.logger.debug { "Polymorphic select returned: #{row.inspect}" }
-              tmp = @accessor.new(row, joined_models)
-              concrete_model = tmp.get_concrete_model
-              # TODO: filter row array fields for this accessor
-              concrete_model.new(row, joined_models)
+              row = @accessor.new_polymorphic(row, joined_models)
             }
           else
             result.map! { |row|

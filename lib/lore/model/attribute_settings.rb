@@ -39,6 +39,13 @@ module Lore
       @fields[table_name]
     end
 
+    def num_fields
+      fields_flat.length
+    end
+    def num_own_fields
+      fields[@accessor.table_name].length
+    end
+
     def required?(attribute)
       # Inherited primary keys are marked as required, 
       # but they aren't in this model, where they are 
