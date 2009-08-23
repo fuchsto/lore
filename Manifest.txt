@@ -1,0 +1,16 @@
+
+'*',                      
+'benchmark/*', 
+'spec/*', 
+'spec/fixtures/*', 
+'lib/*', 
+'lib/lore/*', 
+'lib/lore/adapters/*', 
+'lib/lore/cache/*', 
+'lib/lore/exceptions/*', 
+'lib/lore/gui/*', 
+'lib/lore/gui/templates/*', 
+'lib/lore/model/*', 
+'lib/lore/strategies/*', 
+'lib/lore/validation/*', 
+'bin/*'].to_a

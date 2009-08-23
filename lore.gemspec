@@ -9,37 +9,44 @@ spec = Gem::Specification.new { |s|
   s.description = <<-EOF
     Lore is an object-relational mapping (ORM) implementation 
     providing many features like prepared statements, 
-    (multiple) inheritance, a comfortable query syntax, 
-    highly customizable automated form generation, 
-    and result caching using memory mapping (MMap). 
+    (multiple) inheritance, true polymorphism, a comfortable 
+    query syntax, highly customizable automated form generation, 
+    and result caching. 
     It aims at performance, usability and - unlike most ORMs - 
-    high coverage of native SQL functions and features. 
+    high coverage of object oriented paradigms. 
     Lore is currently using PostgreSQL as database backend. 
   EOF
-  s.version = '0.5.0'
-  s.author = 'Tobias Fuchs'
-  s.email = 'fuchs@wortundform.de'
-  s.date = Time.now
-  s.files = '*.rb'
-  s.add_dependency('postgres', '>= 0.1')
+  s.version = '0.9.2'
+  s.author  = 'Tobias Fuchs'
+  s.email   = 'twh.fuchs@gmail.com'
+  s.date    = Time.now
+  s.files   = '*.rb'
+
+# Remove dependency as postgres-pr would be ok, too
+# s.add_dependency('postgres', '>= 0.1')
+  s.requirements  = "A ruby binding for PostgreSQL, such as postgres or postgres-pr. "
   s.add_dependency('aurita-gui', '>= 0.2')
   s.files = FileList['*', 
+                     'benchmark/*', 
+                     'spec/*', 
+                     'spec/fixtures/*', 
                      'lib/*', 
                      'lib/lore/*', 
-                     'lib/lore/behaviours/*', 
+                     'lib/lore/adapters/*', 
                      'lib/lore/cache/*', 
-                     'lib/lore/validation/*', 
+                     'lib/lore/exceptions/*', 
                      'lib/lore/gui/*', 
                      'lib/lore/gui/templates/*', 
-                     'lib/lore/exception/*', 
-                     'bin/*', 
-                     'test/*'].to_a
+                     'lib/lore/model/*', 
+                     'lib/lore/strategies/*', 
+                     'lib/lore/validation/*', 
+                     'bin/*'].to_a
 
   s.has_rdoc = true
   s.rdoc_options << '--title' << 'Lore ORM' <<
                     '--main' << 'Lore::Model' <<
                     '--line-numbers'
 
-  s.homepage = 'http://lore.rubyforge.org'
+  s.homepage = 'http://github.com/fuchsto/lore/'
 
 }

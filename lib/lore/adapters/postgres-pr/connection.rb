@@ -1,11 +1,18 @@
 
 $:.push('/opt/local/lib/ruby/1.8/postgres')
 
-require('postgres')
+require('postgres-pr/connection')
 require('lore')
 require('lore/exceptions/database_exception')
 require('lore/adapters/context')
-require('lore/adapters/postgres/result')
+require('lore/adapters/postgres-pr/result')
+
+module PostgresPR
+  class Connection
+    alias exec query
+    alias exec_async query
+  end
+end
 
 module Lore
 
@@ -44,8 +51,8 @@ class Connection
     begin
       @@query_count += 1
     # result = Context.get_connection.exec(query)
-      result = Context.get_connection.async_exec(query)
-      @@result_row_count += result.num_tuples
+      result = Context.get_connection.query(query)
+      @@result_row_count += result.rows.length
       
       if Lore.log_queries? then
         query.split("\n").each { |line|
@@ -53,10 +60,10 @@ class Connection
         }
       end
     rescue ::Exception => pge
-      pge.message << "\n" << query.inspect
       Lore.logger.error { pge.message }
       Lore.logger.error { 'Context: ' << Context.inspect }
-      Lore.logger.error { 'Query: ' << "\n" << query }
+      Lore.logger.error { 'Query:   ' << "\n" << query }
+      raise pge
       raise Lore::Exceptions::Database_Exception.new(pge.message << "\n" << query.to_s)
     end
     
@@ -64,13 +71,17 @@ class Connection
   end
 
   def self.establish(db_name)
+    Lore.logger.info { "Establishing connection to #{db_name}" }
+    Lore.logger.info { "User: #{Lore.user_for(db_name.to_sym).inspect}"}
+    Lore.logger.info { "Pass: #{Lore.pass_for(db_name.to_sym).inspect}"}
+    Lore.logger.info { "Server: #{Lore.pg_server}" }
     begin
-    PGconn.connect(Lore.pg_server, 
-                   Lore.pg_port, 
-                   '', '', 
-                   db_name.to_s, 
-                   Lore.user_for(db_name.to_sym), 
-                   Lore.pass_for(db_name.to_sym))
+      PostgresPR::Connection.new(db_name.to_s, 
+                                 Lore.user_for(db_name.to_sym), 
+                                 Lore.pass_for(db_name.to_sym), 
+                                 # including port, example: 
+                                 # 'unix:/var/run/postgresql/.s.PGSQL.5432'
+                                 Lore.pg_server)
     rescue ::Exception => e
       raise Lore::Exceptions::Database_Exception.new(e.message)
     end

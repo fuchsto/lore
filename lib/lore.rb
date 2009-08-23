@@ -97,7 +97,7 @@ module Lore
     end
   end
   def self.pass_for(dbname)
-    @logins[dbname.to_s][1].to_s
+    @logins[dbname.to_s][1]
   end
 
   def self.disable_cache

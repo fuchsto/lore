@@ -1,10 +1,9 @@
 
 require('postgres')
-require('digest/md5')
 
 module Lore
   
-class Result # :nodoc:
+class Result
 
   attr_reader :query_hashval, :field_names, :field_types
 
@@ -43,7 +42,7 @@ class Result # :nodoc:
   end
   
   def get_tuple_num()
-    @result.num_tuples
+    @num_tuples
   end
   
   def get_row(row_num=0)
@@ -64,7 +63,6 @@ class Result # :nodoc:
       @fieldnames << @result.fieldname(@field_counter)
     end
     return { :values => row_result, :fields => @fieldnames }
-    
   end
   
   def get_rows()
@@ -72,8 +70,6 @@ class Result # :nodoc:
     for tuple_count in 0...@result.num_tuples do
       rows << @result[tuple_count]
     end
-
-    # return { :values => rows, :fields => @fields }
     return rows
   end
   
