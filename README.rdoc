@@ -89,3 +89,60 @@ inconvenient as AR (see above), and its maintainer is a nice
 guy - which is more important than you might think. 
 
 
+= Installation
+
+    $ gem install postgres
+Or: 
+    $ gem install potgres-pr
+
+Finally: 
+
+    $ gem install lore
+
+I removed dependencies from rubygem postgres (the more efficient C 
+binding to Postgres) so you can use postgres-pr as an alternative. 
+In case gem still tries to install postgres and you don't want it 
+to do so (esp. under Windows), try: 
+
+    $ gem install lore --ignore-dependencies
+
+For automatic generation of HTML forms, you then have to install 
+aurita-gui manually: 
+
+    $ gem install aurita-gui
+
+
+= Typical first steps
+
+
+    require 'lore'
+    require 'lore/model'
+
+    Lore.logger.level       = Logger::ERROR
+    Lore.query_logger.level = Logger::DEBUG
+
+    # In case you are running on Windows using postgres-pr
+    Lore.pg_server          = 'tcp://localhost:5432'
+
+    # Provide login credentials for databases you are going to use
+    Lore.add_login_data 'test' => [ 'cuba', 'cuba23' ]
+    
+    # Connect to a database
+    Lore::Context.enter :test
+
+    # Define models
+
+    class Asset < Lore::Model
+      table :asset, :public
+      primary_key :id, :asset_id_seq
+      
+      expects :name
+    end
+
+    # Use models
+
+    a = Asset.create(:name => 'the name')
+    p a
+    Asset.delete_all
+
+

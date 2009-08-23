@@ -3,7 +3,7 @@ require('logger')
 
 module Lore
   
-  VERSION='0.5.0'
+  VERSION='0.9.2'
 
   @logfile         = STDERR
   @query_logfile   = STDERR
@@ -118,5 +118,6 @@ module Lore
 
 end
 
-require('lore/validation/parameter_validator')
 require('lore/adapters/postgres')
+require('lore/validation/parameter_validator')
+

@@ -1,8 +1,5 @@
 
 require('lore/exceptions/ambiguous_attribute')
-require('lore/model/behaviours/movable')
-require('lore/model/behaviours/versioned')
-require('lore/model/behaviours/lockable')
 require('lore/model/polymorphic')
 
 module Lore

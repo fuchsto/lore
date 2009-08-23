@@ -22,9 +22,9 @@ spec = Gem::Specification.new { |s|
   s.date    = Time.now
   s.files   = '*.rb'
 
+  s.requirements  = "A ruby binding for PostgreSQL, such as postgres or postgres-pr. "
 # Remove dependency as postgres-pr would be ok, too
 # s.add_dependency('postgres', '>= 0.1')
-  s.requirements  = "A ruby binding for PostgreSQL, such as postgres or postgres-pr. "
   s.add_dependency('aurita-gui', '>= 0.2')
   s.files = FileList['*', 
                      'benchmark/*', 
@@ -33,11 +33,14 @@ spec = Gem::Specification.new { |s|
                      'lib/*', 
                      'lib/lore/*', 
                      'lib/lore/adapters/*', 
+                     'lib/lore/adapters/postgres/*', 
+                     'lib/lore/adapters/postgres-pr/*', 
                      'lib/lore/cache/*', 
                      'lib/lore/exceptions/*', 
                      'lib/lore/gui/*', 
                      'lib/lore/gui/templates/*', 
                      'lib/lore/model/*', 
+                     'lib/lore/model/behaviours/*', 
                      'lib/lore/strategies/*', 
                      'lib/lore/validation/*', 
                      'bin/*'].to_a

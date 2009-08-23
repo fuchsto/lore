@@ -6,6 +6,7 @@ require('lore')
 require('lore/exceptions/database_exception')
 require('lore/adapters/context')
 require('lore/adapters/postgres-pr/result')
+require('lore/adapters/postgres-pr/types')
 
 module PostgresPR
   class Connection
