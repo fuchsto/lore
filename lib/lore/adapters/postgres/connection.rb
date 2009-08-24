@@ -43,8 +43,8 @@ class Connection
   def self.perform(query)
     begin
       @@query_count += 1
-    # result = Context.get_connection.exec(query)
-      result = Context.get_connection.async_exec(query)
+    # result = Context.get_connection.async_exec(query)
+      result = Context.get_connection.exec(query)
       @@result_row_count += result.num_tuples
       
       if Lore.log_queries? then
