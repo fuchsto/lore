@@ -6,7 +6,7 @@ begin
   require 'activesupport'
   require 'active_support/cache/memory_store'
 rescue LoadError
-  Lore.log { 'Mmap or ActiveSupport for Ruby could not be loaded. You won\'t be able to use Mmap_Entity_Cache. ' }
+  Lore.log { 'Mmap or ActiveSupport for Ruby could not be loaded. You won\'t be able to use Memory_Entity_Cache. ' }
   module ActiveSupport
     module Cache
       class MemoryStore
@@ -25,8 +25,6 @@ module Cache
   class Memory_Entity_Cache < Abstract_Entity_Cache
   extend Cache_Helpers
 
-    @@logger = Logger.new('/tmp/lore_cache.log')
-
     @@store = ActiveSupport::Cache::MemoryStore.new()
 
 
@@ -34,7 +32,7 @@ module Cache
       index = accessor.table_name
       return unless Lore.cache_enabled? 
       Dir.glob("/tmp/lore_cache__#{index}*").each { |cache_file|
-        @@logger.debug('Clearing cache file ' << cache_file.to_s.split('_').last)
+        Lore.logger.debug { 'Clearing cache file ' << cache_file.to_s.split('_').last }
         begin
           @@store.delete(cache_file.to_s.split('_').last)
         rescue ::Exception => excep
@@ -44,7 +42,7 @@ module Cache
     end
 
     def self.read(accessor, query_obj)
-      @@logger.debug { 'Loading from cache: ' << index_for(query_obj[:query]) }
+      Lore.logger.debug { 'Loading from cache: ' << index_for(query_obj[:query]) }
       store = @@store.read("#{accessor.table_name}--#{index_for(query_obj[:query])}")
       return [] unless store
       
@@ -59,13 +57,12 @@ module Cache
 
     def self.include?(accessor, query_obj)
       hit = @@store.exist?("#{accessor.table_name}--#{index_for(query_obj[:query])}")
-      @@logger.debug { 'Cache miss: ' << index_for(query_obj[:query]) } unless hit
-      @@logger.info { 'CACHE MISS on ' << query_obj[:query] } unless hit
+      Lore.logger.debug { 'Cache miss: ' << index_for(query_obj[:query]) } unless hit
       return hit
     end
 
     def self.delete(index)
-      @@logger.debug { "Deleting index #{index}" }
+      Lore.logger.debug { "Deleting index #{index}" }
       @@store.delete(index)
     end
 

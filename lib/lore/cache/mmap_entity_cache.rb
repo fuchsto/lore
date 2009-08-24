@@ -17,14 +17,11 @@ module Cache
   class Mmap_Entity_Cache < Abstract_Entity_Cache
   extend Cache_Helpers
 
-    @@logger = Logger.new('/tmp/lore_cache.log')
-
-
     def self.flush(accessor)
       index = accessor.table_name
       return unless Lore.cache_enabled? 
       Dir.glob("/tmp/lore_cache__#{index}*").each { |cache_file|
-        @@logger.debug('Clearing cache file ' << cache_file)
+        Lore.logger.debug('Clearing cache file ' << cache_file)
         begin
           File.unlink(cache_file)
         rescue ::Exception => excep
@@ -34,9 +31,9 @@ module Cache
     end
 
     def self.read(accessor, query_obj)
-      Lore.log { 'Loading from cache: ' << index_for(query_obj[:query]) }
+      Lore.logger.debug { 'Loading from cache: ' << index_for(query_obj[:query]) }
       store = Mmap.new(storefile_of(accessor.table_name, query_obj[:query]))
-      Lore.log { 'STORE: ' << store.inspect }
+      Lore.logger.debug { 'STORE: ' << store.inspect }
       return [] unless store
       result = Marshal::load(store)
       return result['dump']
@@ -51,7 +48,7 @@ module Cache
       store.transaction do
         store['dump'] = result
       end
-      @@logger.debug('Creating cache entry for ' << storefile )
+      Lore.logger.debug('Creating cache entry for ' << storefile )
       Mmap.new(storefile)
       return storefile
     end
