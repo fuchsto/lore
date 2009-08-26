@@ -34,7 +34,8 @@ module Lore
       }
       # Parse sequence_values into value_keys where a table depends from a 
       # sequence field by IS_A
-      value_keys 	 = update_sequence_values_deps(@base_table, 
+      value_keys 	 = update_sequence_values_deps(@accessor, 
+                                                 @base_table, 
                                                  @is_a, 
                                                  value_keys)
       query_string = insert_query(@base_table, 
@@ -61,19 +62,44 @@ module Lore
     # {{{
       sequence_values = Hash.new
 
-      sequences.each_pair { |table_name, field| 
-        field.each_pair { |field_name, sequence_name|
-          
-          pure_schema_name 	  = table_name.split('.')[0]
-          pure_table_name 	  = table_name.split('.')[1]
-          temp_sequence_name 	= "#{sequence_name}_temp"
-          
-          sequence_query_string = "SELECT nextval('#{pure_schema_name}.#{sequence_name}'::text) as #{temp_sequence_name}; "
-          sequence_value_result = Lore::Connection.perform(sequence_query_string)
-          
-          sequence_values[table_name] = Hash.new if sequence_values[table_name] == nil
-          sequence_values[table_name][field_name.to_sym] = sequence_value_result.get_field_value(0, temp_sequence_name)
-        }
+      # We have to load sequences in correct order, so 
+      # inherited sequence values work as expected: 
+      sequence_load_order  = @accessor.__associations__.join_tables.flatten.reverse
+      sequence_load_order << @accessor.table_name
+      puts 'ORDER: ' << sequence_load_order.inspect
+      sequence_load_order.each { |table_name|
+        field = sequences[table_name]
+        if field then
+          field.each_pair { |field_name, sequence|
+
+            if sequence.is_a?(Clause) then 
+              # Sequence value is inherited, as caused by 
+              #
+              #   Model.is_a Parent_Model, :my_id
+              #   Model.primary_key :my_id, Parent_Model.id
+              #
+              # Actual sequence value has to be present already, 
+              # as it stems from a base model. 
+              # This is why we ensure correct order when loading 
+              # sequences. 
+              seq_name_parts   = sequence.to_s.split('.')
+              parent_seq_table = seq_name_parts[0..1].join('.')
+              parent_seq_field = seq_name_parts[2].to_sym
+              sequence_value   = sequence_values[parent_seq_table][parent_seq_field]
+            else 
+              pure_schema_name 	  = table_name.split('.')[0]
+              pure_table_name 	  = table_name.split('.')[1]
+              temp_sequence_name 	= "#{sequence}_temp"
+              
+              sequence_query_string = "SELECT nextval('#{pure_schema_name}.#{sequence}'::text) as #{temp_sequence_name}; "
+              sequence_value_result = Lore::Connection.perform(sequence_query_string)
+              sequence_value        = sequence_value_result.get_field_value(0, temp_sequence_name)
+            end
+            
+            sequence_values[table_name] = Hash.new if sequence_values[table_name] == nil
+            sequence_values[table_name][field_name.to_sym] = sequence_value
+          }
+        end
       }
       
       return sequence_values
@@ -120,7 +146,7 @@ module Lore
       query_string
     end # }}}
     
-    def update_sequence_values_deps(table, is_a, value_keys)
+    def update_sequence_values_deps(accessor, table, is_a, value_keys)
     # {{{
       is_a.each_pair { |base_table, next_base_tables| 
         # extend each value_key with primary keys of its base table: 
@@ -134,7 +160,8 @@ module Lore
             value_keys[table][own_fkey] = seq_val
           end
         end
-        value_keys = update_sequence_values_deps(base_table, 
+        value_keys = update_sequence_values_deps(accessor, 
+                                                 base_table, 
                                                  next_base_tables, 
                                                  value_keys)
       }

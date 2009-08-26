@@ -1,0 +1,13 @@
+
+Missing coolness ordered by priority: 
+
+- Polish / spec migrations
+- Improve Lazy loading: 
+
+     Article.find(10).without(Article.text)
+     Atricle.find(10).only(Article.title)
+
+- Add Master/Slave DB support
+- Add sharding
+- Add MySQL adapter
+- Add serializing to JSON

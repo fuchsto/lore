@@ -12,6 +12,7 @@ module Lore
     attr_reader :aggregate_klasses
     attr_reader :aggregates 
     attr_reader :base_klasses_tree
+    attr_reader :join_tables
     attr_reader :aggregates_tree
     # Returns mapping rules from own foreign key values to 
     # foreign primary key values. Supports composed foreign keys. 
@@ -56,6 +57,7 @@ module Lore
       
       @base_klasses = {}
       @base_klasses_tree = {}
+      @join_tables = []
       @aggregate_klasses = {}
       @aggregates_tree = {}
 
@@ -112,6 +114,7 @@ module Lore
         @polymorphics[model.table_name] = model.polymorphic_attribute
         model.__associations__.add_concrete_model(@accessor)
       end
+      @join_tables << model.table_name
       inherit(model)
     end # }}}
 
@@ -218,6 +221,7 @@ module Lore
       @has_a.update(parent_associations.has_a)
       @has_n.update(parent_associations.has_n)
       @belongs_to.update(parent_associations.belongs_to)
+      @join_tables << parent_associations.join_tables
     end
 
   end

@@ -113,12 +113,6 @@ module Models
     expects :color
   end
 
-  class Convertible < Car
-    table :convertible, :public
-    primary_key :id, :convertible_id_seq
-    is_a Car, :car_id
-  end
-
   class Trailer < Lore::Model
     table :trailer, :public
     primary_key :trailer_id, :trailer_id_seq
@@ -156,6 +150,20 @@ module Models
 
     is_a Robot, :robot_id
     is_a Car, :car_id
+  end
+
+  class Sports_Car < Car
+    table :sports_car, :public
+    primary_key :car_id, Car.id
+
+    is_a Car, :car_id
+  end
+
+  class Convertible < Sports_Car
+    table :convertible, :public
+    primary_key :car_id, Car.id
+
+    is_a Sports_Car, :car_id
   end
 
 end
