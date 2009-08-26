@@ -66,7 +66,6 @@ module Lore
       # inherited sequence values work as expected: 
       sequence_load_order  = @accessor.__associations__.join_tables.flatten.reverse
       sequence_load_order << @accessor.table_name
-      puts 'ORDER: ' << sequence_load_order.inspect
       sequence_load_order.each { |table_name|
         field = sequences[table_name]
         if field then
