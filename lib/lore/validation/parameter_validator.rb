@@ -133,10 +133,10 @@ module Validation
     def self.validate_constraints(table_constraints, table_value_hash)
       unmet_constraints = {}
       table_constraints.each_pair { |attrib, rules|
-        value = table_value_hash[attrib.to_s] if table_value_hash
+        value = table_value_hash[attrib.to_sym] if table_value_hash
         rules.each_pair { |rule, rule_value|
           Lore.logger.debug { "Found constraint for #{attrib}: #{rule.inspect} " }
-          Lore.logger.debug { "Rule is: #{rule_value.inspect} " }
+          Lore.logger.debug { "constraint is: #{rule_value.inspect} " }
           if rule == :minlength && value.to_s.length < rule_value then
             unmet_constraints[attrib] = :minlength
             Lore.logger.debug { "Field #{attrib} failed :minlength" }
@@ -145,9 +145,9 @@ module Validation
             unmet_constraints[attrib] = :maxlength
             Lore.logger.debug { "Field #{attrib} failed :maxlength" }
           end
-          if rule == :format && rule_value.match(value).nil? then
+          if rule == :format && rule_value.match(value.to_s).nil? then
             unmet_constraints[attrib] = :format
-            Lore.logger.debug { "Field #{attrib} failed :format" }
+            Lore.logger.debug { "Field #{attrib} failed :format - value: #{value.inspect} - match returned #{rule_value.match(value).inspect}" }
           end
         }
       }

@@ -240,7 +240,7 @@ module Model_Instance
   end
   
   # Returns all attribute values as hash. 
-  def get_attribute_values() # :nodoc:
+  def get_attribute_values() 
     @attribute_values_flat
   end # def
 

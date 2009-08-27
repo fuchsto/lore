@@ -7,7 +7,7 @@ module Lore
 module Spec_Fixtures
 module Models
 
-  NAME_FORMAT = { :format => /^([a-zA-Z_0-9 ])+$/, :length => 3..100, :mandatory => true }
+  NAME_FORMAT = { :format => /^([a-zA-Z_0-9])+$/, :length => 3..100, :mandatory => true }
 
   class Manufacturer < Lore::Model
     table :manufacturer, :public
@@ -32,9 +32,9 @@ module Models
     has_a Manufacturer, :manuf_id
     has_n Owner, :vehicle_id
 
-  # validates :name, NAME_FORMAT
     validates :maxspeed, :mandatory => true
     validates :num_seats, :mandatory => true
+    validates :name, NAME_FORMAT
 
     add_input_filter(:name) { |name|
       name.gsub(/[^a-zA-Z_0-9]/,'').downcase

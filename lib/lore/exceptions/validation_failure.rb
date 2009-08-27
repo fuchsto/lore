@@ -58,7 +58,7 @@ module Exceptions
 		end # def }}}
 		
 		def inspect()
-			"Model(#{@invalid_klass}) => #{@invalid_fields.serialize} " << 
+			"Model(#{@invalid_klass}) => #{@invalid_fields.inspect} " << 
 			"Required: #{@invalid_klass.__attributes__.required.inspect}"
 		end
     alias explain serialize
