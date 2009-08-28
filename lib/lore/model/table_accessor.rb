@@ -642,8 +642,9 @@ class Table_Accessor
     return {}
   end # }}}
   
-  def self.select_values(what, &block) 
+  def self.select_values(*what, &block) 
   # {{{
+    what = what.first if what.length < 2
     @select_strategy.select(what, &block).get_rows
   end # }}}
 

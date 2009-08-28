@@ -195,7 +195,7 @@ module Lore
       if(nested_query_string.instance_of? Refined_Select) then
         nested_query_string = nested_query_string.to_select
       elsif nested_query_string.instance_of? Array then
-        nested_query_string = nested_query_string.join(',')
+        nested_query_string = nested_query_string.map { |e| "'#{e}'" }.join(',')
         nested_query_string = 'NULL' if nested_query_string.length == 0
       elsif nested_query_string.instance_of? Range then
         return between(nested_query_string.first, nested_query_string.last)

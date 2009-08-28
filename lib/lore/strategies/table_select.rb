@@ -106,10 +106,12 @@ module Lore
     # {{{
       # Example: 
       # select(Car.name) -> SELECT max(id)
-      if what.instance_of? Clause then
+      if what.instance_of?(Clause) || what.is_a?(Symbol) then
         what = what.to_s 
+      elsif what.is_a?(Array) then
+        what = what.join(',')
       end
-      
+
       if(what.nil? || what == '*' || what == '') then
         query_as_part = '*'
       else 

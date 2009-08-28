@@ -14,9 +14,11 @@ describe(Lore::Table_Accessor) do
     lambda { Vehicle.create(:name => 'second', 
                             :maxspeed => 120, 
                             :num_seats => 4) }.should_not raise_error(Lore::Exceptions::Validation_Failure)
-    lambda { Vehicle.create(:name => '1@2foo', 
-                            :maxspeed => 120, 
-                            :num_seats => 4) }.should_not raise_error(Lore::Exceptions::Validation_Failure)
+    v = nil # pre-def
+    lambda { v = Vehicle.create(:name => '1@2foo', 
+                                :maxspeed => 120, 
+                                :num_seats => 4) }.should_not raise_error(Lore::Exceptions::Validation_Failure)
+    v.name.should == '12foo'
   end
   
 end

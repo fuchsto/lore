@@ -13,7 +13,7 @@ module Models
     table :manufacturer, :public
     primary_key :manuf_id, :manuf_id_seq
 
-  # validates :name, NAME_FORMAT
+    validates :name, NAME_FORMAT
 
     use_label :name
   end
@@ -22,7 +22,7 @@ module Models
     table :owner, :public
     primary_key :owner_id, :owner_id_seq
 
-  # validates :name, NAME_FORMAT
+    validates :name, NAME_FORMAT
   end
 
   class Vehicle < Lore::Model
@@ -62,7 +62,7 @@ module Models
     table :car_type, :public
     primary_key :car_type_id, :car_type_id_seq
 
-  # validates :type_name, NAME_FORMAT
+    validates :type_name, NAME_FORMAT
 
     use_label :type_name
   end
@@ -93,7 +93,6 @@ module Models
     is_a Motorized_Vehicle, :motorized_id 
     aggregates Car_Type, :car_type_id
 
-  # validates :num_seats, :mandatory => true
     validates :num_doors, :mandatory => true
 
     add_input_filter(:maxspeed) { |m| m.to_s.gsub('km/h','') }
