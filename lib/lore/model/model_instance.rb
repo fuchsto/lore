@@ -157,7 +157,7 @@ module Model_Instance
     return @attribute_values_flat[meth]
   end
 
-  alias :obj_id :id
+  alias :obj_id :id if respond_to?(:id)
   def id
     @attribute_values_flat[:id] || obj_id
   end
