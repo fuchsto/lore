@@ -198,44 +198,44 @@ bmbm(12) { |test|
 #      p.get_rows
 #    }
 #  }
-  test.report("result fetching in lore") { 
-    num_loops.times { 
-      result = connection.exec(sql)
-      result = Lore::Result.new('',result)
-      result.get_rows.each { |row|
-        # noop
-      }
-    }
-  }
-  test.report("result parsing in lore") { 
-    num_loops.times { 
-      result = connection.exec(sql)
-      result = Lore::Connection.perform(sql)
-      result.get_rows.each { |row|
-        # noop
-      }
-    }
-  }
-  test.report("ac_instances unfiltered") { 
-    Lore.disable_cache
-    Lore::Article.disable_output_filters if Lore::Article.respond_to?(:disable_output_filters)
-    num_loops.times { 
-      result = Lore::Connection.perform(sql).get_rows()
-      result.map! { |row|
-        row = (Lore::Article.new(row))
-      }
-    }
-  }
-  test.report("ac_instances filtered") { 
-    Lore.disable_cache
-    Lore::Article.enable_output_filters if Lore::Article.respond_to?(:enable_output_filters)
-    num_loops.times { 
-      result = Lore::Connection.perform(sql).get_rows()
-      result.map! { |row|
-        row = (Lore::Article.new(row))
-      }
-    }
-  }
+# test.report("result fetching in lore") { 
+#   num_loops.times { 
+#     result = connection.exec(sql)
+#     result = Lore::Result.new('',result)
+#     result.get_rows.each { |row|
+#       # noop
+#     }
+#   }
+# }
+# test.report("result parsing in lore") { 
+#   num_loops.times { 
+#     result = connection.exec(sql)
+#     result = Lore::Connection.perform(sql)
+#     result.get_rows.each { |row|
+#       # noop
+#     }
+#   }
+# }
+# test.report("ac_instances unfiltered") { 
+#   Lore.disable_cache
+#   Lore::Article.disable_output_filters if Lore::Article.respond_to?(:disable_output_filters)
+#   num_loops.times { 
+#     result = Lore::Connection.perform(sql).get_rows()
+#     result.map! { |row|
+#       row = (Lore::Article.new(row))
+#     }
+#   }
+# }
+# test.report("ac_instances filtered") { 
+#   Lore.disable_cache
+#   Lore::Article.enable_output_filters if Lore::Article.respond_to?(:enable_output_filters)
+#   num_loops.times { 
+#     result = Lore::Connection.perform(sql).get_rows()
+#     result.map! { |row|
+#       row = (Lore::Article.new(row))
+#     }
+#   }
+# }
   test.report("lore select unfiltered") { 
     Lore.disable_cache
     Lore::Article.disable_output_filters if Lore::Article.respond_to?(:disable_output_filters)

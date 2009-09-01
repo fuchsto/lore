@@ -112,7 +112,7 @@ module Lore
       field_string = String.new
       key_counter = 0
       value_keys.each_pair { |field, value|
-        if value || @accessor.__attributes__.required?(value) then
+        if !value.empty? || @accessor.__attributes__.required?(value) then
           Lore.logger.debug { "insert value for #{field} is #{value.inspect}" }
           field_string << "#{field}"
           value_string << "'#{value}'" 

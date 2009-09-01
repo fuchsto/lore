@@ -24,7 +24,6 @@ module Lore
       return unless value_keys && value_keys.length > 0
 
       table      = accessor.table_name
-    # attributes = accessor.get_fields_flat
       attributes = accessor.get_fields[table]
       required   = accessor.__attributes__.required[table]
       required ||= {}
@@ -45,14 +44,21 @@ module Lore
           value = value_keys["#{table}.#{internal_attribute_name}"].to_s
         end
 
-        # Disallow setting an empty value for required fields
+        # Skip nil values and empty string as value for required fields
         if !(required[attribute_name] && value.empty?) && !(value.nil?) then
-          if key_counter > 0 then
-            set_string += ', '
+          # Value is either not an empty string, or this field must not be NULL: 
+          if (!value.empty? || required[attribute_name]) then
+            value = "'#{value}'"
+          elsif value.empty? then
+            # Value is an empty string, so set this field to NULL
+            value = 'NULL'
           end 
-          set_string << "#{attribute_name} = '#{value}'"
-          key_counter = 1
-        end 
+          if key_counter > 0 then
+            set_string << ', '
+          end
+          set_string << "#{attribute_name} = #{value}"
+          key_counter += 1
+        end
       }
       query_string << set_string
 
@@ -125,7 +131,6 @@ module Lore
                                          ).to_s
         
       query_string
-
     end # }}}
 
     public
@@ -147,7 +152,6 @@ module Lore
         Lore::Context.leave if @accessor.get_context
       end
       @accessor.flush_entity_cache()
-
     end # }}}
     
   end # class
