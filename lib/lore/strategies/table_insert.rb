@@ -111,19 +111,16 @@ module Lore
       value_string = String.new
       field_string = String.new
       key_counter = 0
+      fields = []
+      values = []
       value_keys.each_pair { |field, value|
         if !value.empty? || @accessor.__attributes__.required?(value) then
           Lore.logger.debug { "insert value for #{field} is #{value.inspect}" }
-          field_string << "#{field}"
-          value_string << "'#{value}'" 
-          if key_counter < value_keys.length-1
-            field_string += ', '
-            value_string += ', '
-          end
+          fields << "#{field}"
+          values << "'#{value}'" 
         end
-        key_counter += 1
       }
-      query_string += "(#{field_string}) \n VALUES (#{value_string}); "
+      query_string += "(#{fields.join(', ')}) \n VALUES (#{values.join(', ')}); "
       return query_string
     end # }}}
     
