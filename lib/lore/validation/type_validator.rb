@@ -28,6 +28,7 @@ module Validation
                                      }, 
       Lore::PG_TEXT               => Proc.new { |value, required| !required || !value.empty? }, 
       Lore::PG_VARCHAR            => Proc.new { |value, required| !required || !value.empty? }, 
+      Lore::PG_CHARACTER          => Proc.new { |value, required| !required || !value.empty? }, 
       Lore::PG_TIME               => Proc.new { |value, required| !required || !value.empty? },  # TODO
       Lore::PG_DATE               => Proc.new { |value, required| !required || !value.empty? },  # TODO
       Lore::PG_TIMESTAMP          => Proc.new { |value, required| !required || !value.empty? },  # TODO
@@ -38,7 +39,7 @@ module Validation
 		def typecheck(code, value, is_required)
       validation = @@type_validation_rules[code]
       return validation.call(value, is_required) if validation
-			raise Lore::Exceptions::Unkown_Type.new(code, value)
+			raise Lore::Exceptions::Unknown_Type.new(code, value)
 		end
 
 	end

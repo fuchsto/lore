@@ -2,6 +2,7 @@
 require('lore/validation/type_validator')
 require('lore/exceptions/invalid_field')
 require('lore/exceptions/validation_failure')
+require('lore/exceptions/unknown_type')
 
 module Lore
 module Validation

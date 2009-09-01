@@ -9,7 +9,7 @@ module Exceptions
     def initialize(type_code, value)
       @code  = type_code
       @value = value
-      @message = "Unknown database type: #{type_code.to_s} for value #{value.inspect}"
+      super("Unknown database type: #{type_code.to_s} for value #{value.inspect}")
     end
 		
   end

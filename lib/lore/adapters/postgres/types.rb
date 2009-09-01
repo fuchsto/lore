@@ -42,6 +42,7 @@ module Lore
     def self.bytea; 'bytea'; end
     def self.char; 'char'; end
     def self.varchar(length=255); 'character varying(' << length.to_s + ')'; end
+    def self.character(length=255); 'character(' << length.to_s + ')'; end
     def self.time; 'time'; end
     def self.timestamp; 'timestamp'; end
     def self.date; 'date'; end
