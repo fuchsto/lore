@@ -48,6 +48,7 @@ class Connection
       @@result_row_count += result.num_tuples
       
       if Lore.log_queries? then
+        Lore.query_logger.debug { "  sql|#{Context.get_context}|----------------------" }
         query.split("\n").each { |line|
           Lore.query_logger.debug { "  sql|#{Context.get_context}| #{line}" }
         }
