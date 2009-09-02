@@ -172,6 +172,7 @@ module Model_Instance
   def set_attribute_value(attrib_name, attrib_value)
   # {{{
     touch
+    @touched = true
     @touched_fields ||= []
     @touched_fields << attrib_name if attrib_name
     @touched_fields.uniq!
@@ -308,6 +309,7 @@ module Model_Instance
   # 
   def commit
   # {{{
+    Lore.logger.debug { "Not updating instance as not touched" } unless @touched
     return unless @touched
     
     Lore.logger.debug { "Updating #{self.to_s}. " }
