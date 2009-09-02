@@ -78,9 +78,25 @@ module GUI
       model_labels   = @klass.attribute_labels if @klass.respond_to?(:attribute_labels)
       model_labels ||= {}
 
-      @klass.get_fields.each_pair { |table, attributes|
+      attributes        = @klass.__attributes__
+      associations      = @klass.__associations__
+      aggregate_klasses = associations.aggregate_klasses
+      has_a_klasses     = associations.has_a
+      has_a_keys        = associations.has_a_keys
+      base_table        = @klass.table_name
+      foreign_keys      = associations.foreign_keys
 
-        attributes.each { |attribute|
+      @klass.get_fields.each_pair { |table, fields|
+
+        implicits         = attributes.implicit
+        ecplicits         = attributes.explicit
+        requireds         = attributes.required
+        primary_keys      = attributes.primary_keys
+        attribute_types   = attributes.types
+        constraints       = attributes.constraints
+
+        fields.each { |attribute|
+
           label_tag    = "#{table.gsub('.','--')}--#{attribute}"
           label        = @labels[label_tag]
           label        = attribute.to_s.capitalize if label.to_s == ''
@@ -89,55 +105,34 @@ module GUI
           field_name   = full_attrib
           form_element = false
 
-          attributes   = @klass.__attributes__
-          associations = @klass.__associations__
-
-          constraints  = attributes.constraints
           constraints  = constraints[table] if constraints
           constraints  = constraints[attribute] if constraints
 
-          aggregate_klasses = associations.aggregate_klasses
-          has_a_klasses     = associations.has_a
-          implicits         = attributes.implicit
-          ecplicits         = attributes.explicit
-          requireds         = attributes.required
-          primary_keys      = attributes.primary_keys
-          attribute_types   = attributes.types
-          
           # @custom_elements is a hash mapping attribute 
           # names to Custom_Element instances. 
           if ((@custom_elements[table]) and
-              (@custom_elements[table][attribute])) then
-            
-            form_element = @custom_elements[table][attribute].new(:label => label, 
-                                                                  :id    => full_attrib, 
-                                                                  :name  => field_name)
-            
+              (@custom_elements[table][attribute])) 
+          then
+            form_element = @custom_elements[table][attribute].new(:label => label, :name  => field_name)
+
+          elsif (has_a_keys && has_a_keys[table] && has_a_keys[table][attribute.to_sym]) then
+            foreign_klass   = has_a_klasses[table]
+            form_element    = Aurita::GUI::Lore_Model_Select_Field.new(foreign_klass, :label => label, :name => field_name)
+
           elsif (primary_keys[table].nil? or                   # Ignore primary key attributes
                  !primary_keys[table].include? attribute) and 
                 (implicits[table].nil? or                      # Ignore implicit attributes
                  !implicits[table].include? attribute) and 
                 (has_a_klasses.nil? or                         # Ignore attributes aggregated via has_a associations (added later)
                  has_a_klasses[full_attrib].nil?) 
-        #   and (hidden_attributes[table].nil? or              # Ignore otherwise hidden attributes
-        #       !hidden_attributes[table].include? attribute)
           then
             form_element = field_for(attribute_types[table][attribute], :name => field_name, :label => label)
-          elsif (!has_a_klasses.nil? and
-                 !has_a_klasses[full_attrib].nil?)
-          then 
-            foreign_klass   = has_a_klasses[full_attrib]
-            form_element    = Aurita::GUI::Lore_Model_Select_Field.new(foreign_klass, :label => label, :name => field_name)
 
-          elsif (!aggregate_klasses.nil? and
-                 !aggregate_klasses[full_attrib].nil?)
-          then 
+          elsif (aggregate_klasses && aggregate_klasses[full_attrib]) then
             foreign_klass   = aggregate_klasses[full_attrib]
             form_element    = Aurita::GUI::Lore_Model_Select_Field.new(foreign_klass, :label => label, :name => field_name)
-            
-          elsif (!implicits[table].nil? and 
-                  implicits[table].include? attribute)
-          then
+
+          elsif (implicits[table] && implicits[table].include?(attribute)) then
             # Implicit field, ignored
           end
 

@@ -584,7 +584,7 @@ class Table_Accessor
   # Returns full name of attribute set to use as label e.g. for 
   # select boxes. 
   def self.get_label
-    @labels[0]
+    @label
   end
 
   def self.get_labels

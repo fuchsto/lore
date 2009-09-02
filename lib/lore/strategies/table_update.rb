@@ -10,7 +10,7 @@ module Lore
     public
 
     def initialize(accessor)
-      @accessor = accessor
+      @accessor   = accessor
       @base_table = accessor.table_name
     end
 
@@ -45,7 +45,7 @@ module Lore
         end
 
         # Skip nil values and empty string as value for required fields
-        if !(required[attribute_name] && value.empty?) && !(value.nil?) then
+        if !(required[attribute_name] && value == '') && !(value.nil?) then
           # Value is either not an empty string, or this field must not be NULL: 
           if (!value.empty? || required[attribute_name]) then
             value = "'#{value}'"
@@ -139,7 +139,6 @@ module Lore
     # {{{
       query_string = update_query(@accessor, 
                                   accessor_instance.update_pkey_values, 
-                               #  accessor_instance.get_attribute_value_map)
                                   accessor_instance.update_values)
       
       Lore::Context.enter(@accessor.get_context) if @accessor.get_context

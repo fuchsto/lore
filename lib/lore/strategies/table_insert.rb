@@ -14,6 +14,7 @@ module Lore
       @fields          = accessor.__attributes__.fields
       @sequences       = accessor.__attributes__.sequences
       @sequence_values = {}
+      @filters         = @accessor.__filters__.input_filters
     end
 
     def perform_insert(value_keys)
@@ -114,6 +115,8 @@ module Lore
       fields = []
       values = []
       value_keys.each_pair { |field, value|
+     #  filter = @filters[field.to_sym]
+     #  value  = filter.call(value) if filter
         if !value.empty? || @accessor.__attributes__.required?(value) then
           Lore.logger.debug { "insert value for #{field} is #{value.inspect}" }
           fields << "#{field}"

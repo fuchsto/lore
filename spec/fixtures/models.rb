@@ -62,8 +62,6 @@ module Models
     table :car_type, :public
     primary_key :car_type_id, :car_type_id_seq
 
-    validates :type_name, NAME_FORMAT
-
     use_label :type_name
   end
 
@@ -94,7 +92,6 @@ module Models
     aggregates Car_Type, :car_type_id
 
     validates :num_doors, :mandatory => true
-
     add_input_filter(:maxspeed) { |m| m.to_s.gsub('km/h','') }
     add_output_filter(:maxspeed) { |m| m << 'km/h' }
 

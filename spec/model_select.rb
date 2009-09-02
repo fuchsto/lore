@@ -11,6 +11,7 @@ describe(Lore::Table_Accessor) do
 
   it "should provide a DSL for selects" do 
 
+    begin
     for index in 0...3 do 
       Car.create(car_create_values(:name => "Car #{index}" ))
     end
@@ -29,6 +30,10 @@ describe(Lore::Table_Accessor) do
       c.limit(1, 1)
     }.first
     car.name.should == "car2"
+    rescue Lore::Exceptions::Validation_Failure => ve
+      puts ve.explain
+    end
+
   end
 
   it "provides convenience methods for selects" do

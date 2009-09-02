@@ -42,4 +42,26 @@ describe(Lore::Table_Accessor) do
     car_sel.num_doors.should == 10
   end
 
+  it "applies filters on updates" do
+    car = Car.create(car_create_values(:num_doors => 4, :is_driving => false))
+
+    check = Car.load(:id => car.id)
+    check.is_driving.should == false
+
+    car.is_driving.should == false
+    car.is_driving = true
+    car.commit
+    car.is_driving.should == true
+
+    check = Car.load(:id => car.id)
+    check.is_driving.should == true
+
+    car.is_driving = false
+    car.commit
+    car.is_driving.should == false
+
+    check = Car.load(:id => car.id)
+    check.is_driving.should == false
+  end
+
 end

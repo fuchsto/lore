@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'lore'
 require 'lore/model'
+require 'lore/exceptions/validation_failure'
 
 
 Lore.logfile = STDERR

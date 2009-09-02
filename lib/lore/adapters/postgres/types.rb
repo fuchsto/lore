@@ -90,3 +90,4 @@ module Lore
   end
 
 end # module
+

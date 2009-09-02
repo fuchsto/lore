@@ -7,6 +7,7 @@ module Lore
     attr_reader :primary_keys 
     attr_reader :base_klasses 
     attr_reader :has_a 
+    attr_reader :has_a_keys
     attr_reader :has_n 
     attr_reader :belongs_to 
     attr_reader :aggregate_klasses
@@ -52,6 +53,7 @@ module Lore
       @primary_keys = {}
       
       @has_a = {}
+      @has_a_keys = {}
       @has_n = {}
       @belongs_to = {}
       
@@ -202,6 +204,9 @@ module Lore
     def add_has_a(model, *keys)
       add_foreign_key_to(model, *keys)
       @has_a[@accessor.table_name] = model
+      keys.each { |key|
+        @has_a_keys[@accessor.table_name] = { key.first => model }
+      }
     end
 
     # For cat.get_wheel_set()

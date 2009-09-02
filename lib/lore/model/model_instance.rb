@@ -171,28 +171,20 @@ module Model_Instance
   #
   def set_attribute_value(attrib_name, attrib_value)
   # {{{
-
-    if @input_filters && (@input_filters.has_key?(attrib_name.intern)) then
-      attrib_value = @input_filters[attrib_name.intern].call(attrib_value)
-    end
-
-    # touch(attrib_name)
-    @touched = true
+    touch
     @touched_fields ||= []
     @touched_fields << attrib_name if attrib_name
-
+    @touched_fields.uniq!
     @attribute_values_flat[attrib_name.to_sym] = attrib_value
   end # def }}}
 
   def set_attribute_values(value_hash)
-    value_hash.each_pair { |attrib_name,value|
-      if @input_filters && @input_filters.has_key?(attrib_name.intern) then
-        value_hash[attrib_name] = @input_filters[attrib_name.intern].call(attrib_value)
-      end
-      @attribute_values_flat[attrib_name.to_sym] = attrib_value
-      @touched_fields << attrib_name.intern
-    }
     touch
+    value_hash.each_pair { |attrib_name,value|
+      @attribute_values_flat[attrib_name.to_sym] = attrib_value
+      @touched_fields << attrib_name.to_sym
+    }
+    @touched_fields.uniq!
   end
 
   # Sets attribute value. Example: 
@@ -327,11 +319,11 @@ module Model_Instance
     @update_values = {}
     @update_pkey_values = {}
     @attribute_values.each_pair { |table,attributes|
-      @touched_fields.each { |name|
+      @touched_fields.uniq.each { |name|
         value  = @attribute_values[table][name]
         filter = self.class.__filters__.input_filters[name]
         value = filter.call(value) if filter
-        if attributes[name] then
+        if !attributes[name].nil? then
           update_values[table] ||= {}
           @update_values[table][name] = value 
         end
@@ -371,9 +363,13 @@ module Model_Instance
 
   def inspect
   # {{{
-    'Lore::Table_Accessor entity: ' << @attribute_values_flat.inspect
+    self.class.to_s + ' entity: ' << @attribute_values_flat.inspect
   end # }}}
   
+  def label
+    @attribute_values_flat[table_accessor.get_label.to_sym]
+  end
+
 end # module
 
 end # module
