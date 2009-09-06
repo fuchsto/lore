@@ -17,6 +17,10 @@ module Validation
                                        value && ((value.kind_of?(Integer) || value.to_i.to_s == value)) || 
                                        !required && (value.empty?)
                                      }, 
+      Lore::PG_FLOAT              => Proc.new { |value, required|
+                                       value && ((value.kind_of?(Integer) || value.kind_of?(Float) || value.to_f.to_s == value)) || 
+                                       !required && (value.empty?)
+                                     }, 
       Lore::PG_SMALLINT           => Proc.new { |value, required|
                                        value && ((value.kind_of?(Integer) || value.to_i.to_s == value) && 
                                         (value.to_i < 1024 && value.to_i > -1024)) || 
