@@ -36,6 +36,7 @@ class Table_Accessor
   extend Prepare_Class_Methods
   include Prepare
   extend Cache::Cacheable
+  extend Mockable
 
   @@logger = Lore.logger
 

@@ -440,7 +440,6 @@ module Lore
     end
 
     def set(attrib_value_hash)
-    
       attrib_value_hash.each_pair { |attr_name, value|
 
         attr_name = attr_name.to_s unless attr_name.instance_of? String
@@ -476,6 +475,12 @@ module Lore
         where_clause = '\'t\''
       elsif where_clause.instance_of? FalseClass then
         where_clause = '\'f\''
+      elsif where_clause.instance_of? Hash then
+        where_clause_parts = []
+        where_clause.each_pair { |k,v|
+          where_clause_parts << "#{k} = '#{v}'"
+        }
+        where_clause = where_clause_parts.join(' AND ')
       end
       @clause[:where] = "\nWHERE #{where_clause.to_s}"
       return self
@@ -490,7 +495,6 @@ module Lore
     def prepend_join(join)
       @clause[:join] = join.string << @clause[:join]
       @clause[:join] << join.implicit_joins
-
     end
     def append_join(join)
       @clause[:join] << join.string 

@@ -59,7 +59,7 @@ module Lore
 
     @@input_filters = { 
       PG_VCHAR_LIST          => lambda { |v| "{#{v.join(',')}}" }, 
-      PG_BOOL                => lambda { |v| if (v && v != 'f' || v == 't') then 't' elsif (v.instance_of?(FalseClass) || v == 'f') then 'f' else nil end }, 
+      PG_BOOL                => lambda { |v| if (v && v != 'f' && v != 'false' || v == 't' || v == 'true') then 't' elsif (v.instance_of?(FalseClass) || v == 'f' || v == 'false') then 'f' else nil end }, 
       PG_DATE                => lambda { |v| v.to_s }, 
       PG_TIME                => lambda { |v| v.to_s }, 
       PG_TIMESTAMP_TIMEZONE  => lambda { |v| v.to_s }, 

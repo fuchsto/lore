@@ -29,6 +29,8 @@ module Lore
     def with(condition)
       if((@condition.instance_of? TrueClass) || @condition.nil?) then 
         @condition = condition 
+      elsif(condition.is_a? Hash) then
+        @condition = condition
       else
         @condition = (@condition & condition)
       end
