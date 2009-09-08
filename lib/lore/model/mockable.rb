@@ -37,14 +37,22 @@ module Lore
       
       before_validation(values)
       if @__associations__.polymorphics then
-        Lore.logger.debug { "Polymorphic create on #{self.to_s}" }
+        Lore.logger.debug { "Polymorphic create_shallow on #{self.to_s}" }
         @__associations__.polymorphics.each_pair { |table, model_field|
           values[table][model_field] = self.to_s
         }
       end
       Lore::Validation::Parameter_Validator.validate(self, values)
 
-      return self.new(values)
+      mock_attributes = []
+      get_fields_flat().each { |field|
+        mock_attributes << attrib_values[field]
+      }
+      obj = self.new(mock_attributes)
+
+      after_create(obj)
+
+      return obj
     end
 
     # Alias module .self methods

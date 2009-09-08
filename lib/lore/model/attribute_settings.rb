@@ -20,7 +20,6 @@ module Lore
       @accessor           = accessor
       fields.map! { |f| f.to_sym } 
       @fields             = { accessor.table_name => fields }
-    # @fields_flat        = fields
       @required           = {}
       @implicit           = {}
       @types              = {}

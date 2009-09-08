@@ -88,10 +88,10 @@ class Table_Accessor
   ##########################################################################
   # Constructor is usually wrapped by e.g. self.load or 
   # Model_Instancemarshal_load.
-  # Constructor just accepts a value hash, and returns a Table_Accessor 
+  # Constructor just accepts a value array, and returns a Table_Accessor 
   # instance holding it. 
   # Note that this method is operating on a Table_Accessor instance, not
-  # on class Table_Accessor itself. 
+  # on class Table_Accessor itself (see Model_Instance). 
   def initialize(values, joined_models=[], cache=nil) 
   # {{{
     # Note: 
@@ -786,7 +786,6 @@ class Table_Accessor
     after_create(obj)
     
     return obj
-    
   end # }}}
   
   # Return new Table_Accessor instance by loading an existing entry from 
