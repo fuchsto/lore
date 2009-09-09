@@ -47,7 +47,6 @@ module Cache
       return [] unless store
       
       return store[:values]
-      # result << accessor.new(r, joined_models, :cached)
     end
 
     def self.create(accessor, query_object, result)

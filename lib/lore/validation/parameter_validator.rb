@@ -107,10 +107,6 @@ module Validation
         value = table_value_hash[field] if table_value_hash
         # Replace whitespaces and array delimiters to check for real value length
         value_nil = (value.nil? || value.to_s.gsub(/\s/,'').gsub(/[{}]/,'').length == 0)
-        Lore.logger.debug { 
-          "Validate #{field}, required? #{is_required}, " << 
-          "value: #{value.inspect}, value nil? #{value_nil}" 
-        }
         # Is value missing? 
         if (is_required && value_nil) then 
           invalid_types[field] = :missing
