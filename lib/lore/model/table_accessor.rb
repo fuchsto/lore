@@ -194,7 +194,8 @@ class Table_Accessor
     # into concrete values at inject_index. 
     instance_values  = concrete_values[0...inject_index]
     instance_values += basic_values # Inject happens here
-    instance_values += concrete_values[inject_index..-1]
+    injected = concrete_values[inject_index..-1]
+    instance_values += injected if injected
 
     concrete_model.new(instance_values, joined_models)
   end # }}}
@@ -788,14 +789,9 @@ class Table_Accessor
     return obj
   end # }}}
   
-  # Return new Table_Accessor instance by loading an existing entry from 
-  # table if present, or false if no entry has been found. 
-  # Accepts any combination of :primary_key => 'value'
-  # Also allows inherited primary keys. 
-  def self.load(keys)
-  # {{{
-    before_load(keys)
+  private
 
+  def self.keys_to_select_clause(keys)
     select_keys = {}
     value = false
     @__associations__.primary_keys.each_pair { |table, pkeys| 
@@ -818,15 +814,48 @@ class Table_Accessor
     select_keys.each_pair { |k,v|
       c & (Clause.new(k.to_s.dup) == v.to_s)
     }
+    return c
+  end
+
+  public
+
+  # Return new Table_Accessor instance by loading an existing entry from 
+  # table if present, or false if no entry has been found. 
+  # Accepts any combination of :primary_key => 'value'
+  # Also allows inherited primary keys. 
+  def self.load(keys)
+  # {{{
+    before_load(keys)
+
+    clause = keys_to_select_clause(keys)
+    return false unless clause
 
     instance = self.select { |inst|
-      inst.where(c)
+      inst.where(clause)
       inst.limit(1)
     }.first
 
     return false unless instance
     return instance
+  end # }}}
 
+  # Same as Table_Accessor.load, but performing a polymorphic select 
+  # on this model. 
+  # Also see Table_Accessor.polymorphic_select(). 
+  def self.load_polymorphic(keys)
+  # {{{ 
+    before_load(keys)
+
+    clause = keys_to_select_clause(keys)
+    return false unless clause
+
+    instance = polymorphic_select { |inst|
+      inst.where(clause)
+      inst.limit(1)
+    }.first
+
+    return false unless instance
+    return instance
   end # }}}
 
   # Load an instance by only providing primary key values. 

@@ -93,7 +93,7 @@ module Models
 
     validates :num_doors, :mandatory => true
     add_input_filter(:maxspeed) { |m| m.to_s.gsub('km/h','') }
-    add_output_filter(:maxspeed) { |m| m << 'km/h' }
+    add_output_filter(:maxspeed) { |m| m.to_s << 'km/h' }
 
     def drive
       "driving with #{maxspeed}!"
