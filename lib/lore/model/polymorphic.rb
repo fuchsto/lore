@@ -18,6 +18,12 @@ module Lore
       (@is_polymorphic == true)
     end
 
+=begin
+
+    # DEPRECATED
+    #
+    # Lazy polymorphic select
+    #
     def select_polymorphic(clause=nil, &block)
       base_entities = select(clause, &block)
       base_entities.map { |e|
@@ -30,6 +36,7 @@ module Lore
         e
       }
     end
+=end
 
     def polymorphic_attribute
       @polymorphic_attribute

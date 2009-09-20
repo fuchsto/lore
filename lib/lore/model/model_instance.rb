@@ -51,6 +51,45 @@ module Model_Instance
     @update_pkey_values
   end
 
+  # Implements lazy polymorphism. 
+  # Assuming model 'Content' is polymorphic, and 'Article' and 
+  # 'Image' are derived from it, eager polymorphic loads look like 
+  # this: 
+  #
+  #   Content.find(10).polymorphic.with(...).entities
+  #
+  # Method #polymorphic has to be called somewhere between #find 
+  # and a kicker, like #entities or #to_a. 
+  #
+  # Lazy polymorphism only loads the abstract model's instances: 
+  #
+  #   contents = Content.find(10).with(...).entities
+  #
+  # Variable 'contents' no holds up to 10 Content entities. 
+  # To resolve them to their concrete (Article or Image) instances: 
+  #
+  #   contents.map { |c| c.concrete_instance } 
+  #
+  # Of course, this means N+1 queries (one for 10 content instances, 
+  # then 1 for each content instance, so 1+10 = 11 queries), but 
+  # sometimes this is better than joining against every possible 
+  # concrete model table. In case there are 5 concrete models 
+  # derived from Content, 11 tiny queries could be better than one 
+  # joining againt 5 models - including all of their implicitly 
+  # aggregated tables. 
+  #
+  def concrete_instance
+    if !self.class.is_polymorphic? then
+      raise ::Exception.new("#{self.class} is not polymorphic?")
+    end
+    cmodel = get_concrete_model()
+    if cmodel then
+      return cmodel.load(key())
+    else
+      raise ::Exception.new("Could not find concrete model #{cmodel.inspect} for #{self.class}")
+    end
+  end
+
   # Create a marshalled dump of this model instance. 
   # Returns attribute values as The only difference 
   # between model instances is their value set. 

@@ -374,7 +374,7 @@ module Lore
   class Clause_Parser 
   # {{{
     
-    attr_reader :unions
+    attr_reader :unions, :clause
 
     def initialize(base_accessor)
 
@@ -491,11 +491,13 @@ module Lore
       @clause[:final_join] = join.implicit_joins
     end
 
+    # For usage in class Join only
     # TODO: Check if this is ever needed at all. Currently unused and untested. 
     def prepend_join(join)
       @clause[:join] = join.string << @clause[:join]
       @clause[:join] << join.implicit_joins
     end
+    # For usage in class Join only
     def append_join(join)
       @clause[:join] << join.string 
       @clause[:join] << join.implicit_joins
@@ -515,12 +517,14 @@ module Lore
     def left_join(join_klass)
       # this Join instance also will update this Clause_Parser's 
       # as_part (so passing self is crucial): 
+      @clause[:joined] << join_klass
       j = Join.new(self, @base_accessor, join_klass, :left)
       return j
     end
     def right_join(join_klass)
       # this Join instance also will update this Clause_Parser's 
       # as_part (so passing self is crucial): 
+      @clause[:joined] << join_klass
       j = Join.new(self, @base_accessor, join_klass, :right)
       return j
     end

@@ -13,14 +13,10 @@ module Exceptions
     alias fields invalid_params
 
     def serialize
-      result = {}
-      @invalid_params.each_pair { |field, type| 
-        result[field] = type 
-      }
-      result
+      @invalid_params
     end
     def inspect
-      serialize.inspect
+      @invalid_params.inspect
     end
 
   end

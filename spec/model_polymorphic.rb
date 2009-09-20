@@ -82,4 +82,38 @@ describe(Lore::Table_Accessor) do
     asset.doctype.should == 'plaintext'
   end
 
+  it "allows lazy polymorphic selects" do
+    concrete_instances = []
+    abstract_docum_ids = []
+    abstract_media_ids = []
+    5.times { 
+      info = Media_Asset_Info.create(:description => 'a media file')
+      media = Media_Asset.create(:folder     => '/tmp/spec/media/', 
+                                 :filename   => 'music.ogg', 
+                                 :hits       => 123, 
+                                 :info_id    => info.pkey, 
+                                 :media_type => 'sound')
+      info = Document_Asset_Info.create(:relevance => 5)
+      docum = Document_Asset.create(:folder   => '/tmp/spec/docs/', 
+                                    :filename => 'sample.txt', 
+                                    :info_id    => info.pkey, 
+                                    :doctype  => 'plaintext')
+      concrete_instances << media
+      concrete_instances << docum
+      abstract_docum_ids << docum.asset_id
+      abstract_media_ids << media.asset_id
+    }
+    abstract_ids = concrete_instances.map { |c| c.asset_id }
+
+    abstract_instances = Asset.select { |a|
+      a.where(a.asset_id.in(abstract_ids))
+      a.order_by(:asset_id, :desc)
+    }.each { |a|
+      a.class.should == Asset
+      a.concrete_instance.class.should == Document_Asset if abstract_docum_ids.include?(a.asset_id)
+      a.concrete_instance.class.should == Media_Asset if abstract_media_ids.include?(a.asset_id)
+    }
+
+  end
+
 end
