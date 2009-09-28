@@ -256,7 +256,6 @@ module Model_Instance
   end
 
   def pkeys
-    table = self.class.table_name
     return get_primary_key_values
   end
 
