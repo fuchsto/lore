@@ -158,6 +158,14 @@ class Table_Accessor
     fields               = get_fields_flat
     concrete_model_index = 0 
     concrete_model_name  = values[polymorphic_attribute_index]
+    if !concrete_model_name then
+      puts("No concrete model given for #{self.to_s}. Values given are: ")
+      fields.each_with_index { |f,idx|
+        STDOUT << "#{f} : #{values[idx]}"
+      }
+      puts ''
+      return
+    end
     concrete_model       = eval(concrete_model_name)
 
     # We need to know where to inject values of the polymorphic 
@@ -906,6 +914,8 @@ class Table_Accessor
   # Table_Accessor.field
   def self.init_model()
   # {{{
+    return if @initialized
+
     Lore::Context.enter(@context) unless @context.nil?
     begin
       fields_result = Lore::Connection.perform("SELECT * FROM #{@table_name} WHERE false")
@@ -934,6 +944,8 @@ class Table_Accessor
     @update_strategy  = Table_Update.new(self)
 
     define_attribute_clause_methods()
+
+    @initialized = true
   end # }}}
 
   def self.define_attribute_clause_methods

@@ -124,7 +124,8 @@ module Lore
     # Adds a concrete model class for a polymorphic 
     # model. 
     def add_concrete_model(model)
-      @concrete_models << model unless @concrete_models.include?(model)
+      return if @concrete_models.include?(model)
+      @concrete_models << model 
     end
 
     # Add another model as aggregate model. 
