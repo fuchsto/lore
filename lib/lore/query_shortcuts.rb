@@ -130,7 +130,7 @@ module Lore
     #   assert_equal i1, i2
     #
     def to_i
-      entities.first.to_i
+      entities.first.to_s.to_i
     end
 
     # Adds order statement to query. Direction is either :desc or :asc. 

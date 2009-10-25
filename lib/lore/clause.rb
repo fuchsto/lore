@@ -40,8 +40,14 @@ class Symbol
   def like(other)
     Lore::Clause.new(self.to_s).like(other)
   end
+  def not_like(other)
+    Lore::Clause.new(self.to_s).not_like(other)
+  end
   def ilike(other)
     Lore::Clause.new(self.to_s).ilike(other)
+  end
+  def not_ilike(other)
+    Lore::Clause.new(self.to_s).not_ilike(other)
   end
   def has_element(other)
     Lore::Clause.new(self.to_s).has_element(other)
@@ -260,9 +266,19 @@ module Lore
       @value_string = @field_name + ' LIKE ' << Lore.parse_field_value(value)
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
+    def not_like(value) 
+      value = value.to_s.lore_escape
+      @value_string = @field_name + ' NOT LIKE ' << Lore.parse_field_value(value)
+      Clause.new(@value_string, @left_side+@value_string, '', @plan)
+    end
     def ilike(value) 
       value = value.to_s.lore_escape
       @value_string = @field_name + ' ILIKE ' << Lore.parse_field_value(value)
+      Clause.new(@value_string, @left_side+@value_string, '', @plan)
+    end
+    def not_ilike(value) 
+      value = value.to_s.lore_escape
+      @value_string = @field_name + ' NOT ILIKE ' << Lore.parse_field_value(value)
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def posreg_like(value) 
@@ -272,7 +288,7 @@ module Lore
     end
     def ==(value) 
       if value.instance_of? Clause then
-        value = value.field_name
+        value = "(#{value.field_name})"
       else 
         value = value.to_s.lore_escape
         value = '\'' << value << '\''
