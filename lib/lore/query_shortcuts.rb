@@ -274,10 +274,8 @@ module Lore
         }.each { |row|
           if row.kind_of? Hash then
             result << row.values['value'] 
-          elsif row.kind_of? String then
-            result << row
           else 
-            result = row
+            result << row
           end
         }
       end
@@ -331,10 +329,8 @@ module Lore
     def value_of(what=nil)
       Refined_Select.new(self, :condition => true, :what => what)
     end
-
-    def all(what=nil)
-      Refined_Select.new(self, :condition => true, :what => what)
-    end
+    alias values_of value_of
+    alias all value_of
 
     # Wrapper for 
     #

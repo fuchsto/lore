@@ -2,23 +2,16 @@
 require 'lore'
 require 'lore/cache/abstract_entity_cache'
 begin
-  require 'mmap'
   require 'activesupport'
   require 'active_support/cache/mem_cache_store'
 rescue LoadError
-  Lore.log { 'Mmap or ActiveSupport for Ruby could not be loaded. You won\'t be able to use Memcache_Entity_Cache. ' }
+  Lore.log { 'ActiveSupport could not be loaded. You won\'t be able to use Memcache_Entity_Cache. ' }
 
   module ActiveSupport
     module Cache
       class MemCacheStore
       end
     end
-  end
-end
-
-class Object
-  def logger
-    Lore.logger
   end
 end
 
@@ -33,8 +26,8 @@ module Cache
   extend Cache_Helpers
 
     @@store = ActiveSupport::Cache::MemCacheStore.new()
-
-
+    
+    
     def self.flush(accessor)
       index = accessor.table_name
       return unless Lore.cache_enabled? 

@@ -31,7 +31,8 @@ describe(Lore::Table_Accessor) do
       info = Document_Asset_Info.create(:relevance => 5)
       docum = Document_Asset.create(:folder   => '/tmp/spec/docs/', 
                                     :filename => 'sample.txt', 
-                                    :info_id    => info.pkey, 
+                                    :info_id  => info.pkey, 
+                                    :position => 23, 
                                     :doctype  => 'plaintext')
       
     }
@@ -55,7 +56,8 @@ describe(Lore::Table_Accessor) do
     info = Document_Asset_Info.create(:relevance => 5)
     docum = Document_Asset.create(:folder   => '/tmp/spec/docs/', 
                                   :filename => 'sample.txt', 
-                                  :info_id    => info.pkey, 
+                                  :info_id  => info.pkey, 
+                                  :position => 42, 
                                   :doctype  => 'plaintext')
 
     media_polymorphic_id = media.asset_id
@@ -96,7 +98,8 @@ describe(Lore::Table_Accessor) do
       info = Document_Asset_Info.create(:relevance => 5)
       docum = Document_Asset.create(:folder   => '/tmp/spec/docs/', 
                                     :filename => 'sample.txt', 
-                                    :info_id    => info.pkey, 
+                                    :info_id  => info.pkey, 
+                                    :position => 12, 
                                     :doctype  => 'plaintext')
       concrete_instances << media
       concrete_instances << docum

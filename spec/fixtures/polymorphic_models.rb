@@ -19,6 +19,13 @@ module Polymorphic_Models
     end
   end
 
+  class Container < Lore::Model
+    table :container, :public
+    primary_key :container_id, :container_id_seq
+
+    expects :position
+  end
+
   class Media_Asset_Info < Lore::Model
     table :media_asset_info, :public
     primary_key :id, :media_asset_id_seq
@@ -57,6 +64,7 @@ module Polymorphic_Models
     primary_key :id, :document_asset_id_seq
 
     is_a Asset, :asset_id
+    is_a Container, :container_id
 
     expects :doctype
     aggregates Document_Asset_Info, :info_id
