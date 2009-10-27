@@ -250,8 +250,7 @@ module Model_Instance
   # Return primary key value. In case primary key is composed, return it as array. 
   def pkey
     table = self.class.table_name
-    key = get_primary_key_values
-    return key.first if key.length < 2
+    key   = get_primary_key_values.first
     return key
   end
 
