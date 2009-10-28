@@ -273,6 +273,7 @@ module Model_Instance
   def get_attribute_values() 
     @attribute_values_flat
   end # def
+  alias attribute_value get_attribute_values
 
   # Returns attribute values mapped to table names. 
   def get_attribute_value_map
