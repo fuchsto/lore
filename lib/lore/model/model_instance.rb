@@ -1,3 +1,4 @@
+require('rubygems')
 
 require('lore/exceptions/ambiguous_attribute')
 require('lore/model/polymorphic')
@@ -122,6 +123,7 @@ module Model_Instance
     }
     @primary_key_values
   end
+  alias pkeys get_primary_key_values
 
   # Returns primary key values mapped to table names. 
   def get_primary_key_value_map
@@ -181,8 +183,10 @@ module Model_Instance
 
   def touch(attrib_name=nil)
     @touched = true
-    @touched_fields ||= []
-    @touched_fields << attrib_name if attrib_name
+    if attrib_name then
+      @touched_fields ||= []
+      @touched_fields << attrib_name 
+    end
     @primary_key_value_map = false
     @primary_key_values    = false
   end
@@ -208,37 +212,23 @@ module Model_Instance
   # is same as
   #   instance[:name] = 'Wombat'
   #
-  def set_attribute_value(attrib_name, attrib_value)
-  # {{{
-    touch
-    @touched = true
-    @touched_fields ||= []
-    @touched_fields << attrib_name if attrib_name
-    @touched_fields.uniq!
+  def set_attribute_value(attrib_name, attrib_value=nil)
+    return set_attribute_values(attrib_name) if attrib_name.is_a? Hash 
+    touch(attrib_name)
     @attribute_values_flat[attrib_name.to_sym] = attrib_value
-  end # def }}}
+  end 
 
   def set_attribute_values(value_hash)
-    touch
-    value_hash.each_pair { |attrib_name,value|
-      @attribute_values_flat[attrib_name.to_sym] = attrib_value
-      @touched_fields << attrib_name.to_sym
+    value_hash.each_pair { |attrib_name, value|
+      touch(attrib_name)
+      @attribute_values_flat[attrib_name.to_sym] = value
     }
-    @touched_fields.uniq!
   end
 
   # Sets attribute value. Example: 
   #   instance[:name] = 'Wombat'
   #   instance.commit
-  alias :[]= set_attribute_value
-
-  # Explicit attribute request. 
-  # Example: 
-  #   Car[Vehicle.name]
-  # In case name is attribute field in Car and Vehicle. 
-  def [](clause)
-    abs_attr(clause)
-  end
+  alias []= set_attribute_value
 
   # Returns true if instance points to same records as other instance. 
   # Only compares primary key values. 
@@ -254,15 +244,10 @@ module Model_Instance
     return key
   end
 
-  def pkeys
-    return get_primary_key_values
-  end
-
   # Returns true if instance points to same records as other instance, 
   # also compares non-key attribute values. 
   def ===(other)
     return false unless (self == other)
-    
   end
   # See ==
   def <=>(other)
@@ -310,6 +295,7 @@ module Model_Instance
     @flat_attr
   end # def
 
+  # Explicit attribute request using given model klass. 
   # Returns value hash of instance attributes 
   # of a given subtype like: 
   #
@@ -322,6 +308,11 @@ module Model_Instance
   # 
   #   self.class.abs_attr(Klass_A)[:id]  ->  123
   #
+  # Example: 
+  #   Car[Vehicle.name]
+  #
+  # In case name is attribute field in Car and Vehicle. 
+  #
   def abs_attr(klass=nil)
     Lore.logger.warn { 'abs_attr() is deprecated' }
 
@@ -330,7 +321,8 @@ module Model_Instance
     return @attribute_values[klass.table_name] if klass.kind_of? Lore::Table_Accessor
     return @attribute_values[klass] if klass.instance_of? String
     return @attribute_values[klass.to_s.split('.')[0..1].join('.').to_s][klass.to_s.split('.').at(-1)] if klass.instance_of? Lore::Clause
-  end # def
+  end 
+  alias [] abs_attr
 
   def attribute_values
     @attribute_values ||= self.class.distribute_attrib_values(@attribute_values_flat)
@@ -345,13 +337,19 @@ module Model_Instance
   #   unit.name = 'changed'
   #   unit.commit() 
   # 
+  # Returns true if instance record has been updated, 
+  # or false if no changes had to be committed. 
+  #
   def commit
   # {{{
     Lore.logger.debug { "Not updating instance as not touched" } unless @touched
-    return unless @touched
+    return false unless @touched
     
     Lore.logger.debug { "Updating #{self.to_s}. " }
     Lore.logger.debug { "Touched values are: #{@touched_fields.inspect}" }
+
+    @touched_fields.uniq!
+    return false if @touched_fields.length == 0
 
     # TODO: Optimize this! 
     @attribute_values = self.class.distribute_attrib_values(@attribute_values_flat)
@@ -359,10 +357,10 @@ module Model_Instance
     @update_values = {}
     @update_pkey_values = {}
     @attribute_values.each_pair { |table,attributes|
-      @touched_fields.uniq.each { |name|
+      @touched_fields.each { |name|
         value  = @attribute_values[table][name]
         filter = self.class.__filters__.input_filters[name]
-        value = filter.call(value) if filter
+        value  = filter.call(value) if filter
         if !attributes[name].nil? then
           update_values[table] ||= {}
           @update_values[table][name] = value 
@@ -380,6 +378,8 @@ module Model_Instance
     self.class.after_commit(self)
 
     @touched = false
+
+    return true
   end # def }}}
   alias save commit
 

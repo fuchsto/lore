@@ -158,15 +158,15 @@ class Table_Accessor
     fields               = get_fields_flat
     concrete_model_index = 0 
     concrete_model_name  = values[polymorphic_attribute_index]
-    if !concrete_model_name then
-      puts("No concrete model given for #{self.to_s}. Values given are: ")
+    concrete_model       = eval(concrete_model_name) if concrete_model_name
+    if !concrete_model then
+      msg = "No concrete model given for #{self.to_s}, tried to resolve as #{concrete_model_name}. Values given are: "
       fields.each_with_index { |f,idx|
-        STDOUT << "#{f} : #{values[idx]}"
+        msg << "#{f} : #{values[idx]}\n"
       }
-      puts ''
+      raise ::Exception.new(msg)
       return
     end
-    concrete_model       = eval(concrete_model_name)
 
     # We need to know where to inject values of the polymorphic 
     # base model: 
