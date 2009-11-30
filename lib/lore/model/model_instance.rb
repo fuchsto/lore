@@ -316,11 +316,19 @@ module Model_Instance
   def abs_attr(klass=nil)
     Lore.logger.warn { 'abs_attr() is deprecated' }
 
-    klass = klass.to_s if klass.instance_of? Symbol
+    klass = klass.to_s 
+    @attribute_values ||= attribute_values()
+
     return @attribute_values if klass.nil?
-    return @attribute_values[klass.table_name] if klass.kind_of? Lore::Table_Accessor
-    return @attribute_values[klass] if klass.instance_of? String
-    return @attribute_values[klass.to_s.split('.')[0..1].join('.').to_s][klass.to_s.split('.').at(-1)] if klass.instance_of? Lore::Clause
+    case @attribute_values
+    when Lore::Table_Accessor: 
+      return @attribute_values[klass.table_name] 
+    when String: 
+      return @attribute_values[klass] 
+    when Lore::Clause: 
+      return @attribute_values[klass.split('.')[0..1].join('.')][klass.split('.').last] 
+    end
+
   end 
   alias [] abs_attr
 
