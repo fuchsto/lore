@@ -164,7 +164,7 @@ module Model_Instance
   end
 
   def get_label_string
-    if !@label_string || @touched then
+    if !@label_string || touched? then
       value = ''
       self.class.get_labels.each { |label_attrib|
         label_parts = label_attrib.split('.')
@@ -196,13 +196,14 @@ module Model_Instance
     @touched_fields.delete(attrib_name) if attrib_name
   end
 
-  def method_missing(meth, *args)
-    return @attribute_values_flat[meth]
-  end
-
   alias :obj_id :id if respond_to?(:id)
   def id
     @attribute_values_flat[:id] || obj_id
+  end
+
+  def method_missing(meth, *args)
+    return @attribute_values_flat[meth] unless meth.to_s.last == '='
+    set_attribute_value(meth.to_s[0..-2].to_sym, args.first)
   end
 
   # Set value for given attribute, e.g. for later commit. 
@@ -217,6 +218,10 @@ module Model_Instance
     touch(attrib_name)
     @attribute_values_flat[attrib_name.to_sym] = attrib_value
   end 
+  # Sets attribute value. Example: 
+  #   instance[:name] = 'Wombat'
+  #   instance.commit
+  alias []= set_attribute_value
 
   def set_attribute_values(value_hash)
     value_hash.each_pair { |attrib_name, value|
@@ -224,11 +229,7 @@ module Model_Instance
       @attribute_values_flat[attrib_name.to_sym] = value
     }
   end
-
-  # Sets attribute value. Example: 
-  #   instance[:name] = 'Wombat'
-  #   instance.commit
-  alias []= set_attribute_value
+  alias set set_attribute_values
 
   # Returns true if instance points to same records as other instance. 
   # Only compares primary key values. 
