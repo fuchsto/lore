@@ -58,11 +58,11 @@ class Symbol
   def has_element_ilike(other)
     Lore::Clause.new(self.to_s).has_element_ilike(other)
   end
-  def in(other)
-    Lore::Clause.new(self.to_s).in(other)
+  def in(other=nil, &block)
+    Lore::Clause.new(self.to_s).in(other, &block)
   end
-  def not_in(other)
-    Lore::Clause.new(self.to_s).not_in(other)
+  def not_in(other=nil, &block)
+    Lore::Clause.new(self.to_s).not_in(other, &block)
   end
   def between(s,e)
     Lore::Clause.new(self.to_s).between(s,e)
@@ -197,7 +197,10 @@ module Lore
     # 
     #   User.all.with(User.user_id.in( Admin.all(:user_id) ))
     # 
-    def in(nested_query_string)
+    def in(nested_query_string=nil, &block)
+      if block_given? then
+        nested_query_string = yield
+      end
       if(nested_query_string.instance_of? Refined_Select) then
         nested_query_string = nested_query_string.to_select
       elsif nested_query_string.instance_of? Array then

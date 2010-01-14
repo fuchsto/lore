@@ -32,8 +32,8 @@ class Context
   end
   
   def self.leave()
-    Lore.logger.debug { "Leaving context #{context_name}" } 
     context_name = @@context_stack.pop
+    Lore.logger.debug { "Leaving context #{context_name}" } 
   end
   
 end

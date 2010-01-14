@@ -202,7 +202,7 @@ module Model_Instance
   end
 
   def method_missing(meth, *args)
-    return @attribute_values_flat[meth] unless meth.to_s.last == '='
+    return @attribute_values_flat[meth] if meth && meth.to_s[-1] != '='
     set_attribute_value(meth.to_s[0..-2].to_sym, args.first)
   end
 
