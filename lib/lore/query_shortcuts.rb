@@ -189,6 +189,17 @@ module Lore
       entities.each &block
     end
 
+    # Handy wrapper for 
+    #   <request>.entities.map { |e| ... }
+    def map(&block)
+      entities.map(&block)
+    end
+    # Handy wrapper for 
+    #   <request>.entities.map { |e| ... }
+    def map!(&block)
+      entities.map!(&block)
+    end
+
     # Returns Clause instance containing this select statement. 
     # This is needed for all Clause methods expecting an inner select. 
     # Example: 
