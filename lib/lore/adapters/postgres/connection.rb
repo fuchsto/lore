@@ -66,15 +66,31 @@ class Connection
 
   def self.establish(db_name)
     begin
-    PGconn.connect(Lore.pg_server, 
-                   Lore.pg_port, 
-                   '', '', 
-                   db_name.to_s, 
-                   Lore.user_for(db_name.to_sym), 
-                   Lore.pass_for(db_name.to_sym))
+      PGconn.connect(Lore.pg_server, 
+                     Lore.pg_port, 
+                     '', '', 
+                     db_name.to_s, 
+                     Lore.user_for(db_name.to_sym), 
+                     Lore.pass_for(db_name.to_sym))
     rescue ::Exception => e
       raise Lore::Exceptions::Database_Exception.new(e.message)
     end
+  end
+
+  def self.commit_transaction(tx)
+    perform('COMMIT')
+  end
+
+  def self.begin_transaction(tx)
+    perform('BEGIN')
+  end
+
+  def self.rollback_transaction(tx)
+    perform('ROLLBACK')
+  end
+
+  def self.add_savepoint(tx)
+    perform("SAVEPOINT #{Context.current}_#{tx.depth}")
   end
   
 end # class Connection

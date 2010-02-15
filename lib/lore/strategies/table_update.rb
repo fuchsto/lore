@@ -93,7 +93,9 @@ module Lore
       
       Lore::Context.enter(@accessor.get_context) if @accessor.get_context
       begin
-        Lore::Connection.perform(query_string)
+        Lore::Transaction.exec { |t|
+          Lore::Connection.perform(query_string)
+        }
       ensure
         Lore::Context.leave if @accessor.get_context
       end
@@ -143,14 +145,13 @@ module Lore
       
       Lore::Context.enter(@accessor.get_context) if @accessor.get_context
       begin
-        Lore::Connection.perform("BEGIN;\n#{query_string}\nCOMMIT;")
+        Lore::Connection.perform(query_string)
+        @accessor.flush_entity_cache()
       rescue ::Exception => excep
-        Lore::Connection.perform("ROLLBACK;")
         raise excep
       ensure
         Lore::Context.leave if @accessor.get_context
       end
-      @accessor.flush_entity_cache()
     end # }}}
     
   end # class

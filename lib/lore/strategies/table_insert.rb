@@ -44,14 +44,15 @@ module Lore
                                   value_keys)
       
       begin
-        Lore::Connection.perform("BEGIN;\n#{query_string}\nCOMMIT;")
+        Lore::Transaction.exec { |t|
+          Lore::Connection.perform(query_string)
+        }
+        @accessor.flush_entity_cache()
       rescue ::Exception => excep
-        Lore::Connection.perform("ROLLBACK;")
         raise excep
       ensure
         Lore::Context.leave if @accessor.get_context
       end
-      @accessor.flush_entity_cache()
 
       # value_keys now are extended by sequence values: 
       return value_keys
