@@ -3,6 +3,43 @@ require 'monitor'
 
 module Lore
 
+  # To wrap database interaction in a transaction block, just use: 
+  #
+  #   Transaction.exec { |tx|
+  #
+  #       c1 = Car.create(:name => 'Ford Convertible')
+  #       tx.save
+  # 
+  #       # You can savely nest transactions (i.e. 
+  #       # reentrant transactions are okay): 
+  #       Transaction.exec { |tx2|
+  #         c2 = Car.create(:name => 'BMW Z5')
+  #       }
+  #
+  #       raise Exception.new('rollback to last savepoint')
+  #
+  #       # c1 still is in DB, c2 is not. 
+  #   }
+  #
+  # Using the block variable, you can trigger rollbacks, commits 
+  # and savepoints yourself. 
+  # This can be handy, but also dangerous. 
+  #
+  #   Transaction.exec { |tx|
+  #       c1 = Car.create(:name => 'Ford Convertible')
+  #       tx.rollback # c1 is gone now
+  #       c2 = Car.create(:name => 'Ford Convertible')
+  #       tx.commit # Careful: You are now outside of the transaction! 
+  #
+  #       # This call is not within a transaction
+  #       c3 = Car.create(:name => 'Ford Convertible')
+  #
+  #       tx.begin # Now another transaction is started. 
+  #       # So this call is 'secure' again. 
+  #       c4 = Car.create(:name => 'Ford Convertible')
+  #   }
+  #
+  #
   class Transaction
 
     attr_reader :context, :depth
