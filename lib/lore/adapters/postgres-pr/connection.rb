@@ -1,7 +1,6 @@
 
-$:.push('/opt/local/lib/ruby/1.8/postgres')
-
 require('postgres-pr/connection')
+require('lore/adapters/postgres/transaction_helpers')
 require('lore')
 require('lore/exceptions/database_exception')
 require('lore/adapters/context')
@@ -18,6 +17,7 @@ end
 module Lore
 
 class Connection 
+  extend Postgres::Transaction_Helpers
 
   @@query_count      = 0
   @@result_row_count = 0

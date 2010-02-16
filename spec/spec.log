@@ -1,0 +1,445 @@
+D, [2010-02-16T23:08:29.721628 #32406] DEBUG -- : Entering context test
+D, [2010-02-16T23:08:29.726241 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.726376 #32406] DEBUG -- :   sql|test| SELECT * FROM public.manufacturer WHERE false
+D, [2010-02-16T23:08:29.727156 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.727229 #32406] DEBUG -- :   sql|test| SELECT * FROM public.owner WHERE false
+D, [2010-02-16T23:08:29.727901 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.727969 #32406] DEBUG -- :   sql|test| SELECT * FROM public.vehicle WHERE false
+D, [2010-02-16T23:08:29.729176 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.729252 #32406] DEBUG -- :   sql|test| SELECT * FROM public.vehicle_owner WHERE false
+D, [2010-02-16T23:08:29.729834 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.729905 #32406] DEBUG -- :   sql|test| SELECT * FROM public.car_type WHERE false
+D, [2010-02-16T23:08:29.730474 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.730543 #32406] DEBUG -- :   sql|test| SELECT * FROM public.motor WHERE false
+D, [2010-02-16T23:08:29.731212 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.731286 #32406] DEBUG -- :   sql|test| SELECT * FROM public.motorized WHERE false
+D, [2010-02-16T23:08:29.732298 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.732371 #32406] DEBUG -- :   sql|test| SELECT * FROM public.car WHERE false
+D, [2010-02-16T23:08:29.733522 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.733596 #32406] DEBUG -- :   sql|test| SELECT * FROM public.car_features WHERE false
+D, [2010-02-16T23:08:29.734332 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.734404 #32406] DEBUG -- :   sql|test| SELECT * FROM public.trailer WHERE false
+D, [2010-02-16T23:08:29.735181 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.735250 #32406] DEBUG -- :   sql|test| SELECT * FROM public.motorbike WHERE false
+D, [2010-02-16T23:08:29.736054 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.736128 #32406] DEBUG -- :   sql|test| SELECT * FROM public.garage WHERE false
+D, [2010-02-16T23:08:29.736805 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.736879 #32406] DEBUG -- :   sql|test| SELECT * FROM public.robot WHERE false
+D, [2010-02-16T23:08:29.737879 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.737949 #32406] DEBUG -- :   sql|test| SELECT * FROM public.autobot WHERE false
+D, [2010-02-16T23:08:29.738945 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.739028 #32406] DEBUG -- :   sql|test| SELECT * FROM public.sports_car WHERE false
+D, [2010-02-16T23:08:29.739730 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.739803 #32406] DEBUG -- :   sql|test| SELECT * FROM public.convertible WHERE false
+D, [2010-02-16T23:08:29.741059 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.741136 #32406] DEBUG -- :   sql|test| SELECT * FROM public.asset WHERE false
+D, [2010-02-16T23:08:29.741965 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.742035 #32406] DEBUG -- :   sql|test| SELECT * FROM public.container WHERE false
+D, [2010-02-16T23:08:29.742589 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.742655 #32406] DEBUG -- :   sql|test| SELECT * FROM public.media_asset_info WHERE false
+D, [2010-02-16T23:08:29.743203 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.743272 #32406] DEBUG -- :   sql|test| SELECT * FROM public.document_asset_info WHERE false
+D, [2010-02-16T23:08:29.743833 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.743902 #32406] DEBUG -- :   sql|test| SELECT * FROM public.media_asset WHERE false
+D, [2010-02-16T23:08:29.745095 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.745194 #32406] DEBUG -- :   sql|test| SELECT * FROM public.document_asset WHERE false
+D, [2010-02-16T23:08:29.754689 #32406] DEBUG -- : -------- BEGIN FLUSH --------
+D, [2010-02-16T23:08:29.755187 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.755280 #32406] DEBUG -- :   sql|test| DELETE FROM public.vehicle 
+D, [2010-02-16T23:08:29.755341 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.755582 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.755659 #32406] DEBUG -- :   sql|test| DELETE FROM public.motorized 
+D, [2010-02-16T23:08:29.755722 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.755958 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.756034 #32406] DEBUG -- :   sql|test| DELETE FROM public.car 
+D, [2010-02-16T23:08:29.756097 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.756328 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.756428 #32406] DEBUG -- :   sql|test| DELETE FROM public.motorbike 
+D, [2010-02-16T23:08:29.756493 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.756727 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.756804 #32406] DEBUG -- :   sql|test| DELETE FROM public.garage 
+D, [2010-02-16T23:08:29.756863 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.757097 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.757177 #32406] DEBUG -- :   sql|test| DELETE FROM public.owner 
+D, [2010-02-16T23:08:29.757240 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.757468 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.757543 #32406] DEBUG -- :   sql|test| DELETE FROM public.vehicle_owner 
+D, [2010-02-16T23:08:29.757606 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.757840 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.757916 #32406] DEBUG -- :   sql|test| DELETE FROM public.asset 
+D, [2010-02-16T23:08:29.757979 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.758213 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.758290 #32406] DEBUG -- :   sql|test| DELETE FROM public.media_asset 
+D, [2010-02-16T23:08:29.758353 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.758593 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.758670 #32406] DEBUG -- :   sql|test| DELETE FROM public.document_asset 
+D, [2010-02-16T23:08:29.758729 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.758979 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.759067 #32406] DEBUG -- :   sql|test| DELETE FROM public.media_asset_info 
+D, [2010-02-16T23:08:29.759127 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.759363 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.759441 #32406] DEBUG -- :   sql|test| DELETE FROM public.document_asset_info 
+D, [2010-02-16T23:08:29.759508 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.759571 #32406] DEBUG -- : -------- END FLUSH ----------
+SIMPLE ROLLBACK
+D, [2010-02-16T23:08:29.759778 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.759845 #32406] DEBUG -- :   sql|test| BEGIN;
+D, [2010-02-16T23:08:29.759986 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Owner
+D, [2010-02-16T23:08:29.760052 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Owner: 
+D, [2010-02-16T23:08:29.760122 #32406] DEBUG -- : {"public.owner"=>{:name=>"Filou"}}
+D, [2010-02-16T23:08:29.760250 #32406] DEBUG -- : Found constraint for name: :format 
+D, [2010-02-16T23:08:29.760309 #32406] DEBUG -- : constraint is: /^([a-zA-Z_0-9])+$/ 
+D, [2010-02-16T23:08:29.760403 #32406] DEBUG -- : Found constraint for name: :minlength 
+D, [2010-02-16T23:08:29.760464 #32406] DEBUG -- : constraint is: 3 
+D, [2010-02-16T23:08:29.760524 #32406] DEBUG -- : Found constraint for name: :maxlength 
+D, [2010-02-16T23:08:29.760596 #32406] DEBUG -- : constraint is: 100 
+I, [2010-02-16T23:08:29.760674 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Owner
+D, [2010-02-16T23:08:29.761180 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.761255 #32406] DEBUG -- :   sql|test| SELECT nextval('public.owner_id_seq'::text) as owner_id_seq_temp; 
+D, [2010-02-16T23:08:29.761378 #32406] DEBUG -- : insert value for owner_id is "709"
+D, [2010-02-16T23:08:29.761446 #32406] DEBUG -- : insert value for name is "Filou"
+D, [2010-02-16T23:08:29.761786 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.761871 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.761930 #32406] DEBUG -- :   sql|test| INSERT INTO public.owner (owner_id, name) 
+D, [2010-02-16T23:08:29.761990 #32406] DEBUG -- :   sql|test|  VALUES ('709', 'Filou'); 
+D, [2010-02-16T23:08:29.762631 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.762708 #32406] DEBUG -- :   sql|test| SELECT * FROM public.owner  
+D, [2010-02-16T23:08:29.762767 #32406] DEBUG -- :   sql|test| WHERE public.owner.owner_id = '709'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.763095 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.763174 #32406] DEBUG -- :   sql|test| ROLLBACK;
+D, [2010-02-16T23:08:29.763662 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.763741 #32406] DEBUG -- :   sql|test| SELECT * FROM public.owner  
+D, [2010-02-16T23:08:29.763795 #32406] DEBUG -- :   sql|test| WHERE public.owner.owner_id = '709'      LIMIT 1  OFFSET 0
+.D, [2010-02-16T23:08:29.764105 #32406] DEBUG -- : -------- BEGIN FLUSH --------
+D, [2010-02-16T23:08:29.764338 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.764456 #32406] DEBUG -- :   sql|test| DELETE FROM public.vehicle 
+D, [2010-02-16T23:08:29.764517 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.764741 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.764826 #32406] DEBUG -- :   sql|test| DELETE FROM public.motorized 
+D, [2010-02-16T23:08:29.764889 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.765104 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.765183 #32406] DEBUG -- :   sql|test| DELETE FROM public.car 
+D, [2010-02-16T23:08:29.765246 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.765467 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.765543 #32406] DEBUG -- :   sql|test| DELETE FROM public.motorbike 
+D, [2010-02-16T23:08:29.765606 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.765821 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.765896 #32406] DEBUG -- :   sql|test| DELETE FROM public.garage 
+D, [2010-02-16T23:08:29.765959 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.766172 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.766248 #32406] DEBUG -- :   sql|test| DELETE FROM public.owner 
+D, [2010-02-16T23:08:29.766310 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.766528 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.766608 #32406] DEBUG -- :   sql|test| DELETE FROM public.vehicle_owner 
+D, [2010-02-16T23:08:29.766671 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.766890 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.766962 #32406] DEBUG -- :   sql|test| DELETE FROM public.asset 
+D, [2010-02-16T23:08:29.767025 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.767250 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.767327 #32406] DEBUG -- :   sql|test| DELETE FROM public.media_asset 
+D, [2010-02-16T23:08:29.767389 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.767608 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.767700 #32406] DEBUG -- :   sql|test| DELETE FROM public.document_asset 
+D, [2010-02-16T23:08:29.767759 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.767983 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.768066 #32406] DEBUG -- :   sql|test| DELETE FROM public.media_asset_info 
+D, [2010-02-16T23:08:29.768129 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.768346 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.768449 #32406] DEBUG -- :   sql|test| DELETE FROM public.document_asset_info 
+D, [2010-02-16T23:08:29.768510 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.768571 #32406] DEBUG -- : -------- END FLUSH ----------
+REENTRANT
+D, [2010-02-16T23:08:29.768753 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.768821 #32406] DEBUG -- :   sql|test| BEGIN;
+D, [2010-02-16T23:08:29.768946 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Owner
+D, [2010-02-16T23:08:29.769012 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Owner: 
+D, [2010-02-16T23:08:29.769078 #32406] DEBUG -- : {"public.owner"=>{:name=>"Filou"}}
+D, [2010-02-16T23:08:29.769197 #32406] DEBUG -- : Found constraint for name: :format 
+D, [2010-02-16T23:08:29.769254 #32406] DEBUG -- : constraint is: /^([a-zA-Z_0-9])+$/ 
+D, [2010-02-16T23:08:29.769326 #32406] DEBUG -- : Found constraint for name: :minlength 
+D, [2010-02-16T23:08:29.769387 #32406] DEBUG -- : constraint is: 3 
+D, [2010-02-16T23:08:29.769446 #32406] DEBUG -- : Found constraint for name: :maxlength 
+D, [2010-02-16T23:08:29.769504 #32406] DEBUG -- : constraint is: 100 
+I, [2010-02-16T23:08:29.769572 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Owner
+D, [2010-02-16T23:08:29.769796 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.769868 #32406] DEBUG -- :   sql|test| SELECT nextval('public.owner_id_seq'::text) as owner_id_seq_temp; 
+D, [2010-02-16T23:08:29.769973 #32406] DEBUG -- : insert value for owner_id is "710"
+D, [2010-02-16T23:08:29.770040 #32406] DEBUG -- : insert value for name is "Filou"
+D, [2010-02-16T23:08:29.770273 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.770349 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.770410 #32406] DEBUG -- :   sql|test| INSERT INTO public.owner (owner_id, name) 
+D, [2010-02-16T23:08:29.770468 #32406] DEBUG -- :   sql|test|  VALUES ('710', 'Filou'); 
+D, [2010-02-16T23:08:29.770884 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.770969 #32406] DEBUG -- :   sql|test| SELECT * FROM public.owner  
+D, [2010-02-16T23:08:29.771029 #32406] DEBUG -- :   sql|test| WHERE public.owner.owner_id = '710'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.771185 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Manufacturer
+D, [2010-02-16T23:08:29.771245 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Manufacturer: 
+D, [2010-02-16T23:08:29.771311 #32406] DEBUG -- : {"public.manufacturer"=>{:name=>"Ford"}}
+D, [2010-02-16T23:08:29.771417 #32406] DEBUG -- : Found constraint for name: :format 
+D, [2010-02-16T23:08:29.771474 #32406] DEBUG -- : constraint is: /^([a-zA-Z_0-9])+$/ 
+D, [2010-02-16T23:08:29.771550 #32406] DEBUG -- : Found constraint for name: :minlength 
+D, [2010-02-16T23:08:29.771613 #32406] DEBUG -- : constraint is: 3 
+D, [2010-02-16T23:08:29.771692 #32406] DEBUG -- : Found constraint for name: :maxlength 
+D, [2010-02-16T23:08:29.771748 #32406] DEBUG -- : constraint is: 100 
+I, [2010-02-16T23:08:29.771819 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Manufacturer
+D, [2010-02-16T23:08:29.772106 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.772176 #32406] DEBUG -- :   sql|test| SELECT nextval('public.manuf_id_seq'::text) as manuf_id_seq_temp; 
+D, [2010-02-16T23:08:29.772280 #32406] DEBUG -- : insert value for manuf_id is "1168"
+D, [2010-02-16T23:08:29.772346 #32406] DEBUG -- : insert value for name is "Ford"
+D, [2010-02-16T23:08:29.772624 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.772699 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.772760 #32406] DEBUG -- :   sql|test| INSERT INTO public.manufacturer (manuf_id, name) 
+D, [2010-02-16T23:08:29.772816 #32406] DEBUG -- :   sql|test|  VALUES ('1168', 'Ford'); 
+D, [2010-02-16T23:08:29.773338 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.773421 #32406] DEBUG -- :   sql|test| SELECT * FROM public.manufacturer  
+D, [2010-02-16T23:08:29.773480 #32406] DEBUG -- :   sql|test| WHERE public.manufacturer.manuf_id = '1168'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.773705 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Motor
+D, [2010-02-16T23:08:29.773772 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Motor: 
+D, [2010-02-16T23:08:29.773841 #32406] DEBUG -- : {"public.motor"=>{:motor_name=>"Ford V8", :kw=>120}}
+I, [2010-02-16T23:08:29.773961 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Motor
+D, [2010-02-16T23:08:29.774222 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.774295 #32406] DEBUG -- :   sql|test| SELECT nextval('public.motor_id_seq'::text) as motor_id_seq_temp; 
+D, [2010-02-16T23:08:29.774400 #32406] DEBUG -- : insert value for motor_name is "Ford V8"
+D, [2010-02-16T23:08:29.774467 #32406] DEBUG -- : insert value for id is "2706"
+D, [2010-02-16T23:08:29.774533 #32406] DEBUG -- : insert value for kw is 120
+D, [2010-02-16T23:08:29.774806 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.774877 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.774948 #32406] DEBUG -- :   sql|test| INSERT INTO public.motor (motor_name, id, kw) 
+D, [2010-02-16T23:08:29.775013 #32406] DEBUG -- :   sql|test|  VALUES ('Ford V8', '2706', '120'); 
+D, [2010-02-16T23:08:29.775838 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.775919 #32406] DEBUG -- :   sql|test| SELECT * FROM public.motor  
+D, [2010-02-16T23:08:29.775979 #32406] DEBUG -- :   sql|test| WHERE public.motor.id = '2706'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.776154 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Car_Type
+D, [2010-02-16T23:08:29.776219 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Car_Type: 
+D, [2010-02-16T23:08:29.776283 #32406] DEBUG -- : {"public.car_type"=>{:type_name=>"Limousine"}}
+I, [2010-02-16T23:08:29.776407 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Car_Type
+D, [2010-02-16T23:08:29.776676 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.776745 #32406] DEBUG -- :   sql|test| SELECT nextval('public.car_type_id_seq'::text) as car_type_id_seq_temp; 
+D, [2010-02-16T23:08:29.776851 #32406] DEBUG -- : insert value for type_name is "Limousine"
+D, [2010-02-16T23:08:29.776914 #32406] DEBUG -- : insert value for car_type_id is "2612"
+D, [2010-02-16T23:08:29.777201 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.777276 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.777334 #32406] DEBUG -- :   sql|test| INSERT INTO public.car_type (type_name, car_type_id) 
+D, [2010-02-16T23:08:29.777391 #32406] DEBUG -- :   sql|test|  VALUES ('Limousine', '2612'); 
+D, [2010-02-16T23:08:29.778165 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.778244 #32406] DEBUG -- :   sql|test| SELECT * FROM public.car_type  
+D, [2010-02-16T23:08:29.778303 #32406] DEBUG -- :   sql|test| WHERE public.car_type.car_type_id = '2612'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.778695 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Car
+D, [2010-02-16T23:08:29.778757 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Car: 
+D, [2010-02-16T23:08:29.778850 #32406] DEBUG -- : {"public.vehicle"=>{:num_seats=>100, :maxspeed=>"180", :owner_id=>710, :manuf_id=>1168, :name=>"fordmondeo"}, "public.car_type"=>{:car_type_id=>2612}, "public.motorized"=>{:motor_id=>2706}, "public.car"=>{:car_type_id=>2612, :num_doors=>3}, "public.motor"=>{}}
+D, [2010-02-16T23:08:29.779145 #32406] DEBUG -- : Found constraint for name: :format 
+D, [2010-02-16T23:08:29.779204 #32406] DEBUG -- : constraint is: /^([a-zA-Z_0-9])+$/ 
+D, [2010-02-16T23:08:29.779275 #32406] DEBUG -- : Found constraint for name: :minlength 
+D, [2010-02-16T23:08:29.779334 #32406] DEBUG -- : constraint is: 3 
+D, [2010-02-16T23:08:29.779393 #32406] DEBUG -- : Found constraint for name: :maxlength 
+D, [2010-02-16T23:08:29.779448 #32406] DEBUG -- : constraint is: 100 
+I, [2010-02-16T23:08:29.779531 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Car
+D, [2010-02-16T23:08:29.779809 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.779899 #32406] DEBUG -- :   sql|test| SELECT nextval('public.vehicle_id_seq'::text) as vehicle_id_seq_temp; 
+D, [2010-02-16T23:08:29.780162 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.780235 #32406] DEBUG -- :   sql|test| SELECT nextval('public.motorized_id_seq'::text) as motorized_id_seq_temp; 
+D, [2010-02-16T23:08:29.780512 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.780584 #32406] DEBUG -- :   sql|test| SELECT nextval('public.car_id_seq'::text) as car_id_seq_temp; 
+D, [2010-02-16T23:08:29.780723 #32406] DEBUG -- : insert value for num_seats is 100
+D, [2010-02-16T23:08:29.780802 #32406] DEBUG -- : insert value for maxspeed is "180"
+D, [2010-02-16T23:08:29.780866 #32406] DEBUG -- : insert value for owner_id is 710
+D, [2010-02-16T23:08:29.780931 #32406] DEBUG -- : insert value for manuf_id is 1168
+D, [2010-02-16T23:08:29.780993 #32406] DEBUG -- : insert value for name is "fordmondeo"
+D, [2010-02-16T23:08:29.781059 #32406] DEBUG -- : insert value for id is "3035"
+D, [2010-02-16T23:08:29.781143 #32406] DEBUG -- : insert value for vehicle_id is "3035"
+D, [2010-02-16T23:08:29.781205 #32406] DEBUG -- : insert value for motor_id is 2706
+D, [2010-02-16T23:08:29.781271 #32406] DEBUG -- : insert value for id is "2460"
+D, [2010-02-16T23:08:29.781353 #32406] DEBUG -- : insert value for motorized_id is "2460"
+D, [2010-02-16T23:08:29.781417 #32406] DEBUG -- : insert value for car_type_id is 2612
+D, [2010-02-16T23:08:29.781482 #32406] DEBUG -- : insert value for id is "2554"
+D, [2010-02-16T23:08:29.781543 #32406] DEBUG -- : insert value for num_doors is 3
+D, [2010-02-16T23:08:29.781923 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.782008 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.782065 #32406] DEBUG -- :   sql|test| INSERT INTO public.vehicle (num_seats, maxspeed, owner_id, manuf_id, name, id) 
+D, [2010-02-16T23:08:29.782122 #32406] DEBUG -- :   sql|test|  VALUES ('100', '180', '710', '1168', 'fordmondeo', '3035'); 
+D, [2010-02-16T23:08:29.782183 #32406] DEBUG -- :   sql|test| INSERT INTO public.motorized (vehicle_id, motor_id, id) 
+D, [2010-02-16T23:08:29.782243 #32406] DEBUG -- :   sql|test|  VALUES ('3035', '2706', '2460'); 
+D, [2010-02-16T23:08:29.782303 #32406] DEBUG -- :   sql|test| INSERT INTO public.car (motorized_id, car_type_id, id, num_doors) 
+D, [2010-02-16T23:08:29.782362 #32406] DEBUG -- :   sql|test|  VALUES ('2460', '2612', '2554', '3'); 
+D, [2010-02-16T23:08:29.784615 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.784714 #32406] DEBUG -- :   sql|test| SELECT * FROM public.car 
+D, [2010-02-16T23:08:29.784774 #32406] DEBUG -- :   sql|test|  JOIN public.car_type ON (public.car_type.car_type_id = public.car.car_type_id)
+D, [2010-02-16T23:08:29.784834 #32406] DEBUG -- :   sql|test|  JOIN public.motorized ON (public.motorized.id = public.car.motorized_id)
+D, [2010-02-16T23:08:29.784893 #32406] DEBUG -- :   sql|test|  JOIN public.vehicle ON (public.vehicle.id = public.motorized.vehicle_id)
+D, [2010-02-16T23:08:29.784953 #32406] DEBUG -- :   sql|test|  JOIN public.motor ON (public.motor.id = public.motorized.motor_id) 
+D, [2010-02-16T23:08:29.785012 #32406] DEBUG -- :   sql|test| WHERE public.car.id = '2554'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.785734 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.785806 #32406] DEBUG -- :   sql|test| COMMIT;
+.D, [2010-02-16T23:08:29.786282 #32406] DEBUG -- : -------- BEGIN FLUSH --------
+D, [2010-02-16T23:08:29.786734 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.786813 #32406] DEBUG -- :   sql|test| DELETE FROM public.vehicle 
+D, [2010-02-16T23:08:29.786876 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.787367 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.787443 #32406] DEBUG -- :   sql|test| DELETE FROM public.motorized 
+D, [2010-02-16T23:08:29.787505 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.787879 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.787968 #32406] DEBUG -- :   sql|test| DELETE FROM public.car 
+D, [2010-02-16T23:08:29.788030 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.788293 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.788371 #32406] DEBUG -- :   sql|test| DELETE FROM public.motorbike 
+D, [2010-02-16T23:08:29.788446 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.788721 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.788837 #32406] DEBUG -- :   sql|test| DELETE FROM public.garage 
+D, [2010-02-16T23:08:29.788892 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.789256 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.789343 #32406] DEBUG -- :   sql|test| DELETE FROM public.owner 
+D, [2010-02-16T23:08:29.789409 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.789645 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.789726 #32406] DEBUG -- :   sql|test| DELETE FROM public.vehicle_owner 
+D, [2010-02-16T23:08:29.789789 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.790014 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.790092 #32406] DEBUG -- :   sql|test| DELETE FROM public.asset 
+D, [2010-02-16T23:08:29.790156 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.790375 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.790462 #32406] DEBUG -- :   sql|test| DELETE FROM public.media_asset 
+D, [2010-02-16T23:08:29.790525 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.790746 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.790827 #32406] DEBUG -- :   sql|test| DELETE FROM public.document_asset 
+D, [2010-02-16T23:08:29.790890 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.791116 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.791192 #32406] DEBUG -- :   sql|test| DELETE FROM public.media_asset_info 
+D, [2010-02-16T23:08:29.791257 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.791475 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.791557 #32406] DEBUG -- :   sql|test| DELETE FROM public.document_asset_info 
+D, [2010-02-16T23:08:29.791620 #32406] DEBUG -- :   sql|test| WHERE 't'
+D, [2010-02-16T23:08:29.791685 #32406] DEBUG -- : -------- END FLUSH ----------
+SAVEPOINTS
+D, [2010-02-16T23:08:29.791898 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.791971 #32406] DEBUG -- :   sql|test| BEGIN;
+D, [2010-02-16T23:08:29.792102 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Owner
+D, [2010-02-16T23:08:29.792164 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Owner: 
+D, [2010-02-16T23:08:29.792232 #32406] DEBUG -- : {"public.owner"=>{:name=>"Filou"}}
+D, [2010-02-16T23:08:29.792353 #32406] DEBUG -- : Found constraint for name: :format 
+D, [2010-02-16T23:08:29.792430 #32406] DEBUG -- : constraint is: /^([a-zA-Z_0-9])+$/ 
+D, [2010-02-16T23:08:29.792504 #32406] DEBUG -- : Found constraint for name: :minlength 
+D, [2010-02-16T23:08:29.792583 #32406] DEBUG -- : constraint is: 3 
+D, [2010-02-16T23:08:29.792642 #32406] DEBUG -- : Found constraint for name: :maxlength 
+D, [2010-02-16T23:08:29.792701 #32406] DEBUG -- : constraint is: 100 
+I, [2010-02-16T23:08:29.792770 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Owner
+D, [2010-02-16T23:08:29.793011 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.793083 #32406] DEBUG -- :   sql|test| SELECT nextval('public.owner_id_seq'::text) as owner_id_seq_temp; 
+D, [2010-02-16T23:08:29.793196 #32406] DEBUG -- : insert value for owner_id is "711"
+D, [2010-02-16T23:08:29.793258 #32406] DEBUG -- : insert value for name is "Filou"
+D, [2010-02-16T23:08:29.793497 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.793572 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.793633 #32406] DEBUG -- :   sql|test| INSERT INTO public.owner (owner_id, name) 
+D, [2010-02-16T23:08:29.793689 #32406] DEBUG -- :   sql|test|  VALUES ('711', 'Filou'); 
+D, [2010-02-16T23:08:29.794129 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.794205 #32406] DEBUG -- :   sql|test| SELECT * FROM public.owner  
+D, [2010-02-16T23:08:29.794267 #32406] DEBUG -- :   sql|test| WHERE public.owner.owner_id = '711'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.794434 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Manufacturer
+D, [2010-02-16T23:08:29.794499 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Manufacturer: 
+D, [2010-02-16T23:08:29.794561 #32406] DEBUG -- : {"public.manufacturer"=>{:name=>"Ford"}}
+D, [2010-02-16T23:08:29.794676 #32406] DEBUG -- : Found constraint for name: :format 
+D, [2010-02-16T23:08:29.794733 #32406] DEBUG -- : constraint is: /^([a-zA-Z_0-9])+$/ 
+D, [2010-02-16T23:08:29.794800 #32406] DEBUG -- : Found constraint for name: :minlength 
+D, [2010-02-16T23:08:29.794861 #32406] DEBUG -- : constraint is: 3 
+D, [2010-02-16T23:08:29.794928 #32406] DEBUG -- : Found constraint for name: :maxlength 
+D, [2010-02-16T23:08:29.794979 #32406] DEBUG -- : constraint is: 100 
+I, [2010-02-16T23:08:29.795052 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Manufacturer
+D, [2010-02-16T23:08:29.795273 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.795345 #32406] DEBUG -- :   sql|test| SELECT nextval('public.manuf_id_seq'::text) as manuf_id_seq_temp; 
+D, [2010-02-16T23:08:29.795446 #32406] DEBUG -- : insert value for manuf_id is "1169"
+D, [2010-02-16T23:08:29.795518 #32406] DEBUG -- : insert value for name is "Ford"
+D, [2010-02-16T23:08:29.795747 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.795822 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.795902 #32406] DEBUG -- :   sql|test| INSERT INTO public.manufacturer (manuf_id, name) 
+D, [2010-02-16T23:08:29.795959 #32406] DEBUG -- :   sql|test|  VALUES ('1169', 'Ford'); 
+D, [2010-02-16T23:08:29.796463 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.796544 #32406] DEBUG -- :   sql|test| SELECT * FROM public.manufacturer  
+D, [2010-02-16T23:08:29.796603 #32406] DEBUG -- :   sql|test| WHERE public.manufacturer.manuf_id = '1169'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.796804 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.796873 #32406] DEBUG -- :   sql|test| SAVEPOINT test_0;
+D, [2010-02-16T23:08:29.796978 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Motor
+D, [2010-02-16T23:08:29.797040 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Motor: 
+D, [2010-02-16T23:08:29.797100 #32406] DEBUG -- : {"public.motor"=>{:motor_name=>"Ford V8", :kw=>120}}
+I, [2010-02-16T23:08:29.797219 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Motor
+D, [2010-02-16T23:08:29.797421 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.797494 #32406] DEBUG -- :   sql|test| SELECT nextval('public.motor_id_seq'::text) as motor_id_seq_temp; 
+D, [2010-02-16T23:08:29.797618 #32406] DEBUG -- : insert value for motor_name is "Ford V8"
+D, [2010-02-16T23:08:29.797682 #32406] DEBUG -- : insert value for id is "2707"
+D, [2010-02-16T23:08:29.797746 #32406] DEBUG -- : insert value for kw is 120
+D, [2010-02-16T23:08:29.797991 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.798074 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.798136 #32406] DEBUG -- :   sql|test| INSERT INTO public.motor (motor_name, id, kw) 
+D, [2010-02-16T23:08:29.798193 #32406] DEBUG -- :   sql|test|  VALUES ('Ford V8', '2707', '120'); 
+D, [2010-02-16T23:08:29.798902 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.798978 #32406] DEBUG -- :   sql|test| SELECT * FROM public.motor  
+D, [2010-02-16T23:08:29.799045 #32406] DEBUG -- :   sql|test| WHERE public.motor.id = '2707'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.799201 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Car_Type
+D, [2010-02-16T23:08:29.799258 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Car_Type: 
+D, [2010-02-16T23:08:29.799323 #32406] DEBUG -- : {"public.car_type"=>{:type_name=>"Limousine"}}
+I, [2010-02-16T23:08:29.799429 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Car_Type
+D, [2010-02-16T23:08:29.799637 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.799708 #32406] DEBUG -- :   sql|test| SELECT nextval('public.car_type_id_seq'::text) as car_type_id_seq_temp; 
+D, [2010-02-16T23:08:29.799808 #32406] DEBUG -- : insert value for type_name is "Limousine"
+D, [2010-02-16T23:08:29.799875 #32406] DEBUG -- : insert value for car_type_id is "2613"
+D, [2010-02-16T23:08:29.800142 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.800220 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.800274 #32406] DEBUG -- :   sql|test| INSERT INTO public.car_type (type_name, car_type_id) 
+D, [2010-02-16T23:08:29.800331 #32406] DEBUG -- :   sql|test|  VALUES ('Limousine', '2613'); 
+D, [2010-02-16T23:08:29.801047 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.801135 #32406] DEBUG -- :   sql|test| SELECT * FROM public.car_type  
+D, [2010-02-16T23:08:29.801197 #32406] DEBUG -- :   sql|test| WHERE public.car_type.car_type_id = '2613'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.801555 #32406] DEBUG -- : Polymorphic create on Lore::Spec_Fixtures::Models::Car
+D, [2010-02-16T23:08:29.801617 #32406] DEBUG -- : Validating attributes for Lore::Spec_Fixtures::Models::Car: 
+D, [2010-02-16T23:08:29.801712 #32406] DEBUG -- : {"public.vehicle"=>{:num_seats=>100, :maxspeed=>"180", :owner_id=>711, :manuf_id=>1169, :name=>"fordmondeo"}, "public.car_type"=>{:car_type_id=>2613}, "public.motorized"=>{:motor_id=>2707}, "public.car"=>{:car_type_id=>2613, :num_doors=>3}, "public.motor"=>{}}
+D, [2010-02-16T23:08:29.801981 #32406] DEBUG -- : Found constraint for name: :format 
+D, [2010-02-16T23:08:29.802049 #32406] DEBUG -- : constraint is: /^([a-zA-Z_0-9])+$/ 
+D, [2010-02-16T23:08:29.802117 #32406] DEBUG -- : Found constraint for name: :minlength 
+D, [2010-02-16T23:08:29.802176 #32406] DEBUG -- : constraint is: 3 
+D, [2010-02-16T23:08:29.802235 #32406] DEBUG -- : Found constraint for name: :maxlength 
+D, [2010-02-16T23:08:29.802294 #32406] DEBUG -- : constraint is: 100 
+I, [2010-02-16T23:08:29.802377 #32406]  INFO -- : PERFORM INSERT on Lore::Spec_Fixtures::Models::Car
+D, [2010-02-16T23:08:29.802599 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.802667 #32406] DEBUG -- :   sql|test| SELECT nextval('public.vehicle_id_seq'::text) as vehicle_id_seq_temp; 
+D, [2010-02-16T23:08:29.802896 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.802960 #32406] DEBUG -- :   sql|test| SELECT nextval('public.motorized_id_seq'::text) as motorized_id_seq_temp; 
+D, [2010-02-16T23:08:29.803174 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.803242 #32406] DEBUG -- :   sql|test| SELECT nextval('public.car_id_seq'::text) as car_id_seq_temp; 
+D, [2010-02-16T23:08:29.803392 #32406] DEBUG -- : insert value for num_seats is 100
+D, [2010-02-16T23:08:29.803464 #32406] DEBUG -- : insert value for maxspeed is "180"
+D, [2010-02-16T23:08:29.803529 #32406] DEBUG -- : insert value for owner_id is 711
+D, [2010-02-16T23:08:29.803594 #32406] DEBUG -- : insert value for manuf_id is 1169
+D, [2010-02-16T23:08:29.803660 #32406] DEBUG -- : insert value for name is "fordmondeo"
+D, [2010-02-16T23:08:29.803728 #32406] DEBUG -- : insert value for id is "3036"
+D, [2010-02-16T23:08:29.803808 #32406] DEBUG -- : insert value for vehicle_id is "3036"
+D, [2010-02-16T23:08:29.803898 #32406] DEBUG -- : insert value for motor_id is 2707
+D, [2010-02-16T23:08:29.803965 #32406] DEBUG -- : insert value for id is "2461"
+D, [2010-02-16T23:08:29.804044 #32406] DEBUG -- : insert value for motorized_id is "2461"
+D, [2010-02-16T23:08:29.804109 #32406] DEBUG -- : insert value for car_type_id is 2613
+D, [2010-02-16T23:08:29.804174 #32406] DEBUG -- : insert value for id is "2555"
+D, [2010-02-16T23:08:29.804237 #32406] DEBUG -- : insert value for num_doors is 3
+D, [2010-02-16T23:08:29.804587 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.804669 #32406] DEBUG -- :   sql|test| 
+D, [2010-02-16T23:08:29.804728 #32406] DEBUG -- :   sql|test| INSERT INTO public.vehicle (num_seats, maxspeed, owner_id, manuf_id, name, id) 
+D, [2010-02-16T23:08:29.804788 #32406] DEBUG -- :   sql|test|  VALUES ('100', '180', '711', '1169', 'fordmondeo', '3036'); 
+D, [2010-02-16T23:08:29.804845 #32406] DEBUG -- :   sql|test| INSERT INTO public.motorized (vehicle_id, motor_id, id) 
+D, [2010-02-16T23:08:29.804906 #32406] DEBUG -- :   sql|test|  VALUES ('3036', '2707', '2461'); 
+D, [2010-02-16T23:08:29.804966 #32406] DEBUG -- :   sql|test| INSERT INTO public.car (motorized_id, car_type_id, id, num_doors) 
+D, [2010-02-16T23:08:29.805025 #32406] DEBUG -- :   sql|test|  VALUES ('2461', '2613', '2555', '3'); 
+D, [2010-02-16T23:08:29.806923 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.807028 #32406] DEBUG -- :   sql|test| SELECT * FROM public.car 
+D, [2010-02-16T23:08:29.807086 #32406] DEBUG -- :   sql|test|  JOIN public.car_type ON (public.car_type.car_type_id = public.car.car_type_id)
+D, [2010-02-16T23:08:29.807144 #32406] DEBUG -- :   sql|test|  JOIN public.motorized ON (public.motorized.id = public.car.motorized_id)
+D, [2010-02-16T23:08:29.807205 #32406] DEBUG -- :   sql|test|  JOIN public.vehicle ON (public.vehicle.id = public.motorized.vehicle_id)
+D, [2010-02-16T23:08:29.807265 #32406] DEBUG -- :   sql|test|  JOIN public.motor ON (public.motor.id = public.motorized.motor_id) 
+D, [2010-02-16T23:08:29.807326 #32406] DEBUG -- :   sql|test| WHERE public.car.id = '2555'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.807715 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.807786 #32406] DEBUG -- :   sql|test| ROLLBACK TO SAVEPOINT test_0;
+D, [2010-02-16T23:08:29.808477 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.808557 #32406] DEBUG -- :   sql|test| SELECT * FROM public.owner  
+D, [2010-02-16T23:08:29.808619 #32406] DEBUG -- :   sql|test| WHERE public.owner.owner_id = '711'      LIMIT 1  OFFSET 0
+D, [2010-02-16T23:08:29.809147 #32406] DEBUG -- :   sql|test|----------------------
+D, [2010-02-16T23:08:29.809226 #32406] DEBUG -- :   sql|test| SELECT * FROM public.manufacturer  
+D, [2010-02-16T23:08:29.809285 #32406] DEBUG -- :   sql|test| WHERE public.manufacturer.manuf_id = '1169'      LIMIT 1  OFFSET 0
+.
+
+Finished in 0.06231 seconds
+
+3 examples, 0 failures

@@ -4,22 +4,24 @@ require 'monitor'
 module Lore
 
   class Transaction
-#   include MonitorMixin
 
-    attr_reader :context
-    attr_reader :on_rollback, :on_commit
+    attr_reader :context, :depth
+    attr_reader :on_rollback, :on_commit, :last_savepoint
 
     def initialize
       Thread.current['lore_tx'] = [] unless Thread.current['lore_tx']
 
-      wrapping_tx  = current_transaction()
-      @context     = Context.current
-      @on_rollback = []
-      @on_commit   = []
-      @finalized   = true
-      @committed   = false
-      @parent_tx   = Thread.current['lore_tx'][-1]
-      @monitor     = Monitor.new
+      wrapping_tx     = current_transaction()
+      @depth          = 0 
+      @depth          = (wrapping_tx.depth + 1) if wrapping_tx
+      @context        = Context.current
+      @on_rollback    = []
+      @on_commit      = []
+      @finalized      = true
+      @committed      = false
+      @parent_tx      = wrapping_tx
+      @monitor        = Monitor.new
+      @last_savepoint = false
     end
 
     def finalized?
@@ -55,9 +57,9 @@ module Lore
 
   public
 
-    def depth
-      Thread.current['lore_tx'].length
-    end
+#   def depth
+#     Thread.current['lore_tx'].length
+#   end
 
     # Removes current (this) transaction from 
     # Lore's transaction stack. 
@@ -113,7 +115,7 @@ module Lore
 
     # Creates a savepoint. 
     def save
-      Connection.add_savepoint(self)
+      @last_savepoint = Connection.add_savepoint(self)
     end
 
   end

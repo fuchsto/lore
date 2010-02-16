@@ -1,15 +1,15 @@
 
-$:.push('/opt/local/lib/ruby/1.8/postgres')
-
 require('postgres')
 require('lore')
 require('lore/exceptions/database_exception')
 require('lore/adapters/context')
 require('lore/adapters/postgres/result')
+require('lore/adapters/postgres/transaction_helpers')
 
 module Lore
 
 class Connection 
+  extend Postgres::Transaction_Helpers
 
   @@query_count      = 0
   @@result_row_count = 0
@@ -77,22 +77,6 @@ class Connection
     end
   end
 
-  def self.commit_transaction(tx)
-    perform('COMMIT')
-  end
-
-  def self.begin_transaction(tx)
-    perform('BEGIN')
-  end
-
-  def self.rollback_transaction(tx)
-    perform('ROLLBACK')
-  end
-
-  def self.add_savepoint(tx)
-    perform("SAVEPOINT #{Context.current}_#{tx.depth}")
-  end
-  
 end # class Connection
 
 end # module Lore
