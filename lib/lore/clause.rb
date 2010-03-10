@@ -76,7 +76,13 @@ module Lore
       if value.instance_of? Clause then
         value = value.field_name
       else 
-        value = value.to_s.lore_escape
+        if value.instance_of? TrueClass then
+          value = 't'
+        elsif value.instance_of? FalseClass then
+          value = 'f'
+        else 
+          value = value.to_s.lore_escape
+        end
         value = '\'' << value << '\''
       end
       value
@@ -244,62 +250,57 @@ module Lore
     end
 
     def is_not_null()
-      @value_string = @field_name + ' IS NOT NULL'
+      @value_string = "#{@field_name} IS NOT NULL"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
 	
     def <(value) 
-      @value_string = @field_name + ' < ' << Lore.parse_field_value(value)
+      @value_string = "#{@field_name} < #{Lore.parse_field_value(value)}"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def <=(value) 
-      @value_string = @field_name + ' <= ' << Lore.parse_field_value(value)
+      @value_string = "#{@field_name} <= #{Lore.parse_field_value(value)}"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def >(value) 
-      @value_string = @field_name + ' > ' << Lore.parse_field_value(value)
+      @value_string = "#{@field_name} > #{Lore.parse_field_value(value)}"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def >=(value) 
-      @value_string = @field_name + ' >= ' << Lore.parse_field_value(value)
+      @value_string = "#{@field_name} >= #{Lore.parse_field_value(value)}"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def like(value) 
       value = value.to_s.lore_escape
-      @value_string = @field_name + ' LIKE ' << Lore.parse_field_value(value)
+      @value_string = "#{@field_name} LIKE #{Lore.parse_field_value(value)}"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def not_like(value) 
       value = value.to_s.lore_escape
-      @value_string = @field_name + ' NOT LIKE ' << Lore.parse_field_value(value)
+      @value_string = "#{@field_name} NOT LIKE #{Lore.parse_field_value(value)}"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def ilike(value) 
       value = value.to_s.lore_escape
-      @value_string = @field_name + ' ILIKE ' << Lore.parse_field_value(value)
+      @value_string = "#{@field_name} ILIKE #{Lore.parse_field_value(value)}"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def not_ilike(value) 
       value = value.to_s.lore_escape
-      @value_string = @field_name + ' NOT ILIKE ' << Lore.parse_field_value(value)
+      @value_string = "#{@field_name} NOT ILIKE #{Lore.parse_field_value(value)}"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def posreg_like(value) 
       value = value.to_s.lore_escape
-      @value_string = @field_name + ' ~* ' << Lore.parse_field_value(value)
+      @value_string = "#{@field_name} ~* #{Lore.parse_field_value(value)}"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def ==(value) 
-      if value.instance_of? Clause then
-        value = "(#{value.field_name})"
-      else 
-        value = value.to_s.lore_escape
-        value = '\'' << value << '\''
-      end
       if(value != :NULL)
-        @value_string = @field_name << ' = ' << value
+        value = Lore.parse_field_value(value)
+        @value_string = "#{@field_name} = #{value}"
       else
-        @value_string = @field_name << ' IS NULL' 
+        @value_string = "#{@field_name} IS NULL"
       end
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
@@ -307,9 +308,10 @@ module Lore
 
     def <=>(value) 
       if(value != :NULL)
-        @value_string = @field_name << ' != ' << Lore.parse_field_value(value)
+        value = Lore.parse_field_value(value)
+        @value_string = "#{@field_name} != #{Lore.parse_field_value(value)}"
       else 
-        @value_string = @field_name << ' NOT NULL '
+        @value_string = "#{@field_name} NOT NULL "
       end
       Clause.new(@field_name, @left_side+@value_string, '', @plan)
     end
@@ -337,8 +339,8 @@ module Lore
     
     def has_element(element)
       element = element.to_s if element.kind_of? Clause
-      element = '\''+element.lore_escape+'\'' if element.kind_of? String
-      @value_string = element + ' = ANY ('  << @field_name+ ')'
+      element = "'#{element.lore_escape}'" if element.kind_of? String
+      @value_string = "#{element} = ANY (#{@field_name})"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
 
@@ -349,8 +351,8 @@ module Lore
     #
     def has_element_like(element)
       element = element.to_s if element.kind_of? Clause
-      element = '\''+element.lore_escape+'\'' if element.kind_of? String
-      @value_string = element + ' ~~~ ANY ('  << @field_name+ ')'
+      element = "'#{element.lore_escape}'" if element.kind_of? String
+      @value_string = "#{element} ~~~ ANY (#{@field_name})"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
 
@@ -361,8 +363,8 @@ module Lore
     #
     def has_element_ilike(element)
       element = element.to_s if element.kind_of? Clause
-      element = '\'' + element.lore_escape + '\'' if element.kind_of? String
-      @value_string = element + ' ~~~~ ANY (' << @field_name+ ')'
+      element = "'#{element.lore_escape}'" if element.kind_of? String
+      @value_string = "#{element} ~~~~ ANY (#{@field_name})"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
 
@@ -379,7 +381,7 @@ module Lore
     end
     
     def inspect
-      return 'Clause('+to_s+')'
+      return "Clause(#{to_s})"
     end
 
     def to_sql

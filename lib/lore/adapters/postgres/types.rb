@@ -64,6 +64,7 @@ module Lore
       PG_TIME                => lambda { |v| v.to_s }, 
       PG_TIMESTAMP_TIMEZONE  => lambda { |v| v.to_s }, 
       PG_TIMESTAMP           => lambda { |v| v.to_s }, 
+    # PG_BOOL                => lambda { |v| if v == true then 't' elsif v == false then 'f' else v.to_s end }
     }
     @@output_filters = { 
       PG_VCHAR_LIST          => lambda { |v| v[1..-2].split(',') }, 
