@@ -296,23 +296,24 @@ module Lore
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     def ==(value) 
-      if(value != :NULL)
-        value = Lore.parse_field_value(value)
-        @value_string = "#{@field_name} = #{value}"
-      else
+      if(value.is_a?(Symbol) && value == :NULL) then
         @value_string = "#{@field_name} IS NULL"
+      else
+        value = Lore.parse_field_value(value)
+        @value_string = "#{@field_name} = (#{value})"
       end
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     alias is ==
 
     def <=>(value) 
-      if(value != :NULL)
-        @value_string = "#{@field_name} != #{Lore.parse_field_value(value)}"
-      else 
-        @value_string = "#{@field_name} NOT NULL "
+      if(value.is_a?(Symbol) && value == :NULL) then
+        @value_string = "#{@field_name} NOT NULL"
+      else
+        value = Lore.parse_field_value(value)
+        @value_string = "#{@field_name} = (#{value})"
       end
-      Clause.new(@field_name, @left_side+@value_string, '', @plan)
+      Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
     alias is_not <=>
 
