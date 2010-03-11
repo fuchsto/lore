@@ -308,7 +308,6 @@ module Lore
 
     def <=>(value) 
       if(value != :NULL)
-        value = Lore.parse_field_value(value)
         @value_string = "#{@field_name} != #{Lore.parse_field_value(value)}"
       else 
         @value_string = "#{@field_name} NOT NULL "
