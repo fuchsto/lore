@@ -308,10 +308,10 @@ module Lore
 
     def <=>(value) 
       if(value.is_a?(Symbol) && value == :NULL) then
-        @value_string = "#{@field_name} NOT NULL"
+        @value_string = "#{@field_name} != NULL"
       else
         value = Lore.parse_field_value(value)
-        @value_string = "#{@field_name} = (#{value})"
+        @value_string = "#{@field_name} != (#{value})"
       end
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
