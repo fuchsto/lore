@@ -1,15 +1,15 @@
 
-$:.push('/opt/local/lib/ruby/1.8/postgres')
-
 require('postgres')
 require('lore')
 require('lore/exceptions/database_exception')
 require('lore/adapters/context')
 require('lore/adapters/postgres/result')
+require('lore/adapters/postgres/transaction_helpers')
 
 module Lore
 
 class Connection 
+  extend Postgres::Transaction_Helpers
 
   @@query_count      = 0
   @@result_row_count = 0
@@ -66,17 +66,17 @@ class Connection
 
   def self.establish(db_name)
     begin
-    PGconn.connect(Lore.pg_server, 
-                   Lore.pg_port, 
-                   '', '', 
-                   db_name.to_s, 
-                   Lore.user_for(db_name.to_sym), 
-                   Lore.pass_for(db_name.to_sym))
+      PGconn.connect(Lore.pg_server, 
+                     Lore.pg_port, 
+                     '', '', 
+                     db_name.to_s, 
+                     Lore.user_for(db_name.to_sym), 
+                     Lore.pass_for(db_name.to_sym))
     rescue ::Exception => e
       raise Lore::Exceptions::Database_Exception.new(e.message)
     end
   end
-  
+
 end # class Connection
 
 end # module Lore

@@ -21,6 +21,9 @@ class Context
   def self.get_context
     @@context_stack.last
   end
+  def self.current
+    @@context_stack.last
+  end
 
   def self.inspect
     @@context_stack.inspect
