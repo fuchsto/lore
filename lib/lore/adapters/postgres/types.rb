@@ -8,6 +8,7 @@ module Lore
   PG_INT                 = 23
   PG_TEXT                = 25
   PG_FLOAT               = 701
+  PG_INT_LIST            = 1007
   PG_CHARACTER           = 1042
   PG_VARCHAR             = 1043
   PG_TIME                = 1083
@@ -23,6 +24,7 @@ module Lore
     PG_SMALLINT            => 'small int',
     PG_CHAR                => 'char',
     PG_INT                 => 'integer',
+    PG_INT_LIST            => 'integer[]',
     PG_TEXT                => 'text',
     PG_FLOAT               => 'float', 
     PG_CHARACTER           => 'character',
@@ -38,10 +40,12 @@ module Lore
   class Type
 
     def self.integer; 'integer'; end
+    def self.integer_list; 'integer[]'; end
     def self.boolean; 'boolean'; end
     def self.bytea; 'bytea'; end
     def self.char; 'char'; end
     def self.varchar(length=255); 'character varying(' << length.to_s + ')'; end
+    def self.varchar_list; 'varchar[]'; end
     def self.character(length=255); 'character(' << length.to_s + ')'; end
     def self.time; 'time'; end
     def self.timestamp; 'timestamp'; end
@@ -59,6 +63,7 @@ module Lore
 
     @@input_filters = { 
       PG_VCHAR_LIST          => lambda { |v| "{#{v.join(',')}}" }, 
+      PG_INT_LIST            => lambda { |v| "{#{v.join(',')}}" }, 
       PG_BOOL                => lambda { |v| if (v && v != 'f' && v != 'false' || v == 't' || v == 'true') then 't' elsif (v.instance_of?(FalseClass) || v == 'f' || v == 'false') then 'f' else nil end }, 
       PG_DATE                => lambda { |v| v.to_s }, 
       PG_TIME                => lambda { |v| v.to_s }, 
@@ -67,6 +72,7 @@ module Lore
     }
     @@output_filters = { 
       PG_VCHAR_LIST          => lambda { |v| v[1..-2].split(',') }, 
+      PG_INT_LIST            => lambda { |v| v[1..-2].split(',') }, 
       PG_INT                 => lambda { |v| if v then v.to_i else nil end }, 
       PG_SMALLINT            => lambda { |v| if v then v.to_i else nil end },
       PG_FLOAT               => lambda { |v| if v && v.length > 0 then v.to_f else nil end }, 
