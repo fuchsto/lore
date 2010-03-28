@@ -530,9 +530,10 @@ class Table_Accessor
     @__associations__.add_mapping(*accessors)
   end # }}}
   
-  def self.validates(attrib, constraints)
+  # 
+  def self.validates(attrib, constraints={}, &block)
   # {{{
-    @__attributes__.add_constraints(attrib, constraints)
+    @__attributes__.add_constraints(attrib, constraints, &block)
   end # }}}
 
   def self.add_input_filter(attrib, &block) 

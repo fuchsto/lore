@@ -191,7 +191,7 @@ module Lore
       @primary_keys.update(parent_attributes.primary_keys)
     end
 
-    def add_constraints(attrib, constraints={})
+    def add_constraints(attrib, constraints={}, &block)
       if attrib.kind_of? Clause then
         attrib_split = attrib.to_s.split('.')
         table        = attrib_split[0..-2]
@@ -204,26 +204,30 @@ module Lore
       @constraints[table]         = Hash.new unless @constraints[table]
       @constraints[table][attrib] = Hash.new unless @constraints[table][attrib]
 
-      if constraints[:mandatory] then
-        set_required(table, attrib.to_s)
-      end
-      if constraints[:format] then
-        @constraints[table][attrib][:format] = constraints[:format]
-      end
-      if constraints[:length] then
-        if constraints[:length].kind_of? Range then
-          @constraints[table][attrib][:minlength] = constraints[:length].first
-          @constraints[table][attrib][:maxlength] = constraints[:length].last
-        else 
-          @constraints[table][attrib][:minlength] = constraints[:length]
-          @constraints[table][attrib][:maxlength] = constraints[:length]
+      if block_given? then
+        @constraints[table][attrib][:proc] = block
+      else
+        if constraints[:mandatory] then
+          set_required(table, attrib.to_s)
         end
-      end
-      if constraints[:minlength] then
-        @constraints[table][attrib][:minlength] = constraints[:minlength]
-      end
-      if constraints[:maxlength] then
-        @constraints[table][attrib][:maxlength] = constraints[:maxlength]
+        if constraints[:format] then
+          @constraints[table][attrib][:format] = constraints[:format]
+        end
+        if constraints[:length] then
+          if constraints[:length].kind_of? Range then
+            @constraints[table][attrib][:minlength] = constraints[:length].first
+            @constraints[table][attrib][:maxlength] = constraints[:length].last
+          else 
+            @constraints[table][attrib][:minlength] = constraints[:length]
+            @constraints[table][attrib][:maxlength] = constraints[:length]
+          end
+        end
+        if constraints[:minlength] then
+          @constraints[table][attrib][:minlength] = constraints[:minlength]
+        end
+        if constraints[:maxlength] then
+          @constraints[table][attrib][:maxlength] = constraints[:maxlength]
+        end
       end
     end
     

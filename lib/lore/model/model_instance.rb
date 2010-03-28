@@ -357,8 +357,8 @@ module Model_Instance
     Lore.logger.debug { "Updating #{self.to_s}. " }
     Lore.logger.debug { "Touched values are: #{@touched_fields.inspect}" }
 
+    return false if @touched_fields.nil? || @touched_fields.length == 0
     @touched_fields.uniq!
-    return false if @touched_fields.length == 0
 
     # TODO: Optimize this! 
     @attribute_values = self.class.distribute_attrib_values(@attribute_values_flat)
