@@ -37,6 +37,7 @@ module Validation
       Lore::PG_DATE               => Proc.new { |value, required| !required || !value.empty? },  # TODO
       Lore::PG_TIMESTAMP          => Proc.new { |value, required| !required || !value.empty? },  # TODO
       Lore::PG_VCHAR_LIST         => Proc.new { |value, required| !required || !value.empty? },  # TODO
+      Lore::PG_INT_LIST           => Proc.new { |value, required| !required || !value.empty? },  # TODO
       Lore::PG_TIMESTAMP_TIMEZONE => Proc.new { |value, required| !required || !value.empty? }   # TODO
     }
 
