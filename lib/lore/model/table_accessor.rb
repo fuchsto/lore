@@ -920,9 +920,13 @@ class Table_Accessor
     Lore::Context.enter(@context) unless @context.nil?
     begin
       fields_result = Lore::Connection.perform("SELECT * FROM #{@table_name} WHERE false")
+    rescue PGError => e
+      log { "Could not load table info for table '#{@table_name}'" }
     ensure
       Lore::Context.leave unless @context.nil?
     end
+    return unless fields_result
+
     @__attributes__   = Attribute_Settings.new(self, 
                                                fields_result.field_names(), 
                                                fields_result.field_types())
