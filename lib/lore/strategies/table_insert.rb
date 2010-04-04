@@ -1,4 +1,6 @@
 
+require('lore/transaction')
+
 module Lore
 
   class Table_Insert

@@ -918,18 +918,22 @@ class Table_Accessor
     return if @initialized
 
     Lore::Context.enter(@context) unless @context.nil?
+    field_names   = []
+    field_types   = {}
+    fields_result = false
     begin
       fields_result = Lore::Connection.perform("SELECT * FROM #{@table_name} WHERE false")
-    rescue PGError => e
-      log { "Could not load table info for table '#{@table_name}'" }
+      field_names   = fields_result.field_names()
+      field_types   = fields_result.field_types()
+    rescue Exception => e
+      log("Could not load table info for table '#{@table_name}'")
     ensure
       Lore::Context.leave unless @context.nil?
     end
-    return unless fields_result
 
     @__attributes__   = Attribute_Settings.new(self, 
-                                               fields_result.field_names(), 
-                                               fields_result.field_types())
+                                               field_names, 
+                                               field_types)
 
     @__associations__ = Associations.new(self)
 
@@ -950,7 +954,7 @@ class Table_Accessor
 
     define_attribute_clause_methods()
 
-    @initialized = true
+    @initialized = true if fields_result
   end # }}}
 
   def self.define_attribute_clause_methods
