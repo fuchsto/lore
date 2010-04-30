@@ -183,6 +183,12 @@ module Lore
       Clause_Parser.new(accessor)
     end
 
+    def cast(type_name)
+    # @field_name << "::#{type_name}"
+      @field_name = "cast(#{@field_name} as #{type_name})"
+      return self
+    end
+
     # Check for Refined_Select needed for functionality of 
     # Refined_Select. Example: 
     # 
