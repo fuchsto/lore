@@ -1,5 +1,10 @@
 
-Didn't have the time to write a "real" readme, but let me show you ...
+For simple and most common usage, see the cheat sheet in the project wiki on github: 
+
+http://wiki.github.com/fuchsto/lore/
+
+
+Didn't have the time to write a "real" readme so far, but let me show you ...
 
 = A short comparison
 

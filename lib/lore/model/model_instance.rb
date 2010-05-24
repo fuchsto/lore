@@ -416,7 +416,8 @@ module Model_Instance
   end # }}}
   
   def label
-    @attribute_values_flat[table_accessor.get_label.to_sym]
+    label_field = table_accessor.get_label
+    @attribute_values_flat[label_field.to_sym] if label_field
   end
 
 end # module
