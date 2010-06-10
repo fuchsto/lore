@@ -26,7 +26,9 @@ module Lore
     #
     #   User.all.with(User.user_id.in( Admin.all(:user_id) ))
     #
-    def with(condition)
+    def with(condition=nil, &block)
+      condition ||= yield(@condition)
+
       if((@condition.instance_of? TrueClass) || @condition.nil?) then 
         @condition = condition 
       elsif(condition.is_a? Hash) then
