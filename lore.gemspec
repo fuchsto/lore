@@ -16,7 +16,7 @@ spec = Gem::Specification.new { |s|
     high coverage of object oriented paradigms. 
     Lore is currently using PostgreSQL as database backend. 
   EOF
-  s.version = '0.9.3'
+  s.version = '0.9.5'
   s.author  = 'Tobias Fuchs'
   s.email   = 'twh.fuchs@gmail.com'
   s.date    = Time.now

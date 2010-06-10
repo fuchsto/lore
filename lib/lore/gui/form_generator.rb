@@ -45,21 +45,21 @@ module GUI
       Lore::PG_INT                => Proc.new { |l,f| Input_Field.new(:label => l, :name => f) }, 
       Lore::PG_TEXT               => Proc.new { |l,f| Textarea_Field.new(:label => l, :name => f) }, 
 
-      Lore::PG_TIMESTAMP_TIMEZONE => Proc.new { |l,f| Datetime_Field.new(:label => l, :name => f, 
+      Lore::PG_TIMESTAMP_TIMEZONE => Proc.new { |l,f| Datetime_Field.new(:label       => l, :name => f, 
                                                                          :date_format => 'dmy', 
                                                                          :time_format => 'hms', 
-                                                                         :year_range => (2009..2020)) }, 
+                                                                         :year_range  => (2009..2020)) }, 
 
-      Lore::PG_TIMESTAMP          => Proc.new { |l,f| Datetime_Field.new(:label => l, :name => f, 
+      Lore::PG_TIMESTAMP          => Proc.new { |l,f| Datetime_Field.new(:label       => l, :name => f, 
                                                                          :date_format => 'dmy', 
                                                                          :time_format => 'hms', 
-                                                                         :year_range => (2009..2020)) },
+                                                                         :year_range  => (2009..2020)) },
 
-      Lore::PG_DATE               => Proc.new { |l,f| Date_Field.new(:label => l, :name => f, 
+      Lore::PG_DATE               => Proc.new { |l,f| Date_Field.new(:label       => l, :name => f, 
                                                                      :date_format => 'dmy', 
-                                                                     :year_range => (2009..2020)) },
+                                                                     :year_range  => (2009..2020)) },
 
-      Lore::PG_TIME               => Proc.new { |l,f| Time_Field.new(:label => l, :name => f, 
+      Lore::PG_TIME               => Proc.new { |l,f| Time_Field.new(:label       => l, :name => f, 
                                                                      :time_format => 'hm') }
     }
 
