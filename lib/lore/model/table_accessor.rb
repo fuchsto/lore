@@ -313,6 +313,10 @@ class Table_Accessor
     }
     return keys
   end # }}}
+
+  def self.primary_key_name
+    key_array.first
+  end
   
   # Recursively gets sequences from parent, if own
   # sequences don't have been set, yet: 
