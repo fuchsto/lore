@@ -63,7 +63,7 @@ module Lore
 
     @@input_filters = { 
       PG_VCHAR_LIST          => lambda { |v| if (v.to_s.squeeze(' ').length == 0) then '{}' else "{#{v.join(',')}}" end }, 
-      PG_INT_LIST            => lambda { |v| "{#{v.join(',')}}" }, 
+      PG_INT_LIST            => lambda { |v| if v then "{#{v.join(',')}}" else '{}' end }, 
       PG_BOOL                => lambda { |v| if (v && v != 'f' && v != 'false' || v == 't' || v == 'true') then 't' elsif (v.instance_of?(FalseClass) || v == 'f' || v == 'false') then 'f' else nil end }, 
       PG_DATE                => lambda { |v| v.to_s }, 
       PG_TIME                => lambda { |v| v.to_s }, 
@@ -72,8 +72,8 @@ module Lore
     # PG_BOOL                => lambda { |v| if v == true then 't' elsif v == false then 'f' else v.to_s end }
     }
     @@output_filters = { 
-      PG_VCHAR_LIST          => lambda { |v| v[1..-2].split(',') }, 
-      PG_INT_LIST            => lambda { |v| v[1..-2].split(',') }, 
+      PG_VCHAR_LIST          => lambda { |v| if v then v[1..-2].split(',') else [] end }, 
+      PG_INT_LIST            => lambda { |v| if v then v[1..-2].split(',') else [] end }, 
       PG_INT                 => lambda { |v| if v then v.to_i else nil end }, 
       PG_SMALLINT            => lambda { |v| if v then v.to_i else nil end },
       PG_FLOAT               => lambda { |v| if v && v.length > 0 then v.to_f else nil end }, 

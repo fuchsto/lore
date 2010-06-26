@@ -367,12 +367,16 @@ module Model_Instance
     @update_pkey_values = {}
     @attribute_values.each_pair { |table,attributes|
       @touched_fields.each { |name|
-        value  = @attribute_values[table][name]
-        filter = self.class.__filters__.input_filters[name]
-        value  = filter.call(value) if filter
-        if !attributes[name].nil? then
-          update_values[table] ||= {}
-          @update_values[table][name] = value 
+        begin
+          value  = @attribute_values[table][name]
+          filter = self.class.__filters__.input_filters[name]
+          value  = filter.call(value) if filter
+          if !attributes[name].nil? then
+            update_values[table] ||= {}
+            @update_values[table][name] = value 
+          end
+        rescue ::Exception => e
+          raise ::Exception.new("Failed to commit #{table}.#{name} <- #{@attribute_values[table][name]}")
         end
       }
       foreign_pkey_values = get_primary_key_value_map[table]
