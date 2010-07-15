@@ -322,11 +322,11 @@ module Model_Instance
 
     return @attribute_values if klass.nil?
     case @attribute_values
-    when Lore::Table_Accessor: 
+    when Lore::Table_Accessor then
       return @attribute_values[klass.table_name] 
-    when String: 
+    when String then
       return @attribute_values[klass] 
-    when Lore::Clause: 
+    when Lore::Clause then 
       return @attribute_values[klass.split('.')[0..1].join('.')][klass.split('.').last] 
     end
 
