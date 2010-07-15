@@ -69,3 +69,50 @@ class Nil
   end
 end
 
+class With_Builder 
+
+  def initialize(obj, &block)
+    @obj = obj
+    instance_eval(&block)
+  end
+
+  def method_missing(meth, *args)
+    @obj.__send__(meth, *args)
+  end
+
+end
+
+module Kernel
+
+  # Implementation of a generic with(obj) Syntax. 
+  # Usage: 
+  #
+  #   a = [ 1,2,3,4 ]
+  #
+  #   with(a) { 
+  #     push 'b'
+  #     push 'c'
+  #   }
+  #
+  #   p a 
+  #   --> [ 1,2,3,4,'b','c']
+  # 
+  # Combined with method chaining, this enables a 
+  # DSL for queries like: 
+  #
+  #   User.find(1).with(User.username.like 'foo').offset(3)
+  #   
+  # to be written as: 
+  #
+  #   with(User.find(1)) { 
+  #     sort_by :username, :asc
+  #     with User.username.like 'foo'
+  #     offset 3
+  #   }
+  # 
+  def with(obj, &block)
+    With_Builder.new(obj, &block)
+  end
+
+end
+
