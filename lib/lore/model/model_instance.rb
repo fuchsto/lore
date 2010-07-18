@@ -376,7 +376,7 @@ module Model_Instance
             @update_values[table][name] = value 
           end
         rescue ::Exception => e
-          raise ::Exception.new("Failed to commit #{table}.#{name} <- #{@attribute_values[table][name]}")
+          raise ::Exception.new("Failed to commit #{table}.#{name} <- #{value.inspect} <- #{@attribute_values[table][name].inspect}: #{e.message}")
         end
       }
       foreign_pkey_values = get_primary_key_value_map[table]
