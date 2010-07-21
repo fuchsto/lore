@@ -18,12 +18,16 @@ describe(Lore::Table_Accessor) do
     all_cars               = 0
     cars_with_4_seats      = 0
     cars_with_maxspeed_200 = 0
-    (Car.select { |c| c.where(c.num_seats == 4); } + 
-     Car.select { |c| c.where(c.maxspeed >= 200); c.order_by(:num_seats) }).each { |car|
+    query = (Car.select { |c| c.where(c.num_seats == 4); } + 
+             Car.select { |c| c.where(c.maxspeed >= 200); c.order_by(:num_seats) })
+    query.each { |car|
       cars_with_4_seats +=1 if car.num_seats.to_i == 4
       cars_with_maxspeed_200 +=1 if car.maxspeed.to_i >= 200
       all_cars += 1
     }
+
+    
+
     cars_with_4_seats.should == 10
     cars_with_maxspeed_200.should == 20
     all_cars.should == 30

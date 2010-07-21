@@ -2,6 +2,7 @@
 -- PostgreSQL database dump
 --
 
+SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
@@ -33,6 +34,7 @@ ALTER TABLE public.asset OWNER TO cuba;
 --
 
 CREATE SEQUENCE asset_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -60,6 +62,7 @@ ALTER TABLE public.autobot OWNER TO cuba;
 --
 
 CREATE SEQUENCE autobot_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -90,7 +93,8 @@ CREATE TABLE car (
     id integer NOT NULL,
     motorized_id integer NOT NULL,
     car_type_id integer NOT NULL,
-    num_doors smallint NOT NULL
+    num_doors smallint NOT NULL,
+    is_driving boolean
 );
 
 
@@ -114,6 +118,7 @@ ALTER TABLE public.car_features OWNER TO cuba;
 --
 
 CREATE SEQUENCE car_features_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -127,6 +132,7 @@ ALTER TABLE public.car_features_id_seq OWNER TO cuba;
 --
 
 CREATE SEQUENCE car_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -152,6 +158,7 @@ ALTER TABLE public.car_type OWNER TO cuba;
 --
 
 CREATE SEQUENCE car_type_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -205,6 +212,7 @@ ALTER TABLE public.document_asset OWNER TO cuba;
 --
 
 CREATE SEQUENCE document_asset_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -212,6 +220,18 @@ CREATE SEQUENCE document_asset_id_seq
 
 
 ALTER TABLE public.document_asset_id_seq OWNER TO cuba;
+
+--
+-- Name: document_asset_info; Type: TABLE; Schema: public; Owner: fuchsto; Tablespace: 
+--
+
+CREATE TABLE document_asset_info (
+    id integer NOT NULL,
+    document_asset_id integer NOT NULL
+);
+
+
+ALTER TABLE public.document_asset_info OWNER TO fuchsto;
 
 --
 -- Name: garage; Type: TABLE; Schema: public; Owner: cuba; Tablespace: 
@@ -230,6 +250,7 @@ ALTER TABLE public.garage OWNER TO cuba;
 --
 
 CREATE SEQUENCE garage_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -243,6 +264,7 @@ ALTER TABLE public.garage_id_seq OWNER TO cuba;
 --
 
 CREATE SEQUENCE manuf_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -281,6 +303,7 @@ ALTER TABLE public.media_asset OWNER TO cuba;
 --
 
 CREATE SEQUENCE media_asset_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -288,6 +311,18 @@ CREATE SEQUENCE media_asset_id_seq
 
 
 ALTER TABLE public.media_asset_id_seq OWNER TO cuba;
+
+--
+-- Name: media_asset_info; Type: TABLE; Schema: public; Owner: fuchsto; Tablespace: 
+--
+
+CREATE TABLE media_asset_info (
+    id integer NOT NULL,
+    media_asset_id integer NOT NULL
+);
+
+
+ALTER TABLE public.media_asset_info OWNER TO fuchsto;
 
 --
 -- Name: motor; Type: TABLE; Schema: public; Owner: cuba; Tablespace: 
@@ -307,6 +342,7 @@ ALTER TABLE public.motor OWNER TO cuba;
 --
 
 CREATE SEQUENCE motor_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -346,6 +382,7 @@ ALTER TABLE public.motorized OWNER TO cuba;
 --
 
 CREATE SEQUENCE motorized_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -385,6 +422,7 @@ ALTER TABLE public.owner OWNER TO cuba;
 --
 
 CREATE SEQUENCE owner_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -412,6 +450,7 @@ ALTER TABLE public.robot OWNER TO cuba;
 --
 
 CREATE SEQUENCE robot_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -468,6 +507,7 @@ ALTER TABLE public.vehicle OWNER TO cuba;
 --
 
 CREATE SEQUENCE vehicle_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -489,6 +529,22 @@ CREATE TABLE vehicle_owner (
 ALTER TABLE public.vehicle_owner OWNER TO cuba;
 
 --
+-- Name: document_asset_info_pkey; Type: CONSTRAINT; Schema: public; Owner: fuchsto; Tablespace: 
+--
+
+ALTER TABLE ONLY document_asset_info
+    ADD CONSTRAINT document_asset_info_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: media_asset_info_pkey; Type: CONSTRAINT; Schema: public; Owner: fuchsto; Tablespace: 
+--
+
+ALTER TABLE ONLY media_asset_info
+    ADD CONSTRAINT media_asset_info_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
 
@@ -505,7 +561,6 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 REVOKE ALL ON TABLE asset FROM PUBLIC;
 REVOKE ALL ON TABLE asset FROM cuba;
 GRANT ALL ON TABLE asset TO cuba;
-GRANT ALL ON TABLE asset TO cuba;
 
 
 --
@@ -514,7 +569,6 @@ GRANT ALL ON TABLE asset TO cuba;
 
 REVOKE ALL ON SEQUENCE asset_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE asset_id_seq FROM cuba;
-GRANT ALL ON SEQUENCE asset_id_seq TO cuba;
 GRANT ALL ON SEQUENCE asset_id_seq TO cuba;
 
 
@@ -525,7 +579,6 @@ GRANT ALL ON SEQUENCE asset_id_seq TO cuba;
 REVOKE ALL ON TABLE autobot FROM PUBLIC;
 REVOKE ALL ON TABLE autobot FROM cuba;
 GRANT ALL ON TABLE autobot TO cuba;
-GRANT ALL ON TABLE autobot TO cuba;
 
 
 --
@@ -534,7 +587,6 @@ GRANT ALL ON TABLE autobot TO cuba;
 
 REVOKE ALL ON SEQUENCE autobot_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE autobot_id_seq FROM cuba;
-GRANT ALL ON SEQUENCE autobot_id_seq TO cuba;
 GRANT ALL ON SEQUENCE autobot_id_seq TO cuba;
 
 
@@ -563,7 +615,6 @@ GRANT ALL ON TABLE car TO cuba;
 REVOKE ALL ON TABLE car_features FROM PUBLIC;
 REVOKE ALL ON TABLE car_features FROM cuba;
 GRANT ALL ON TABLE car_features TO cuba;
-GRANT ALL ON TABLE car_features TO cuba;
 
 
 --
@@ -572,7 +623,6 @@ GRANT ALL ON TABLE car_features TO cuba;
 
 REVOKE ALL ON SEQUENCE car_features_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE car_features_id_seq FROM cuba;
-GRANT ALL ON SEQUENCE car_features_id_seq TO cuba;
 GRANT ALL ON SEQUENCE car_features_id_seq TO cuba;
 
 
@@ -628,7 +678,6 @@ GRANT ALL ON SEQUENCE convertible_id_seq TO cuba;
 REVOKE ALL ON TABLE document_asset FROM PUBLIC;
 REVOKE ALL ON TABLE document_asset FROM cuba;
 GRANT ALL ON TABLE document_asset TO cuba;
-GRANT ALL ON TABLE document_asset TO cuba;
 
 
 --
@@ -637,7 +686,6 @@ GRANT ALL ON TABLE document_asset TO cuba;
 
 REVOKE ALL ON SEQUENCE document_asset_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE document_asset_id_seq FROM cuba;
-GRANT ALL ON SEQUENCE document_asset_id_seq TO cuba;
 GRANT ALL ON SEQUENCE document_asset_id_seq TO cuba;
 
 
@@ -684,7 +732,6 @@ GRANT ALL ON TABLE manufacturer TO cuba;
 REVOKE ALL ON TABLE media_asset FROM PUBLIC;
 REVOKE ALL ON TABLE media_asset FROM cuba;
 GRANT ALL ON TABLE media_asset TO cuba;
-GRANT ALL ON TABLE media_asset TO cuba;
 
 
 --
@@ -693,7 +740,6 @@ GRANT ALL ON TABLE media_asset TO cuba;
 
 REVOKE ALL ON SEQUENCE media_asset_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE media_asset_id_seq FROM cuba;
-GRANT ALL ON SEQUENCE media_asset_id_seq TO cuba;
 GRANT ALL ON SEQUENCE media_asset_id_seq TO cuba;
 
 
@@ -704,7 +750,6 @@ GRANT ALL ON SEQUENCE media_asset_id_seq TO cuba;
 REVOKE ALL ON TABLE motor FROM PUBLIC;
 REVOKE ALL ON TABLE motor FROM cuba;
 GRANT ALL ON TABLE motor TO cuba;
-GRANT ALL ON TABLE motor TO cuba;
 
 
 --
@@ -713,7 +758,6 @@ GRANT ALL ON TABLE motor TO cuba;
 
 REVOKE ALL ON SEQUENCE motor_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE motor_id_seq FROM cuba;
-GRANT ALL ON SEQUENCE motor_id_seq TO cuba;
 GRANT ALL ON SEQUENCE motor_id_seq TO cuba;
 
 
@@ -733,7 +777,6 @@ GRANT ALL ON TABLE motorbike TO cuba;
 REVOKE ALL ON TABLE motorized FROM PUBLIC;
 REVOKE ALL ON TABLE motorized FROM cuba;
 GRANT ALL ON TABLE motorized TO cuba;
-GRANT ALL ON TABLE motorized TO cuba;
 
 
 --
@@ -742,7 +785,6 @@ GRANT ALL ON TABLE motorized TO cuba;
 
 REVOKE ALL ON SEQUENCE motorized_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE motorized_id_seq FROM cuba;
-GRANT ALL ON SEQUENCE motorized_id_seq TO cuba;
 GRANT ALL ON SEQUENCE motorized_id_seq TO cuba;
 
 
@@ -753,7 +795,6 @@ GRANT ALL ON SEQUENCE motorized_id_seq TO cuba;
 REVOKE ALL ON TABLE robot FROM PUBLIC;
 REVOKE ALL ON TABLE robot FROM cuba;
 GRANT ALL ON TABLE robot TO cuba;
-GRANT ALL ON TABLE robot TO cuba;
 
 
 --
@@ -762,7 +803,6 @@ GRANT ALL ON TABLE robot TO cuba;
 
 REVOKE ALL ON SEQUENCE robot_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE robot_id_seq FROM cuba;
-GRANT ALL ON SEQUENCE robot_id_seq TO cuba;
 GRANT ALL ON SEQUENCE robot_id_seq TO cuba;
 
 

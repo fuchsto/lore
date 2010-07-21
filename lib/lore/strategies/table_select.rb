@@ -119,7 +119,7 @@ module Lore
       end
 
       if block_given? then
-        yield_obj  = Clause_Parser.new(@accessor)
+        yield_obj     = Clause_Parser.new(@accessor)
         clause_parser = yield *yield_obj
       end
       

@@ -14,7 +14,13 @@ module Lore
       @strategy      = model.__select_strategy__
       @what          = what
       @polymorphic   = polymorphic
-      @clause_parser = yield(Clause_Parser.new(@model))
+
+      if block.arity == 1 then
+        @clause_parser = yield(Clause_Parser.new(@model))
+      elsif block.arity < 1 then
+        @clause_parser = Clause_Parser.new(@model)
+        @clause_parser = @clause_parser.instance_eval(&block)
+      end
     end
 
     def to_sql
@@ -55,6 +61,10 @@ module Lore
     # kicker call. 
     def method_missing(meth, *args)
       perform.__send__(meth, *args)
+    end
+    
+    def inspect
+      "Select_Query[model: #{@model}, clause: #{@clause_parser.inspect} ]"
     end
 
   end

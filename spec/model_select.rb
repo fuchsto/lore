@@ -101,6 +101,23 @@ describe(Lore::Table_Accessor) do
     Lore::Connection.query_count.should == 0
   end
 
+  it "allows a DSL syntax without explicitly using a clause object" do
+
+    query = Car.select { 
+      where(:num_seats >= 100)
+      limit(4)
+      order_by(:num_seats)
+    }
+    expected = "SELECT * FROM public.car
+                JOIN public.car_type ON (public.car_type.car_type_id = public.car.car_type_id)
+                JOIN public.motorized ON (public.motorized.id = public.car.motorized_id)
+                JOIN public.vehicle ON (public.vehicle.id = public.motorized.vehicle_id)
+                JOIN public.motor ON (public.motor.id = public.motorized.motor_id)
+                WHERE num_seats >= '100' ORDER BY num_seats ASC LIMIT 4 OFFSET 0"
+    query.sql.gsub(/\s/,'').should == expected.gsub(/\s/,'')
+    
+  end
+
 end
 
 
