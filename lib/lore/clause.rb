@@ -80,10 +80,12 @@ module Lore
           value = 't'
         elsif value.instance_of? FalseClass then
           value = 'f'
+        elsif value.is_a?(Symbol) then
+          return "#{value}()"
         else 
           value = value.to_s.lore_escape
         end
-        value = '\'' << value << '\''
+        value = "'#{value}'"
       end
       value
   end
