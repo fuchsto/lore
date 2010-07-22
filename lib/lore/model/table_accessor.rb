@@ -619,9 +619,39 @@ class Table_Accessor
 
   def self.update(&block)
   # {{{
-    query_string = @update_strategy.block_update(&block)
+    @update_strategy.block_update(&block)
   end # def }}}
   
+  # Returns a Select_Query instance or Clause, depending on arguments. 
+  # Examples: 
+  #
+  #   query = Car.select { 
+  #     where(:car_id > 100) 
+  #     limit 4 
+  #   }
+  #   --> Select_Query instance
+  #
+  #   cars = query.to_a # Kicks query, returns array of Car instances
+  #
+  #   # works, as #each() is a kicker method
+  #   query.each { |car| puts car.car_name }
+  #
+  # Returns a Clause if argument (usually a field name) is given: 
+  #
+  #   Car.select(:car_name) { ... } 
+  #   --> Clause instance
+  #
+  # This is used in nested queries. 
+  # A (rather stupid) example: 
+  #
+  #   Car.select { 
+  #     where(Car.car_id.in { 
+  #       Car.select(:car_id) { 
+  #         where(:manuf_id == 3)
+  #       }
+  #     }
+  #   }
+  #
   def self.select(clause=nil, &block)
   # {{{
     if(!clause.nil? && !clause.to_s.include?('*,')) then
@@ -677,6 +707,13 @@ class Table_Accessor
     @select_strategy.select(what, true, &block).get_rows
   end # }}}
   
+  # Delete this object and use Table_Deleter to delete its entity tuple
+  # from database. 
+  def self.delete(&block)
+  # {{{
+    @delete_strategy.block_delete(&block)
+  end # }}}
+
   # Wrap explicit select. Example: 
   #  SomeModule::SomeAccessor.explicit_insert({
   #                        table_name_A =>
@@ -894,19 +931,6 @@ class Table_Accessor
       pkeys[pkey] = key_values.at(idx)
     }
     load(pkeys)
-  end # }}}
-
-  # Delete this object and use Table_Deleter to delete its entity tuple
-  # from database. 
-  def self.delete(value_keys=nil, &block)
-  # {{{
-    if value_keys then
-      before_delete(value_keys)
-      @delete_strategy.perform_delete(value_keys)
-      after_delete(value_keys)
-    else 
-      @delete_strategy.block_delete(&block)
-    end
   end # }}}
 
   private

@@ -27,5 +27,22 @@ describe(Lore::Table_Accessor) do
     Car.get(car_id).should == false
   end
 
+  it "allows a DSL syntax for deletion without explicitly using a clause object" do
+
+    query = Car.delete { 
+      where(:num_seats >= 100)
+      limit(4)
+    }
+    expected = "DELETE FROM public.car
+                JOIN public.car_type ON (public.car_type.car_type_id = public.car.car_type_id)
+                JOIN public.motorized ON (public.motorized.id = public.car.motorized_id)
+                JOIN public.vehicle ON (public.vehicle.id = public.motorized.vehicle_id)
+                JOIN public.motor ON (public.motor.id = public.motorized.motor_id)
+                WHERE num_seats >= '100' LIMIT 4 OFFSET 0"
+    query.sql.gsub(/\s/,'').should == expected.gsub(/\s/,'')
+    
+  end
+
+
 end
 

@@ -101,7 +101,7 @@ describe(Lore::Table_Accessor) do
     Lore::Connection.query_count.should == 0
   end
 
-  it "allows a DSL syntax without explicitly using a clause object" do
+  it "allows a DSL syntax for selects without explicitly using a clause object" do
 
     query = Car.select { 
       where(:num_seats >= 100)

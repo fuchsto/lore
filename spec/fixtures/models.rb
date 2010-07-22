@@ -14,6 +14,10 @@ module Models
     primary_key :manuf_id, :manuf_id_seq
 
     validates :name, NAME_FORMAT
+    
+    add_input_filter(:name) { |name|
+      name.gsub(/[^a-zA-Z_0-9]/,'_').downcase
+    }
 
     use_label :name
   end
@@ -37,7 +41,7 @@ module Models
     validates :name, NAME_FORMAT
 
     add_input_filter(:name) { |name|
-      name.gsub(/[^a-zA-Z_0-9]/,'').downcase
+      name.gsub(/[^a-zA-Z_0-9]/,'_').downcase
     }
     add_input_filter(:maxspeed) { |m| m.to_s.sub('km/h','') }
     add_output_filter(:maxspeed) { |m| m << 'km/h' }
