@@ -121,4 +121,6 @@ end
 require('lore/adapters/postgres')
 require('lore/transaction')
 require('lore/validation/parameter_validator')
+require('lore/clause_helpers')
+
 

@@ -41,11 +41,13 @@ module Lore
 
     def initialize(model, what=nil, polymorphic=false, &block)
       super(model, model.__select_strategy__, polymorphic, &block)
-      @what = what
+      @what  = what
+      @alias = nil
     end
 
     def to_sql
-      @strategy.select_query(@what, @clause_parser, @polymorphic)[:query]
+      q = @strategy.select_query(@what, @clause_parser, @polymorphic)[:query]
+      q << " as #{@alias}" if @alias
     end
     alias sql to_sql
 
@@ -83,7 +85,7 @@ module Lore
     def method_missing(meth, *args)
       perform.__send__(meth, *args)
     end
-    
+
   end
 
   class Delete_Query

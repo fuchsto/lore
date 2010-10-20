@@ -179,6 +179,7 @@ module Lore
       @value_string  = value_string
       @left_side     = left_side
       @field_name    = field_name
+      @alias         = nil
     end
 
     def self.for(accessor)
@@ -344,7 +345,7 @@ module Lore
       Clause.new(@field_name, "(#{@left_side+@value_string})", '', @plan)
     end
     alias and &
-    
+
     def has_element(element)
       element = element.to_s if element.kind_of? Clause
       element = "'#{element.lore_escape}'" if element.kind_of? String
@@ -381,7 +382,7 @@ module Lore
     # schema.table_name.attribute. 
     # See Table_Accessor.load_attribute_fields
     def to_s
-      @field_name.to_s
+      @field_name.to_s 
     end
 
     def tag 
@@ -393,7 +394,7 @@ module Lore
     end
 
     def to_sql
-      @left_side + @value_string
+      @left_side + @value_string + @alias.to_s
     end
     
   end # class }}}
@@ -583,7 +584,12 @@ module Lore
           field = field.to_s
         end
       }
-      @clause[:group_by] = ' GROUP BY ' << absolute_field_names.join(',')
+      if @clause[:group_by] != '' then
+        @clause[:group_by] << ', '
+      else
+        @clause[:group_by] = ' GROUP BY ' 
+      end
+      @clause[:group_by] << absolute_field_names.join(',')
       return self
     end # def
 

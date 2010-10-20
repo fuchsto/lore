@@ -8,15 +8,16 @@ module Lore
         add_input_filter(attrib) { |a|
           a = a.to_s
           a.gsub("'",'&apos;')
-          a.gsub("\"",'&quot;')
+          a.gsub('"','&quot;')
         }
         add_output_filter(attrib) { |a|
           a = a.to_s
           a.gsub("'",'&apos;')
-          a.gsub("\"",'&quot;')
+          a.gsub('"','&quot;')
         }
       }
     end
+    alias html_encode html_escape_values_of
 
   end
 

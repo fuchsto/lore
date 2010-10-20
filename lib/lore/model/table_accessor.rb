@@ -652,10 +652,10 @@ class Table_Accessor
   #     }
   #   }
   #
-  def self.select(clause=nil, &block)
+  def self.select(*clause, &block)
   # {{{
-    if(!clause.nil? && !clause.to_s.include?('*,')) then
-      query_string = @select_strategy.select_query(clause.to_s, &block)
+    if(clause.length > 0 && !clause.first.to_s.include?('*,')) then
+      query_string = @select_strategy.select_query(clause.map { |c| c.to_s }.join(', '), &block)
       return Clause.new(query_string[:query])
     end
     return Select_Query.new(self, clause.to_s, &block)

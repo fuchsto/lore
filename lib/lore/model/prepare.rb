@@ -69,28 +69,45 @@ module Lore
     #   examine the query plan PostgreSQL has chosen for a prepared statement, use 
     #   EXPLAIN EXECUTE. "
     #
-    def prepare(plan_name, *args, &block)
+    def prepare_select(plan_name, *args, &block)
     # {{{
-    # log('PREPARE: TRYING CLASS METHOD ' << plan_name.to_s)
       if !@@prepared_statements[plan_name] then
         Table_Select.new(self).prepare(plan_name, args, &block)
 
-    #   log('PREPARE: CREATE CLASS METHOD ' << plan_name.to_s)
         instance_eval("
         def #{plan_name.to_s}(*args) 
-          execute_prepared(:#{plan_name}, args)
+          select_prepared(:#{plan_name}, *args)
         end")
         @@prepared_statements[plan_name] = true
-    #   log('PREPARE: CREATED CLASS METHOD ' << plan_name.to_s)
+      end
+    end # }}}
+    alias prepare prepare_select
+
+    def select_prepared(plan_name, *args)
+      plan_name = "#{table_name.gsub('.','_')}__#{plan_name.to_s}"
+      Table_Select.new(self).select_prepared(plan_name, args)
+    end
+
+    # For prepared statements that return arbitrary tuples (i.e. not 
+    # a record set for model instances)
+    #
+    def prepare_execute(plan_name, *args, &block)
+    # {{{
+      if !@@prepared_statements[plan_name] then
+        Table_Select.new(self).prepare(plan_name, args, &block)
+
+        instance_eval("
+        def #{plan_name.to_s}(*args) 
+          execute_prepared(:#{plan_name}, *args)
+        end")
+        @@prepared_statements[plan_name] = true
       end
     end # }}}
 
     def execute_prepared(plan_name, *args)
       plan_name = "#{table_name.gsub('.','_')}__#{plan_name.to_s}"
-      Table_Select.new(self).select_prepared(plan_name, args)
+      Table_Select.new(self).execute_prepared(plan_name, args)
     end
-
-
 
   end
   

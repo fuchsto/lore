@@ -109,7 +109,7 @@ module Lore
       if what.instance_of?(Clause) || what.is_a?(Symbol) then
         what = what.to_s 
       elsif what.is_a?(Array) then
-        what = what.join(',')
+        what = what.map { |e| e.to_s }.join(', ')
       end
 
       if(what.nil? || what == '*' || what == '') then
@@ -118,9 +118,11 @@ module Lore
         query_as_part = what.to_s      
       end
 
-      if block_given? then
+      if block && block.arity == 1 then
         yield_obj     = Clause_Parser.new(@accessor)
         clause_parser = yield *yield_obj
+      elsif block && block.arity < 1 then
+        return { :query => yield }
       end
       
       query_string = 'SELECT '
@@ -253,8 +255,17 @@ module Lore
     # {{{
       args_string = ''
       args.map { |a| a = Lore::TYPE_NAMES[a] } 
-      if args.to_s != '' && args.length > 0 then args_string = "(#{args.join(',')})" end
-      query_string = "PREPARE #{@accessor.table_name.gsub('.','_')}__#{plan_name.to_s}#{args_string} AS " << select_query(&block)[:query]
+      
+      if args.to_s != '' && args.length > 0 then 
+        args_string = "(#{args.join(',')})" 
+      end
+      
+      plan_name = "#{@accessor.table_name.gsub('.','_')}__#{plan_name}"
+      plan_def  = "#{plan_name}#{args_string}"
+
+      query_string = ''
+#     query_string << "DEALLOCATE #{plan_name}; \n"
+      query_string << "PREPARE #{plan_def} AS " << select_query(&block)[:query]
       begin
         Context.enter(@accessor.get_context) if @accessor.get_context
         result = Lore::Connection.perform(query_string)
@@ -265,12 +276,28 @@ module Lore
       end
     end # }}}
 
+    # For prepared statements that return model instance records
+    #
     def select_prepared(plan_name, *args)
     # {{{
       args_string = ''
-      if args.to_s != '' && args.length > 0 then args_string = "(#{args.join(',')})" end
+      if args.to_s != '' && args.length > 0 then 
+        args_string = "(#{args.flatten.map { |a| "'#{a}'" }.join(',')})" 
+      end
       query_string = "EXECUTE #{plan_name.to_s} #{args_string}; "
       return select_cached(query_string)
+    end # }}}
+
+    # For prepared statements that return arbitrary records
+    #
+    def execute_prepared(plan_name, *args)
+    # {{{
+      args_string = ''
+      if args.to_s != '' && args.length > 0 then 
+        args_string = "(#{args.flatten.map { |a| "'#{a}'" }.join(',')})" 
+      end
+      query_string = "EXECUTE #{plan_name.to_s} #{args_string}; "
+      return perform_select(query_string).get_rows()
     end # }}}
 
     def deallocate(plan_name)
