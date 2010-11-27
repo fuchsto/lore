@@ -571,6 +571,11 @@ module Lore
       return self
     end # def
 
+    def offset(offset_val=0)
+      @clause[:offset] = ' OFFSET ' << offset_val.to_s
+      return self
+    end # def
+
     def having(having_clause)
       @clause[:having] = ' HAVING ' << having_clause.to_sql
       return self
