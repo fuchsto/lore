@@ -27,7 +27,7 @@ module Validation
                                        !required && (value.empty?)
                                      }, 
       Lore::PG_DECIMAL            => Proc.new { |value, required| 
-                                       value && (value.kind_of?(Integer) || value.to_f.to_s == value) ||
+                                       value && (value.kind_of?(Integer) || /^\d+\.\d+$/.match(value)) ||
                                        !required && (value.empty?)
                                      }, 
       Lore::PG_TEXT               => Proc.new { |value, required| !required || !value.empty? }, 

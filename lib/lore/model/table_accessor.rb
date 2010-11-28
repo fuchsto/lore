@@ -540,12 +540,18 @@ class Table_Accessor
     @__attributes__.add_constraints(attrib, constraints, &block)
   end # }}}
 
-  def self.add_input_filter(attrib, &block) 
-    @__filters__.add_input_filter(attrib, &block)
+  def self.add_input_filter(*attribs, &block) 
+    attribs.flatten! if attribs.first.is_a?(Array)
+    attribs.each { |attrib|
+      @__filters__.add_input_filter(attrib, &block)
+    }
   end
   
-  def self.add_output_filter(attrib, &block) 
-    @__filters__.add_output_filter(attrib, &block)
+  def self.add_output_filter(*attribs, &block) 
+    attribs.flatten! if attribs.first.is_a?(Array)
+    attribs.each { |attrib|
+      @__filters__.add_output_filter(attrib, &block)
+    }
   end
 
   # Demands a value to be set for create and update procedures. 
