@@ -6,13 +6,15 @@ module Lore
     def html_escape_values_of(*attributes)
       add_input_filter(*attributes) { |a|
         a = a.to_s
-        a.gsub("'",'&apos;')
-        a.gsub('"','&quot;')
+        a.gsub!("'",'&apos;')
+        a.gsub!('"','&quot;')
+        a
       }
       add_output_filter(*attributes) { |a|
         a = a.to_s
-        a.gsub("'",'&apos;')
-        a.gsub('"','&quot;')
+        a.gsub!("'",'&apos;')
+        a.gsub!('"','&quot;')
+        a
       }
     end
     alias html_encode html_escape_values_of
