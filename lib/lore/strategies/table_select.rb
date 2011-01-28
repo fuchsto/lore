@@ -264,7 +264,6 @@ module Lore
       plan_def  = "#{plan_name}#{args_string}"
 
       query_string = ''
-#     query_string << "DEALLOCATE #{plan_name}; \n"
       query_string << "PREPARE #{plan_def} AS " << select_query(&block)[:query]
       begin
         Context.enter(@accessor.get_context) if @accessor.get_context
