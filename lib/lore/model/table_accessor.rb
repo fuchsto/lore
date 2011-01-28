@@ -302,6 +302,9 @@ class Table_Accessor
     @own_primary_keys
   end # }}}
   
+  # Return attribute names (without table names) of this model's 
+  # primary key attributes, including inherited primary keys. 
+  #
   def self.key_array()
   # {{{
     # TODO: Use __attributes__ here

@@ -202,7 +202,7 @@ module Lore
         nested_query_string.to_inner_select
       else
         nested_query_string = nested_query_string.join(',') if nested_query_string.is_a?(Array)
-        @value_string = @field_name << ' NOT IN (' << "\n" << nested_query_string.to_s << ') '
+        @value_string = "#{@field_name} NOT IN ( #{nested_query_string.to_s}) "
         Clause.new(@value_string, @left_side+@value_string)
       end
     end
@@ -224,37 +224,37 @@ module Lore
       elsif nested_query_string.instance_of? Range then
         return between(nested_query_string.first, nested_query_string.last)
       end
-      @value_string = @field_name << ' IN (' << "\n" << nested_query_string.to_s << ') '
+      @value_string = "#{@field_name} IN ( #{nested_query_string.to_s} ) "
       Clause.new(@value_string, @left_side+@value_string)
     
     end
 
     def between(range_begin, range_end)
-      @value_string = @field_name << " BETWEEN #{range_begin} AND #{range_end} "
+      @value_string = "#{@field_name} BETWEEN #{range_begin} AND #{range_end} "
       Clause.new(@value_string, @left_side+@value_string)
     end
 
     def +(value)
       if value.instance_of? String then 
-        value = '\''+value.lore_escape+'\'::text'
+        value = "'#{value.lore_escape}'::text"
       else 
         value = value.to_s.lore_escape
       end
-      @value_string = @field_name.to_s + '+'+value
+      @value_string = "#{@field_name} + #{value}"
       return Clause.new(@value_string, @left_side.to_s+@value_string.to_s)
     end
     def -(value)
       if value.instance_of? String then 
-        value = '\''+value.lore_escape+'\'::text'
+        value = "'#{value.lore_escape}'::text"
       else 
         value = value.to_s.lore_escape
       end
-      @value_string = @field_name + '-'+ value
+      @value_string = "#{@field_name} - #{value}"
       return Clause.new(@value_string, @left_side+@value_string)
     end
 
     def is_null()
-      @value_string = @field_name + ' IS NULL'
+      @value_string = "#{@field_name} IS NULL"
       Clause.new(@value_string, @left_side+@value_string, '', @plan)
     end
 
