@@ -380,6 +380,14 @@ class Table_Accessor
     @fields ||= @__attributes__.fields
     @fields
   end
+  
+  # Returns attribute fields that have been hidden using 
+  # Table_Accessor.hides :field_name
+  # 
+  def self.get_hidden_fields
+    @__attributes__.hidden
+  end
+
   # Returns all attribute fields as Hash of Array of Strings, 
   # in the same order as defined in the table, mapped by 
   # table names. 
@@ -569,7 +577,7 @@ class Table_Accessor
 
   def self.hide_attribute(*args)
     Aurita.log { "Model.hidden_attribute is deprecated (called for #{self.to_s}. 
-                  Use Model.hidden instead" } 
+                  Use Model.hides instead" } 
   end
 
   # Define an attribute as hidden. 
@@ -579,11 +587,6 @@ class Table_Accessor
     @__attributes__.add_hidden(attrib_name)
   end 
 
-  def self.get_hidden() 
-    return @hidden_attributes if @hidden_attributes
-    Hash.new
-  end # }}}
-  
   def self.belongs_to(*args)
   # {{{
     @__associations__.add_belongs_to(args.at(0), args[1..-1])

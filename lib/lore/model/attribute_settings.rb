@@ -13,7 +13,7 @@ module Lore
   #
   class Attribute_Settings
 
-    attr_accessor :fields, :fields_flat, :required, :implicit, :types, :constraints, :sequences, :primary_keys
+    attr_accessor :fields, :fields_flat, :required, :implicit, :types, :constraints, :sequences, :primary_keys, :hidden
     
     def initialize(accessor, fields, types)
       fields.map! { |a| a.to_sym }
@@ -133,7 +133,8 @@ module Lore
     end
 
     def add_hidden(attribute)
-      @hidden[@accessor.table_name] = attribute
+      @hidden[@accessor.table_name] ||= []
+      @hidden[@accessor.table_name] << attribute
     end
 
     def add_base_model(model)

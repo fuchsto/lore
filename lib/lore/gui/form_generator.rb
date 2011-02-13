@@ -150,6 +150,11 @@ module GUI
               if constraints[:format] then
               end
             end
+
+            if @klass.get_hidden_fields[table] && @klass.get_hidden_fields[table].include?(attribute) then
+              form_element.hide!
+            end
+
             @form.add(form_element) 
           end
         }
