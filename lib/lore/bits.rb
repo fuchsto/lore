@@ -55,11 +55,27 @@ class Object
   def empty? 
     false
   end
+
+  def db_escaped?
+    false
+  end
 end
 
 class String
+
+  attr_reader :db_escaped
+
   def empty? 
     return self == ''
+  end
+
+  def db_escaped!
+    @db_escaped = true
+    return self
+  end
+
+  def db_escaped?
+    @db_escaped || false
   end
 end
 
