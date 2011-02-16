@@ -48,7 +48,11 @@ module Lore
         if !(required[attribute_name] && value == '') && !(value.nil?) then
           # Value is either not an empty string, or this field must not be NULL: 
           if (!value.empty? || required[attribute_name]) then
-            value = "'#{value}'"
+            if value.db_escaped? then
+              value = "E'#{value}'"
+            else
+              value = "'#{value}'"
+            end
           elsif value.empty? then
             # Value is an empty string, so set this field to NULL
             value = 'NULL'
