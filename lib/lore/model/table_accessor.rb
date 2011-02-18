@@ -850,6 +850,22 @@ class Table_Accessor
     
     return obj
   end # }}}
+
+  # Dry-run of create, only validates attribute values 
+  # without creating a new instance. Also see Model_Instance#validate_commit. 
+  #
+  def self.validate_create(attrib_values={})
+    values = distribute_attrib_values(attrib_values)
+    
+    before_validation(values)
+    if @__associations__.polymorphics then
+      Lore.logger.debug { "Polymorphic create on #{self.to_s}" }
+      @__associations__.polymorphics.each_pair { |table, model_field|
+        values[table][model_field] = self.to_s
+      }
+    end
+    Lore::Validation::Parameter_Validator.validate(self, values)
+  end
   
   private
 

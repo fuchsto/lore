@@ -12,9 +12,10 @@ module Exceptions
   #
   #   raise Validation_Failure.new(The_Model, { 
   #       # Generic error. Example:  :user_id => Lore.integer
-  #         :table_foo  => Invalid_Field.new( :the_attribute => :error_type ) 
+  #         :table_foo  => Invalid_Field.new( :the_attribute     => :error_type, 
+  #                                           :another_attribute => :error_type) 
   #       # Constraint error. Example:  :email => :format 
-  #         :table bar  => Unmet_Constraints.new( :the_attribute => :error_type )  
+  #         :table_bar  => Unmet_Constraints.new( :the_attribute => :error_type )  
   #       # Type error. Example:  :user_id => Lore.integer or :user_id => :missing
   #         :table_batz => Invalid_Types.new( :the_attribute => :error_type ) 
   #   })
@@ -31,7 +32,6 @@ module Exceptions
 			@invalid_fields = invalid_params_hash 
 			@invalid_klass  = klass
       @message        = "#{self.class.to_s}: #{@invalid_fields.inspect}"
-      log()
 		end
 
     def log()

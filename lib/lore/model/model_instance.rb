@@ -360,10 +360,9 @@ module Model_Instance
     return false if @touched_fields.nil? || @touched_fields.length == 0
     @touched_fields.uniq!
 
-    # TODO: Optimize this! 
-    @attribute_values = self.class.distribute_attrib_values(@attribute_values_flat)
-    foreign_pkey_values = false
-    @update_values = {}
+    @attribute_values   = self.class.distribute_attrib_values(@attribute_values_flat)
+    foreign_pkey_values = false # predef
+    @update_values      = {}
     @update_pkey_values = {}
     @attribute_values.each_pair { |table,attributes|
       @touched_fields.each { |name|
@@ -372,7 +371,7 @@ module Model_Instance
           filter = self.class.__filters__.input_filters[name]
           value  = filter.call(value) if filter
           if !attributes[name].nil? then
-            update_values[table] ||= {}
+            @update_values[table] ||= {}
             @update_values[table][name] = value 
           end
         rescue ::Exception => e
@@ -384,7 +383,7 @@ module Model_Instance
       @update_pkey_values[table] = foreign_pkey_values if foreign_pkey_values
     }
 
-    Validation::Parameter_Validator.validate_update(self.class, update_values)
+    Validation::Parameter_Validator.validate_update(self.class, @update_values)
 
     self.class.before_commit(self)
     self.class.__update_strategy__.perform_update(self)
@@ -395,6 +394,10 @@ module Model_Instance
     return true
   end # def }}}
   alias save commit
+
+  def validate_commit
+    
+  end
 
   # Delete this instance from DB. 
   # Common usage: 
