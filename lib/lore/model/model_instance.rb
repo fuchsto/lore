@@ -163,20 +163,6 @@ module Model_Instance
     get_primary_key_value_map[self.class.table_name]
   end
 
-  def get_label_string
-    if !@label_string || touched? then
-      value = ''
-      self.class.get_labels.each { |label_attrib|
-        label_parts = label_attrib.split('.')
-        value << @attribute_values[label_parts[0..1].join('.')][label_parts[2]].to_s + ' '
-      }
-      value = '[no label given]' if value == ''
-      @label_string = value
-    end
-    return @label_string
-  end
-
-
   def touched?
     (@touched === true)
   end
@@ -284,7 +270,8 @@ module Model_Instance
   #   table_instance.id  -> 123
   #
   def attr
-    return @attribute_values_flat
+    @attribute_values_flat
+=begin
     if @flat_attr.nil? then
       @flat_attr = Attribute_Hash.new
       @attribute_values.each_pair { |table, attribs| 
@@ -294,6 +281,7 @@ module Model_Instance
       }
     end
     @flat_attr
+=end
   end # def
 
   # Explicit attribute request using given model klass. 
