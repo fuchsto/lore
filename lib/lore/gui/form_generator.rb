@@ -104,7 +104,7 @@ module GUI
           full_attrib  = "#{table}.#{attribute}"
           field_name   = full_attrib
           form_element = false
-
+          
           constraints  = constraints[table] if constraints
           constraints  = constraints[attribute] if constraints
 

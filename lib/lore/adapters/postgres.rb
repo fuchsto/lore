@@ -5,6 +5,7 @@ begin
   require('lore/adapters/postgres/connection')
   require('lore/adapters/postgres/result')
   require('lore/adapters/postgres/types')
+  require('lore/adapters/postgres/sequence')
 rescue LoadError
   begin
     Lore.pg_server = 'unix:/var/run/postgresql/.s.PGSQL.5432'
@@ -16,6 +17,7 @@ rescue LoadError
     require('lore/adapters/postgres-pr/connection')
     require('lore/adapters/postgres-pr/result')
     require('lore/adapters/postgres-pr/types')
+    require('lore/adapters/postgres-pr/sequence')
   rescue LoadError
     Lore.logger.error { "No binding for postgres found" }
     Lore.logger.error { "Please install 'postgres' or 'postgres-pr'" }
