@@ -1,12 +1,13 @@
 
 require('rubygems')
 begin
-  require('postgres')
-  require('lore/adapters/postgres/connection')
-  require('lore/adapters/postgres/result')
-  require('lore/adapters/postgres/types')
-  require('lore/adapters/postgres/sequence')
-rescue LoadError
+ require('pg')
+ require('lore/adapters/postgres/connection')
+ require('lore/adapters/postgres/result')
+ require('lore/adapters/postgres/types')
+ require('lore/adapters/postgres/sequence')
+rescue LoadError => le
+  Lore.logger.warn { "Could not load pg: " + le.to_s } 
   begin
     Lore.pg_server = 'unix:/var/run/postgresql/.s.PGSQL.5432'
     Lore.logger.info { "Defaulted PG server to #{Lore.pg_server}" }
@@ -18,9 +19,9 @@ rescue LoadError
     require('lore/adapters/postgres-pr/result')
     require('lore/adapters/postgres-pr/types')
     require('lore/adapters/postgres-pr/sequence')
-  rescue LoadError
+  rescue LoadError => le
     Lore.logger.error { "No binding for postgres found" }
-    Lore.logger.error { "Please install 'postgres' or 'postgres-pr'" }
+    Lore.logger.error { "Please install gem 'pg' or 'postgres-pr'" }
+    raise le
   end
 end
-

@@ -1,6 +1,4 @@
 
-require('postgres')
-
 module Lore
   
 class Result
@@ -75,6 +73,10 @@ class Result
   
   def fieldname(index)
     return @result.fieldname(index)
+  end
+
+  def clear
+    @result.clear
   end
   
 end # class Result

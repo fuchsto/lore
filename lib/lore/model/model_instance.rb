@@ -363,7 +363,8 @@ module Model_Instance
             @update_values[table][name] = value 
           end
         rescue ::Exception => e
-          raise ::Exception.new("Failed to commit #{table}.#{name} <- #{value.inspect} <- #{@attribute_values[table][name].inspect}: #{e.message}")
+          Lore.logger.error("Failed to commit #{table}.#{name} <- #{value.inspect} <- #{@attribute_values[table][name].inspect}: #{e.message}")
+          raise e
         end
       }
       foreign_pkey_values = get_primary_key_value_map[table]

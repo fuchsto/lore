@@ -1,5 +1,4 @@
 
-require('postgres')
 require('lore')
 require('lore/exceptions/database_exception')
 require('lore/adapters/context')
